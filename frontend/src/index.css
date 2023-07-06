@@ -3,18 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "BMJUA";
-  src: url("/src/assets/fonts/BMJUA.ttf");
-}
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
+  font-family: 'BMJUA';
+  src: url('/src/assets/fonts/BMJUA.ttf');
 }
