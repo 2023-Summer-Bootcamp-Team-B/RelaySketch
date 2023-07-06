@@ -11,31 +11,31 @@ function LoadingPage() {
       <div className="flex">
         <img
           src={cloud1}
-          alt="cloud image"
-          className="relative z-10 w-[20.83333vw] h-[31.48346vh] top-[19.21025vh] left-[8.33333vw]"
+          alt="cloud"
+          className="relative z-10 w-[21vw] h-[31vh] top-[19vh] left-[8vw]"
         />
         <img
           src={cloud2}
-          alt="cloud image"
-          className="relative z-20 w-[12.29167vw] h-[11.7396vh] top-[19.21025vh] right-[1.82291vw]"
+          alt="cloud"
+          className="relative z-20 w-[12vw] h-[12vh] top-[19vh] right-[2vw]"
         />
         <img
           src={sun}
-          alt="sun image"
-          className="relative z-0 w-[23.95833vw] h-[49.09284vh] right-[6.25vw]"
+          alt="sun"
+          className="relative z-0 w-[24vw] h-[49vh] right-[6vw]"
         />
         <img
           src={cloud3}
-          alt="cloud image"
-          className="relative w-[14.0625vw] h-[22.94557vh] right-[7.8125vw] top-[9.60512vh]"
+          alt="cloud"
+          className="relative w-[14vw] h-[23vh] right-[8vw] top-[10vh]"
         />
         <img
           src={cloud4}
-          alt="cloud image"
-          className="relative w-[8.85417vw] h-[16.00853vh] right-[21.61458vw] top-[28.81537vh]"
+          alt="cloud"
+          className="relative w-[9vw] h-[16vh] right-[22vw] top-[29vh]"
         />
       </div>
-      <div className=" mt-[5.33618vh]">PLEASE WAIT...</div>
+      <div className=" mt-[5vh]">PLEASE WAIT...</div>
     </div>
   );
 }
