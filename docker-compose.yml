@@ -1,0 +1,83 @@
+version: "3"
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:latest
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
+      TZ: Asia/Seoul
+
+  django:
+    container_name: django
+    build:
+      context: ./backend # Docker 빌드 컨텍스트를 backend 폴더로 설정
+      dockerfile: Dockerfile # Dockerfile 경로
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
+      - staticfiles:/backend/collected_statics
+    depends_on:
+      - mysql
+      - rabbitmq
+    logging:
+      driver: "json-file" # 로그 드라이버를 json-file로 설정
+      options:
+        max-size: "10m" # 로그 파일의 최대 크기를 10MB로 설정
+        max-file: "3" # 최대 3개의 로그 파일 보존
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - django
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - django
+      - frontend
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - staticfiles:/staticfiles
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:latest
+    network_mode: host
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+
+volumes:
+  staticfiles:

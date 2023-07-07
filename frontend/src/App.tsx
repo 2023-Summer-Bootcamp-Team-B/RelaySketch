@@ -4,8 +4,8 @@ import { RecoilRoot } from "recoil";
 import LoadingPage from "./pages/LoadingPage";
 import MainPage from "./pages/MainPage";
 import ResultsPage from "./pages/ResultsPage";
-import GuessImagePage from "./pages/GuessImagePage";
-import InputSubjectPage from "./pages/InputSubjectPage";
+// import GuessImagePage from "./pages/GuessImagePage";
+// import InputSubjectPage from "./pages/InputSubjectPage";
 
 function App() {
   return (
@@ -15,8 +15,8 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/loading" element={<LoadingPage />} />
-          <Route path="/guess" element={<GuessImagePage />} />
-          <Route path="/input" element={<InputSubjectPage />} />
+          {/* <Route path="/guess" element={<GuessImagePage />} />
+          <Route path="/input" element={<InputSubjectPage />} /> */}
         </Routes>
       </Router>
     </RecoilRoot>
