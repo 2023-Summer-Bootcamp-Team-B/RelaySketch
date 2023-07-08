@@ -24,7 +24,7 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
-      - staticfiles:/backend/collected_statics
+      - staticfiles:/backend/static
     depends_on:
       - mysql
       - rabbitmq
@@ -65,8 +65,7 @@ services:
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:latest
-    network_mode: host
+    image: rabbitmq:3.7.14-management-alpine
     restart: always
     ports:
       - 5672:5672
@@ -74,10 +73,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    volumes:
-      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
 
 volumes:
   staticfiles:
