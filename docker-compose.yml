@@ -4,15 +4,15 @@ services:
   mysql:
     container_name: mysql
     image: mysql:latest
-    restart: always
+    restart: always # 컨테이너가 종료되면 항상 재시작
     ports:
-      - 3307:3306
+      - 3307:3306 # 호스트의 3307 포트와 컨테이너의 3306 포트를 연결
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_USER_PASSWORD}
-      TZ: Asia/Seoul
+      TZ: Asia/Seoul # 타임존을 서울로 설정
 
   django:
     container_name: django
@@ -24,10 +24,10 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
-      - staticfiles:/backend/static
+      - staticfiles:/backend/static # static 파일을 호스트와 컨테이너 간에 공유
     depends_on:
-      - mysql
-      - rabbitmq
+      - mysql # mysql 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
+      - rabbitmq # rabbitmq 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
     logging:
       driver: "json-file" # 로그 드라이버를 json-file로 설정
       options:
@@ -47,29 +47,29 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - django
+      - django # django 컨테이너가 실행되고 나서 frontend 컨테이너가 실행되도록 설정
 
   nginx:
     container_name: nginx
     build:
       context: ./nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile # Dockerfile 경로
     ports:
       - 80:80
     depends_on:
-      - django
-      - frontend
+      - django # django 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
+      - frontend # frontend 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - staticfiles:/staticfiles
+      - ./nginx:/etc/nginx/conf.d # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
+      - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3.7.14-management-alpine
+    image: rabbitmq:3.7.14-management-alpine # RabbitMQ 관리자 페이지를 사용하기 위해 alpine 버전 사용
     restart: always
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 5672:5672 # RabbitMQ 서버 포트
+      - 15672:15672 # RabbitMQ 관리자 페이지 포트
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}

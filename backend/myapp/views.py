@@ -5,7 +5,9 @@ import pika
 
 # Create your views here.
 def send_message(request):
-    connection = pika.BlockingConnection(pika.ConnectionParameters("172.30.1.9"))
+    credentials = pika.PlainCredentials("admin", "admin")
+    parameters = pika.ConnectionParameters("172.30.1.9", 5672, "/", credentials)
+    connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
     # 큐 생성
