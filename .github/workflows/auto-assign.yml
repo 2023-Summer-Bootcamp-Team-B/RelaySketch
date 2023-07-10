@@ -6,6 +6,7 @@ on:
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
     - name: auto-assign
       uses: kentaro-m/auto-assign-action@v1.1.2
