@@ -1,0 +1,15 @@
+name: 'Auto Assign to Specific Reviewer'
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    steps:
+    - name: auto-assign
+      uses: kentaro-m/auto-assign-action@v1.1.2
+      with:
+        configuration-path: '.github/auto_assign.yml'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
