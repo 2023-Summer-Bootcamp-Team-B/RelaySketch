@@ -8,7 +8,7 @@ class SomeConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         pass
 
-    async def receive(self, text_data):
+    async def receive(self, text_data=None, bytes_data=None):
         pass
 
     async def some_custom_method(self, event):
