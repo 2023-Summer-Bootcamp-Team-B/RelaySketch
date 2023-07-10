@@ -15,11 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from myapp.views import send_message
+from django.conf import settings
+from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("rest_framework.urls")),
     path("send-message/", send_message, name="send_message"),
+    re_path(r"static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}, name="static"),
 ]
