@@ -16,6 +16,7 @@ uvicorn = "*"
 pika = "*"
 pymysql = "*"
 cryptography = "*"
+pika-stubs = "==0.1.3"
 
 [dev-packages]
 
