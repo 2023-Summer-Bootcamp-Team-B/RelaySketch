@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django.shortcuts import render
 import pika
 
 
@@ -14,7 +13,7 @@ def send_message(request):
     channel.queue_declare(queue="my_queue")
 
     # 메시지 전송
-    channel.basic_publish(exchange="", routing_key="my_queue", body="Hello, RabbitMQ!")
+    channel.basic_publish(exchange="", routing_key="my_queue", body="Hello, RabbitMQ!".encode())
 
     # 연결 종료
     connection.close()

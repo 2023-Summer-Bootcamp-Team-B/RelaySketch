@@ -36,23 +36,24 @@ class SubRoom(models.Model):
     # SubRoom 객체를 추가하는 메서드
     # 이 메서드는 첫 번째 SubRoom을 찾아 새로운 SubRoom을 추가하고, 원래의 첫 번째 SubRoom을 새로운 SubRoom의 다음 SubRoom으로 설정
     def add_subroom(self, first_player):
-        if not SubRoom.objects.filter(room=self).exists():  # 리스트가 비어있는 경우
-            subroom = SubRoom.objects.create(first_player=first_player, room=self)
-            subroom.next_room = subroom  # next_room을 자기 자신으로 설정
-            subroom.save()
-        else:  # 리스트에 이미 SubRoom 객체가 있는 경우
-            first_subroom = SubRoom.objects.get(room=self, next_room__isnull=False)
-            last_subroom = first_subroom.next_room
-            subroom = SubRoom.objects.create(first_player=first_player, room=self, next_room=first_subroom)
-            last_subroom.next_room = subroom
+        subroom = SubRoom.objects.create(first_player=first_player, room=self)
+
+        if not self.next_room:  # If this is the first SubRoom
+            subroom.next_room = subroom  # next_room is itself
+        else:
+            last_subroom = SubRoom.objects.get(room=self, next_room=self)
+            subroom.next_room = self  # next_room of the new SubRoom is the current SubRoom
+            last_subroom.next_room = subroom  # update the next_room of the last SubRoom to the new SubRoom
             last_subroom.save()
+
+        subroom.save()
 
     # SubRoom 객체를 삭제하는 메서드
     # 이 메서드는 SubRoom 객체가 삭제되는 경우 다음 SubRoom 찾아 이전 SubRoom next_room으로 설정
     def delete_subroom(self):
-        if self.next_room == self:  # 리스트에 하나의 SubRoom 객체만 있는 경우
+        if self.next_room == self:  # if only one SubRoom in the list
             self.delete()
-        else:  # 리스트에 여러 SubRoom 객체가 있는 경우
+        else:
             previous_subroom = SubRoom.objects.get(room=self.room, next_room=self)
             next_subroom = self.next_room
             previous_subroom.next_room = next_subroom
