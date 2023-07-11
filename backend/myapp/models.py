@@ -24,6 +24,7 @@ class SubRoom(models.Model):
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간
     room = models.ForeignKey('Room', on_delete=models.CASCADE)  # 해당 Sub
+    is_host = models.BooleanField(default=False)  # 방장 여부
     # Room 속한 Room
     next_room = models.ForeignKey('self', null=True, on_delete=models.SET_NULL)  # 다음 SubRoom
 
