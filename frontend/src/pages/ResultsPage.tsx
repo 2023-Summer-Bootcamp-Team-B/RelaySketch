@@ -6,7 +6,7 @@ import sunny from "../assets/images/sun.svg";
 
 function ResultsPage() {
   return (
-    <div className=" h-full w-full flex justify-center items-center font-bmjua bg-[#E7F5FF] ">
+    <div className=" h-screen w-screen flex justify-center items-center font-bmjua bg-[#E7F5FF] ">
       {/* 최외곽 컨테이너 */}
       <div className=" flex">
         {/* 플레이어 목록 테두리 */}

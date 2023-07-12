@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 
+import GuessImagePage from "./pages/GuessImagePage";
+import InputSubjectPage from "./pages/InputSubjectPage";
 import LoadingPage from "./pages/LoadingPage";
 import MainPage from "./pages/MainPage";
 import ResultsPage from "./pages/ResultsPage";
-import GuessImagePage from "./pages/GuessImagePage";
-import InputSubjectPage from "./pages/InputSubjectPage";
 
 function App() {
   return (
