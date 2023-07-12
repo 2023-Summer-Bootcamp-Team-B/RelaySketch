@@ -19,7 +19,7 @@ class Room(models.Model):
 
 # SubRoom 모델
 class SubRoom(models.Model):
-    first_player = models.CharField(max_length=32, default='플레이어 1')  # 첫 플레이어
+    first_player = models.CharField(max_length=32, default='플레이어 1',unique=True)  # 첫 플레이어
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간
