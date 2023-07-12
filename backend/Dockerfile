@@ -21,7 +21,7 @@ RUN pip install pipenv
 RUN pipenv install --deploy --ignore-pipfile
 
 # 기다림 스크립트 실행 후 정적파일 모음 및 gunicorn 실행
-# CMD /wait && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000
+# CMD /wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000
 
 # 개발용 서버 실행
-CMD /wait && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run python manage.py runserver 0.0.0.0:8000
+CMD /wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run python manage.py runserver 0.0.0.0:8000
