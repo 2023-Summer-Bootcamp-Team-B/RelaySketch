@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import 스케치북배경 from "../assets/images/스케치북배경.svg";
+import AI이미지 from "../assets/images/AI이미지.svg";
 import 스케치북테두리 from "../assets/images/스케치북테두리.svg";
 import Background from "../components/Background";
 
@@ -27,8 +27,8 @@ function GuessImagePage() {
             className=" w-[500px] h-[400px] z-40 relative mx-auto ml-[80px] pb-10"
           />
           <img
-            src={스케치북배경}
-            alt="sketchbg"
+            src={AI이미지}
+            alt="aiimage"
             className="bg-white w-[450px] h-[300px] z-10 absolute mx-auto right-[275px] top-[50px]"
           />
         </Background>
