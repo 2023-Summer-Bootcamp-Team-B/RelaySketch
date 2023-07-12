@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 import pika
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Room
 
 # Create your views here.
 def send_message(request):
@@ -19,3 +21,17 @@ def send_message(request):
     connection.close()
 
     return HttpResponse("Message sent to RabbitMQ!")
+
+@api_view(['POST'])
+def add_room(request):
+    if request.method == 'POST':
+        room = Room.objects.create()  # 방 생성
+        data = {
+            "message": "방 생성 완료!",
+            "result": {
+                "room_id": room.id,
+                "created_at": room.created_at,
+                "update_at": room.update_at,
+            },
+        }
+        return Response(data)
