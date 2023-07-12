@@ -5,6 +5,7 @@ import sun from "../assets/images/sun.svg";
 
 function LoadingPage() {
   return (
+<<<<<<< HEAD
     <div className="w-screen h-screen font-bmjua bg-[#E7F5FF] flex flex-col items-center justify-center text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl">
       <div>
         <span className="relative animate-[animeTextup_1500ms_infinite_100ms]">
@@ -23,6 +24,10 @@ function LoadingPage() {
           있어요~
         </span>
       </div>
+=======
+    <div className="h-screen w-screen font-bmjua bg-[#E7F5FF] flex flex-col items-center justify-center text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl">
+      <h1>태양이가 열심히 그림을 그리고 있어요~</h1>
+>>>>>>> 0994d972a658e232b7dc4341f33338cef37f660c
       <div className="flex">
         <img
           src={cloud1}

@@ -1,11 +1,9 @@
 from django.db import models
 from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Room 모델
 class Room(models.Model):
-    player_num = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(6)])  # 플레이어 수
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간
@@ -19,11 +17,12 @@ class Room(models.Model):
 
 # SubRoom 모델
 class SubRoom(models.Model):
-    first_player = models.CharField(max_length=32, default='플레이어 1')  # 첫 플레이어
+    first_player = models.CharField(max_length=32, default='플레이어 1', unique=True)  # 첫 플레이어
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간
     room = models.ForeignKey('Room', on_delete=models.CASCADE)  # 해당 Sub
+    is_host = models.BooleanField(default=False)  # 방장 여부
     # Room 속한 Room
     next_room = models.ForeignKey('self', null=True, on_delete=models.SET_NULL)  # 다음 SubRoom
 
