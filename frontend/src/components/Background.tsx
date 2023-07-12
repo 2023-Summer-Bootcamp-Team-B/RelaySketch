@@ -85,10 +85,10 @@ function Background({
             <img
               src={버튼테두리}
               alt="buttonline"
-              className=" absolute bottom-[29.5px] left-[-5.5px] w-[120px] h-[122px]"
+              className=" absolute bottom-[27px] left-[-5.5px] w-auto h-[127px] z-30"
             />
             <button
-              className="text-[42px] px-5 z-20 py-[12px] h-[100px] absolute bg-white whitespace-nowrap"
+              className="text-[42px] px-6 z-20 py-[12px] h-[100px] absolute bg-white whitespace-nowrap"
               type="submit"
               onClick={handleSubmit}
             >

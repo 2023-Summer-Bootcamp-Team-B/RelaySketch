@@ -29,7 +29,7 @@ function GuessImagePage() {
           <img
             src={스케치북배경}
             alt="sketchbg"
-            className=" w-[450px] h-[350px] z-30 relative mx-auto right-[480px] top-[25px]"
+            className="bg-white w-[450px] h-[300px] z-10 absolute mx-auto right-[275px] top-[50px]"
           />
         </Background>
       </div>
