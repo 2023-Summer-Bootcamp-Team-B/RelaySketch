@@ -14,10 +14,11 @@ export default {
         fade: { to: { opacity: 1 } },
         updown: {
           from: { "margin-top": 0 },
-          to: { "margin-top": "-1rem" },
+          to: { "margin-top": "-2rem" },
         },
         tilting: {
-          from: { transform: "rotate(-15deg)" },
+          from: { transform: "rotate(-35deg)" },
+          to: { transform: "rotate(15deg)" },
         },
       },
       animation: {

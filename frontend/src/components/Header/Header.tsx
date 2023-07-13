@@ -1,10 +1,10 @@
 type TitlePropsType = {
   className?: string;
-  title: string;
+  children: JSX.Element | string;
 };
 
-const Title = ({ className, title }: TitlePropsType) => (
-  <h1 className={className}>{title}</h1>
+const Title = ({ className, children }: TitlePropsType) => (
+  <h1 className={className}>{children}</h1>
 );
 
 Title.defaultProps = {

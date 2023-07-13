@@ -1,7 +1,5 @@
-import border from "../assets/images/border.png";
-import Header from "../components/Header/Header";
-import PlayerList from "../components/PlayerList/PlayerList";
-import ResultsList from "../components/ResultsList/ResultsList";
+import PlayersSection from "../components/PlayerList/PlayersSection";
+import ResultsSection from "../components/ResultsList/ResultsSection";
 
 function ResultsPage() {
   const playerArray = [
@@ -23,34 +21,8 @@ function ResultsPage() {
 
   return (
     <div className=" h-screen w-screen flex justify-center items-center font-bmjua bg-[#E7F5FF] ">
-      {/* 플레이어 목록 테두리 */}
-      <div className=" absolute z-10 left-[19vw] bottom-[9vh]">
-        <img src={border} alt="" className="w-[17.5vw] h-[77vh]" />
-      </div>
-      {/* 플레이어 컨테이너 */}
-      <div className=" mr-4 text-center absolute left-[19.8vw] bottom-[14vh] ">
-        {/* 제목 */}
-        <Header
-          className=" text-3xl md:text-4xl xl:text-5xl "
-          title="플레이어"
-        />
-        {/* 목록 */}
-        <PlayerList players={playerArray} />
-      </div>
-      {/* 스케치북 모음 테두리 */}
-      <div className=" absolute z-10 left-[36vw] bottom-[9vh]">
-        <img src={border} alt="" className="w-[46vw] h-[77vh]" />
-      </div>
-      {/* 스케치북 컨테이너 */}
-      <div className=" ml-4 absolute left-[37vw] bottom-[14.5vh]">
-        {/* 제목 */}
-        <Header
-          className=" text-3xl md:text-4xl xl:text-5xl text-center mb-4 "
-          title="플레이어2 님의 스케치북"
-        />
-        {/* 앨범 */}
-        <ResultsList round={resultsSet.round} results={resultsSet.results} />
-      </div>
+      <PlayersSection players={playerArray} />
+      <ResultsSection resultsSet={resultsSet} />
     </div>
   );
 }
