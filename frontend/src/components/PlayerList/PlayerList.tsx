@@ -2,6 +2,7 @@ import Player from "./Player";
 
 interface PlayerSet {
   name: string;
+  myTurn: boolean;
 }
 
 type PlayerListPropsType = {
@@ -11,7 +12,7 @@ type PlayerListPropsType = {
 const PlayerList = ({ players }: PlayerListPropsType) => (
   <ul className=" w-[16vw] h-[67vh] flex flex-col items-center text-lg md:text-2xl lg:text-3xl bg-[white] pt-[2vh] overflow-auto list-none">
     {players.map((player: PlayerSet) => (
-      <Player name={player.name} key={player.name} />
+      <Player name={player.name} turn={player.myTurn} key={player.name} />
     ))}
   </ul>
 );

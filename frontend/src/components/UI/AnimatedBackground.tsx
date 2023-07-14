@@ -4,7 +4,7 @@ import cloud3 from "../../assets/images/구름3.svg";
 import sun from "../../assets/images/햇님.svg";
 
 const AnimatedBackground = () => (
-  <section className="mt-20 mb-20 flex w-72 h-auto max-[640px]:scale-50 sm:scale-50 md:scale-75 lg:scale-75 xl:scale-100">
+  <section className="mt-20 mb-20 flex w-72 h-[200px] max-[640px]:scale-50 sm:scale-50 md:scale-75 lg:scale-75 xl:scale-100">
     <img
       src={cloud1}
       alt="cloud"

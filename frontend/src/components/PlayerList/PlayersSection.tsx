@@ -4,6 +4,7 @@ import Header from "../Header/Header";
 
 interface PlayerSet {
   name: string;
+  myTurn: boolean;
 }
 
 type PlayersSectionPropsType = {

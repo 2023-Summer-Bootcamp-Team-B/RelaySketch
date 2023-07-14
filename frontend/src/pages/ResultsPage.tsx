@@ -3,10 +3,10 @@ import ResultsSection from "../components/ResultsList/ResultsSection";
 
 function ResultsPage() {
   const playerArray = [
-    { name: "플레이어1" },
-    { name: "플레이어2" },
-    { name: "플레이어3" },
-    { name: "플레이어4" },
+    { name: "플레이어1", myTurn: false },
+    { name: "플레이어2", myTurn: true },
+    { name: "플레이어3", myTurn: false },
+    { name: "플레이어4", myTurn: false },
   ];
 
   const resultsSet = {
