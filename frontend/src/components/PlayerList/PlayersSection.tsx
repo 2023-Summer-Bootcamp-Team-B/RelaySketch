@@ -2,10 +2,10 @@ import PlayerList from "./PlayerList";
 import border from "../../assets/images/border.png";
 import Header from "../Header/Header";
 
-interface PlayerSet {
+type PlayerSet = {
   name: string;
   myTurn: boolean;
-}
+};
 
 type PlayersSectionPropsType = {
   players: PlayerSet[];

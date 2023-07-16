@@ -1,9 +1,9 @@
 import Player from "./Player";
 
-interface PlayerSet {
+type PlayerSet = {
   name: string;
   myTurn: boolean;
-}
+};
 
 type PlayerListPropsType = {
   players: PlayerSet[];

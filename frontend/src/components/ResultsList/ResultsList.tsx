@@ -3,12 +3,12 @@ import downloadBtnImg from "../../assets/images/download.svg";
 import playBtnImg from "../../assets/images/play.svg";
 import Button from "../UI/Button";
 
-interface LabelImgSet {
+type LabelImgSet = {
   name: string;
   input: string;
   src: string | undefined;
   isLast: boolean;
-}
+};
 
 type ResultsListPropsType = {
   round: number;

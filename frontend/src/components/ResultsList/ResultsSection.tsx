@@ -2,17 +2,17 @@ import ResultsList from "./ResultsList";
 import border from "../../assets/images/border.png";
 import Header from "../Header/Header";
 
-interface LabelImgSet {
+type LabelImgSet = {
   name: string;
   input: string;
   src: string | undefined;
   isLast: boolean;
-}
+};
 
-interface ResultsSetObj {
+type ResultsSetObj = {
   round: number;
   results: LabelImgSet[];
-}
+};
 
 type ResultsSetPropsType = {
   resultsSet: ResultsSetObj;
