@@ -20,6 +20,7 @@ uvicorn = {version = "*", extras = ["standard"]}
 django-cors-headers = "*"
 asgiref = "*"
 channels-redis = "*"
+django-prometheus = "*"
 
 [dev-packages]
 

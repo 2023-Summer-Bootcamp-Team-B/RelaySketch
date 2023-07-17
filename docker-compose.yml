@@ -1,4 +1,7 @@
 version: "3"
+networks:
+  promnet:
+    driver: bridge
 
 services:
   mysql:
@@ -59,6 +62,9 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+    networks:
+    - promnet
+
 
   frontend:
     container_name: frontend
@@ -84,5 +90,36 @@ services:
       - ./nginx:/etc/nginx/conf.d # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+    networks:
+      - promnet
+    depends_on:
+      - django
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3050:3000
+    volumes:
+      - ./grafana/volume:/var/lib/grafana
+    restart: always
+    networks:
+      - promnet
+
+
+
+
 volumes:
   staticfiles:
+
+
