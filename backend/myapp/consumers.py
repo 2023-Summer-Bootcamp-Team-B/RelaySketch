@@ -26,13 +26,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
 
         # 웹소켓 연결을 활성화하며 유저를 방에 참가시킴
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        sub_room_count = await sync_to_async(SubRoom.objects.filter(room=room, delete_at=None).count)()
+        sub_room_count = await sync_to_async(
+            SubRoom.objects.filter(room=room, delete_at=None).count
+        )()
 
         if sub_room_count >= 6:
             error_message = "방이 가득 찼습니다."
@@ -44,118 +43,70 @@ class RoomConsumer(AsyncWebsocketConsumer):
         sub_room = await sync_to_async(SubRoom.add_subroom)(room)  # 방 생성
         self.sub_room_id = sub_room.id
 
-        await self.send(text_data=json.dumps({
-            "event": "connected",
-            "data": {
-                "playerId": sub_room.id,
-            }
-        }))
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "event": "connected",
+                    "data": {
+                        "playerId": sub_room.id,
+                    },
+                }
+            )
+        )
 
         # 서브룸을 전부 가져오는 로직을 구현한 뒤, 해당 데이터를 전송합니다.
-        sub_rooms = await sync_to_async(SubRoom.objects.filter)(room=room, delete_at=None)
-
-        players_data = await sync_to_async(
-            lambda: [
-                {
-                    "id": subroom.id,
-                    "name": subroom.first_player,
-                    "isHost": subroom.is_host,
-                }
-                for subroom in sub_rooms
-            ]
-        )()
-
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "renew_list",
-                "message": {
-                    "event": "renewList",
-                    "data": {
-                        "players": players_data,
-                    },
-                },
-            }
-        )
+        await self.update_player_list()
 
     async def disconnect(self, close_code):
         # 서브 게임방 테이블을 삭제
-        subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
-        if subroom:
-            await sync_to_async(subroom.delete_subroom)()
+        sub_room = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
+        if sub_room:
+            await sync_to_async(sub_room.delete_subroom)()
 
         # 서브 게임방이 비어있으면 메인 게임방 테이블을 삭제
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
-        remaining_subrooms_exists = await sync_to_async(SubRoom.objects.filter(room=room, delete_at=None).exists)()
+        remaining_subrooms_exists = await sync_to_async(
+            SubRoom.objects.filter(room=room, delete_at=None).exists
+        )()
         if not remaining_subrooms_exists:
             await sync_to_async(room.delete)()
 
         # 서브룸을 전부 가져오는 로직을 구현한 뒤, 해당 데이터를 전송합니다.
-        sub_rooms = await sync_to_async(SubRoom.objects.filter)(room=room, delete_at=None)
-
-        players_data = await sync_to_async(
-            lambda: [
-                {
-                    "id": subroom.id,
-                    "name": subroom.first_player,
-                    "isHost": subroom.is_host,
-                }
-                for subroom in sub_rooms
-            ]
-        )()
-
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "renew_list",
-                "message": {
-                    "event": "renewList",
-                    "data": {
-                        "players": players_data,
-                    },
-                },
-            }
-        )
+        await self.update_player_list()
 
         # 웹소켓 연결을 비활성화하며 유저를 방 그룹에서 제거
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
-            message = res.get('message')
-            data = res.get('data')
+            message = res.get("message")
+            data = res.get("data")
             # 게임을 시작을 알림
             if message == "startGame":
                 # self.round 값을 1 변경
                 self.round = 1
                 # 현재 연결된 subroom 초기화
-                self.present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
+                self.present_sub_room = await sync_to_async(SubRoom.objects.get)(
+                    id=self.sub_room_id
+                )
                 # room에 있는 모든 인원에게 게임을 시작 신호 보냄
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'start',
-                        'message': {
-                            'event': 'gameStart',
-                            'data': {
-                                'round': self.round
-                            }
-                        }
-                    }
+                        "type": "start",
+                        "message": {"event": "gameStart", "data": {"round": self.round}},
+                    },
                 )
             # subroom의 주제 입력 이벤트
             elif message == "inputTitle":
                 title = data["title"]
-                playerId = data["playerId"]
+                player_id = data["playerId"]
 
                 # 현재 룸안에 모든 인원
-                roomNum = await self.get_room_count()
+                room_num = await self.get_room_count()
                 # 주제 객체 만듬
-                await self.save_topic(title, playerId)
+                await self.save_topic(title, player_id)
                 # room 가지고 옴
                 room = await sync_to_async(Room.objects.get)(id=self.room_id)
                 # completeNum 1 더함
@@ -165,31 +116,23 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'make_new_topic',
-                        'message': {
+                        "type": "make_new_topic",
+                        "message": {
                             "event": "completeUpdate",
-                            "data": {
-                                "completeNum": room.completeNum
-                            }
-                        }
-                    }
+                            "data": {"completeNum": room.completeNum},
+                        },
+                    },
                 )
                 # 라운드 변경
                 # 1. room 인원수 == 완료 인원수
-                if roomNum == room.completeNum:
+                if room_num == room.completeNum:
                     room.completeNum = 0
                     await sync_to_async(room.save)()
-                    #print(room.completeNum)
-                # 2. group_send로 로딩 화면 출력 시키라고 함
+                    # print(room.completeNum)
+                    # 2. group_send로 로딩 화면 출력 시키라고 함
                     await self.channel_layer.group_send(
                         self.room_group_name,
-                        {
-                            'type': 'next_round',
-                            'message': {
-                                "event": "loading",
-                                "data": "로딩중 입니다."
-                            }
-                        }
+                        {"type": "next_round", "message": {"event": "loading", "data": "로딩중 입니다."}},
                     )
                 # 3. rebbitMQ함수 실행(AI image url 추가 됨)
                 # 4. round에 1 더해줌
@@ -203,15 +146,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
             # 주제 편집 (가장 최신으로 만들어진 것을 변경함)
             elif message == "changeTitle":
                 title = data["title"]
-                playerId = data["playerId"]
+                # player_id = data["playerId"]
                 # player id에 있는 가장 최신에 topic을 찾음
                 subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
                 topic = await sync_to_async(Topic.get_last_topic)(subroom)
                 # topic의 title을 data에 있는 title로 바꿔줌
-                #print(topic.title)
+                # print(topic.title)
                 topic.title = title
                 await sync_to_async(topic.save)()
-                #print(topic.title)
+                # print(topic.title)
 
     async def renew_list(self, event):
         message_content = event["message"]
@@ -236,12 +179,40 @@ class RoomConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def get_room_count(self):
         room = Room.objects.get(id=self.room_id)
-        roomCount = SubRoom.objects.filter(room=room, delete_at=None).count()
+        room_count = SubRoom.objects.filter(room=room, delete_at=None).count()
 
-        return roomCount
+        return room_count
+
     @sync_to_async
-    def save_topic(self, title, playerId):
-        #subRoom 찾음
-        subRoom = SubRoom.objects.get(id=playerId)
-        Topic.objects.create(title=title, url=None, sub_room=subRoom)
+    def save_topic(self, title, player_id):
+        # subRoom 찾음
+        sub_room = SubRoom.objects.get(id=player_id)
+        Topic.objects.create(title=title, url=None, sub_room=sub_room)
 
+    async def update_player_list(self):
+        room = await sync_to_async(Room.objects.get)(id=self.room_id)
+        sub_rooms = await sync_to_async(SubRoom.objects.filter)(room=room, delete_at=None)
+
+        players_data = await sync_to_async(
+            lambda: [
+                {
+                    "id": subroom.id,
+                    "name": subroom.first_player,
+                    "isHost": subroom.is_host,
+                }
+                for subroom in sub_rooms
+            ]
+        )()
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "renew_list",
+                "message": {
+                    "event": "renewList",
+                    "data": {
+                        "players": players_data,
+                    },
+                },
+            },
+        )
