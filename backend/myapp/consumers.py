@@ -3,7 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .models import Room, SubRoom
+from .models import Room, SubRoom, Topic
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -80,7 +80,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
         if subroom:
             await sync_to_async(subroom.delete_subroom)()
-
         # 서브 게임방이 비어있으면 메인 게임방 테이블을 삭제
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
         remaining_subrooms_exists = await sync_to_async(SubRoom.objects.filter(room=room, delete_at=None).exists)()
@@ -120,13 +119,43 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
             message = res.get('message')
             data = res.get('data')
 
+            if message == "startGame":
+                # "게임시작" 출력
+                print(data)
+                # self.round 값을 1 변경
+                # 게임을 시작했을 알림
+                self.round = 1
+                # room에 있는 모든 인원에게 게임을 시작 신호 보냄
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'start',
+                        'message': {
+                            'event': 'gameStart',
+                            'data': {
+                                'round': self.round
+                            }
+                        }
+                    }
+                )
+
+
     async def renew_list(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
+
+
+    async def start(self, event):
+        message_content = event["message"]
+
+        await self.send(text_data=json.dumps(message_content))
+
