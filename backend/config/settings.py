@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "myapp",
     "gunicorn",
-    "uvicorn"
+    "uvicorn",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -85,7 +87,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 ASGI_APPLICATION = "config.asgi.application"
 
-BROKER_URL = "amqp://admin:admin@localhost:15672/"
+BROKER_URL = "amqp://admin:admin@localhost:5672/"
 
 
 # Database
@@ -145,10 +147,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
         },
     },
 }
@@ -177,3 +179,10 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
+
+# Celery
+CELERY_BROKER_URL = "amqp://admin:admin@localhost:5672/"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"

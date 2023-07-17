@@ -12,6 +12,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_id = None
         self.room_group_name = None
         self.sub_room_id = None
+        self.round = 0
 
     async def connect(self, text_data=None):
         if text_data is not None:
@@ -119,7 +120,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
@@ -147,15 +147,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-
     async def renew_list(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
 
-
     async def start(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
-
