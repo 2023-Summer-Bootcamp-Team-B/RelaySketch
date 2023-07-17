@@ -5,6 +5,7 @@ from django.utils import timezone
 
 # Room 모델
 class Room(models.Model):
+    completeNum = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간
