@@ -12,6 +12,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_id = None
         self.room_group_name = None
         self.sub_room_id = None
+        self.completeNum = 0
 
     async def connect(self, text_data=None):
         if text_data is not None:
@@ -80,6 +81,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
         if subroom:
             await sync_to_async(subroom.delete_subroom)()
+
         # 서브 게임방이 비어있으면 메인 게임방 테이블을 삭제
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
         remaining_subrooms_exists = await sync_to_async(SubRoom.objects.filter(room=room, delete_at=None).exists)()
@@ -119,7 +121,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
@@ -146,16 +147,67 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         }
                     }
                 )
+            # subroom의 주제 입력 이벤트
+            elif message == "inputTitle":
+                title = data["title"]
+                playerId = data["playerId"]
 
+                # 현재 룸안에 모든 인원
+                roomNum = await self.get_room_count()
+                # 주제 객체 만듬
+                await self.save_topic(title, playerId)
+                # completeNum 1 더함
+                self.completeNum += 1
+                # 모든 인원에게 completeNum 보내줌
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'make_new_topic',
+                        'message': {
+                            "event": "completeUpdate",
+                            "data": {
+                                "completeNum": self.completeNum
+                            }
+                        }
+                    }
+                )
+            # 주제 편집 (가장 최신으로 만들어진 것을 변경함)
+            elif message == "changeTitle":
+                title = data["title"]
+                playerId = data["playerId"]
+                # player id에 있는 가장 최신에 topic을 찾음
+                subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
+                topic = await sync_to_async(Topic.get_last_topic)(subroom)
+                # topic의 title을 data에 있는 title로 바꿔줌
+                print(topic.title)
+                topic.title = title
+                await sync_to_async(topic.save)()
+                print(topic.title)
 
     async def renew_list(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
 
+    async def make_new_topic(self, event):
+        message_content = event["message"]
+
+        await self.send(text_data=json.dumps(message_content))
 
     async def start(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
+
+    @sync_to_async
+    def get_room_count(self):
+        room = Room.objects.get(id=self.room_id)
+        roomCount = SubRoom.objects.filter(room=room, delete_at=None).count()
+
+        return roomCount
+    @sync_to_async
+    def save_topic(self, title, playerId):
+        #subRoom 찾음
+        subRoom = SubRoom.objects.get(id=playerId)
+        Topic.objects.create(title=title, url=None, sub_room=subRoom)
 

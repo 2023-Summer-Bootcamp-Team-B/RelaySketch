@@ -90,3 +90,7 @@ class Topic(models.Model):
     def delete(self, *args, **kwargs):
         self.delete_at = timezone.now()
         self.save()
+
+    @classmethod
+    def get_last_topic(cls, subroom):
+        return cls.objects.filter(sub_room=subroom, delete_at=None).order_by('-created_at').first()
