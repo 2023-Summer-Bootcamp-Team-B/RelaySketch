@@ -1,7 +1,4 @@
 version: "3"
-networks:
-  promnet:
-    driver: bridge
 
 services:
   mysql:
@@ -62,8 +59,6 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-    networks:
-    - promnet
 
 
   frontend:
@@ -100,8 +95,6 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     restart: always
-    networks:
-      - promnet
     depends_on:
       - django
 
@@ -113,8 +106,8 @@ services:
     volumes:
       - ./grafana/volume:/var/lib/grafana
     restart: always
-    networks:
-      - promnet
+    depends_on:
+      - prometheus
 
 
 

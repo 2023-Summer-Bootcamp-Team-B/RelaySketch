@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]  # Ip 주소 추가
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0", "django"]  # Ip 주소 추가
 
 # Application definition
 
@@ -161,6 +161,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
     "http://frontend:3000",
+    "http://prometheus:9090",
+    "http://localhost:9090",
+    "http://127.0.0.1:9090",
+    "http://0.0.0.0:9090",
 ]
 
 CORS_ALLOW_HEADERS = (
