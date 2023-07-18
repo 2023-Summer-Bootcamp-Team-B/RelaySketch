@@ -22,7 +22,7 @@ function PlayerRoomPage() {
 
   const [content, setContent] = useState('클릭하여 내용을 편집하세요.');
 
-  const handleContentChange = (event: { target: { textContent: SetStateAction<string>; }; }) => {
+  const handleContentChange = (event) => {
     setContent(event.target.textContent);
   };
 
@@ -46,7 +46,7 @@ function PlayerRoomPage() {
               <p className="absolute z-30  ml-[90px] mt-[28px] font-crayon text-[40px]">
                 EMPTY
               </p>
-              <div className="absolute bg-gray-400 z-39 h-[100%] w-[91%] top-2 left-3" />
+              <div className="absolute bg-gray-400 z-39 h-[100%] w-[92%] top-2 left-2.5" />
             </div>
           ) : (
             <div
@@ -58,15 +58,17 @@ function PlayerRoomPage() {
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
-              <p className="absolute z-30  ml-[70px] mt-[28px] font-crayon text-[40px]" >
+              <p className="absolute z-30  ml-[70px] mt-[28px] font-crayon text-[40px]" contentEditable={true} onClick={handleContentChange}>
                 PLAYER{x.id}
               </p>
-              <div className="absolute bg-[#E7F5FF] z-39 h-[100%] w-[91%] top-1 left-2.5" />
+              <div className="absolute bg-[#E7F5FF] z-39 h-[98%] w-[91%] top-2 left-2.5" />
             </div>
           )
         )}
+
+        
         <button className="relative" type="button">
-          <div className="absolute flex items-center justify-center ml-[100px] z-20 w-[190px] h-[65px] top-[90px]">
+          <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">
             <img
               src={small_border}
               alt="small_border"
@@ -75,29 +77,29 @@ function PlayerRoomPage() {
             <img
               src={invite}
               alt="invite"
-              className="absolute z-30 mt-2 ml-5 left-0"
+              className="absolute z-30 mt-1 ml-4 left-0 w-[40px] h-auto"
             />
-
-            <span className="absolute z-30 ml-[70px] font-crayon text-[40px]">
+            <span className="absolute z-30 ml-[50px] font-crayon text-[40px]">
               Link
             </span>
-            <div className="absolute bg-white z-39 h-[100%] w-[91%] top-1 left-2.5" />
+            <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
 
         <button className="relative" type="button">
-          <div className="absolute flex items-center justify-center ml-10 z-20 w-[190px] h-[65px] top-[90px]">
+          <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
             <img
               src={small_border}
               alt="small_border"
               className="absolute z-30 w-full h-auto"
             />
-            <img src={play} alt="" className="absolute z-30 mt-2 ml-5 left-0" />
 
-            <p className="absolute z-30  ml-[70px] font-crayon text-[40px]">
+            <img src={play} alt="" className="absolute z-30 mt-1 ml-2 left-0 w-[60px] h-auto" />
+
+            <p className="absolute z-30  ml-[50px] font-crayon text-[40px]">
               Start
             </p>
-            <div className="absolute bg-white z-39 h-[100%] w-[91%] top-1 left-2.5" />
+            <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
 
