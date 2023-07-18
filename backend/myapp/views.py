@@ -8,7 +8,7 @@ from .models import Room
 # Create your views here.
 def send_message(request):
     credentials = pika.PlainCredentials("admin", "admin")
-    parameters = pika.ConnectionParameters("172.30.1.9", 5672, "/", credentials)
+    parameters = pika.ConnectionParameters("rabbitmq", 5672, "/", credentials)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
@@ -24,9 +24,9 @@ def send_message(request):
     return HttpResponse("Message sent to RabbitMQ!")
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def add_room(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         room = Room.objects.create()  # 방 생성
         data = {
             "message": "방 생성 완료!",
