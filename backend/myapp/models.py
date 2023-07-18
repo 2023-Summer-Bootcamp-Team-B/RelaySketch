@@ -41,13 +41,19 @@ class SubRoom(models.Model):
         self.save()
 
     @classmethod
+    def get_first_subroom(cls, room):
+        return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
+
+    @classmethod
     def get_last_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('-created_at').first()
 
     @classmethod
     def add_subroom(cls, room):
+        first_subroom = cls.get_first_subroom(room)
         last_subroom = cls.get_last_subroom(room)
 
+        # 이미 1개가 있다면
         if last_subroom:
             last_player_number = int(re.search(r'\d+', last_subroom.first_player).group())
             max_number = last_player_number + 1
@@ -57,6 +63,15 @@ class SubRoom(models.Model):
         first_player = f'플레이어 {max_number}'
 
         subroom = SubRoom.objects.create(first_player=first_player, room=room)
+
+        if last_subroom:
+            last_subroom.next_room = subroom
+            subroom.next_room = first_subroom
+            last_subroom.save()
+            subroom.save()
+        else:
+            subroom.next_room = subroom
+            subroom.save()
 
         if max_number == 1 or not cls.objects.filter(room=room, is_host=True, delete_at=None).exists():
             subroom.is_host = True
@@ -80,7 +95,7 @@ class SubRoom(models.Model):
 # Topic 모델
 class Topic(models.Model):
     title = models.CharField(max_length=128)  # 제목
-    url = models.CharField(max_length=128, null=True, blank=True)  # URL
+    url = models.CharField(max_length=512, null=True, blank=True)  # URL
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
     update_at = models.DateTimeField(auto_now=True)  # 최종 업데이트 시간

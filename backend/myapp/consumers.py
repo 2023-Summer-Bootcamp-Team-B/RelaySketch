@@ -49,12 +49,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
             "event": "connected",
             "data": {
                 "playerId": sub_room.id,
+                "nextPlayerID": sub_room.next_room.id
             }
         }))
 
         # 현재 연결된 subroom 초기화
         self.present_sub_room = sub_room
-
         if self.present_sub_room is None:
             print("present_sub_room 없어")
         print(self.present_sub_room.id)
@@ -89,20 +89,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
             data = res.get("data")
             # 게임을 시작을 알림
             if event == "startGame":
-                # self.round 값을 1 변경
-                self.round = 1
+
                 # 현재 연결된 subroom 초기화
                 self.present_sub_room = await sync_to_async(SubRoom.objects.get)(
                     id=self.sub_room_id
                 )
-                # room에 있는 모든 인원에게 게임을 시작 신호 보냄
+
+                # room에 있는 모든 인원에게 게임을 시작 신호 보냄, 모든 인원에 self.round를 1로 해줌
+                self.round = 1
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "start",
-                        "message": {"event": "gameStart", "data": {"round": self.round}},
+                        "message": {"event": "gameStart", "round": self.round},
                     },
                 )
+
             # subroom의 주제 입력 이벤트
             elif event == "inputTitle":
                 title = data["title"]
@@ -110,13 +112,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
                 # 현재 룸안에 모든 인원
                 room_num = await self.get_room_count()
+
                 # 주제 객체 만듬
                 await self.save_topic(title, player_id)
+
                 # room 가지고 옴
                 room = await sync_to_async(Room.objects.get)(id=self.room_id)
+
                 # completeNum 1 더함
                 room.completeNum += 1
                 await sync_to_async(room.save)()
+
                 # 모든 인원에게 completeNum 보내줌
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -128,53 +134,53 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         },
                     },
                 )
+
                 # 라운드 변경
                 # 1. room 인원수 == 완료 인원수
                 if room_num <= room.completeNum:
-                    #room.completeNum = 0
+
+                    # 1.5. completeNum = 0으로 변경
+                    room.completeNum = 0
                     await sync_to_async(room.save)()
-                    # print(room.completeNum)
-                    # 2. group_send로 로딩 화면 출력 시키라고 함
+
+                    # 2. group_send로 로딩 화면 출력, 모든 인원 image url 생성
                     await self.channel_layer.group_send(
                         self.room_group_name,
-                        {"type": "next_round", "message": {"event": "loading", "data": "로딩중 입니다."}},
+                        {
+                            "type": "show_loading",
+                            "message": {"event": "loading_and_url", "data": "로딩이다."},
+                        },
                     )
-                # 3. rabbitMQ함수 실행(AI image url 추가 됨)
-                    # Celery 작업 호출
-                    result = await sync_to_async(create_image.delay)(title)
 
-                    # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.
-                    await self.send(text_data=json.dumps({
-                        'message': 'Image creation started',
-                        'task_id': result.id
-                    }))
+                    # 3. ai image url 생성하고 클라이언트에게 보냄
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "ai_image_url",
+                            "message" : "ai image url 생성"
+                        },
+                    )
 
-                    # 작업 완료까지 대기하지 않고 클라이언트에게 결과를 전송합니다.
-                    image_url = await sync_to_async(result.get)()
-                    await self.send(text_data=json.dumps({
-                        'message': 'Image creation completed',
-                        'image_url': image_url
-                    }))
-                # 4. round에 1 더해줌
-                self.round  += 1
-                # 5. room 인원수 < round
-                # 5-1. 게임 종료 group_send 함
-                # 6. present_sub_room을 현재 subroom의 next_sub_room으로 변경
-                # 7. completeNum = 0으로 변경
-                # 8. present_sub_room에서 가장 최근 topic의 url 가지고 옴
-                # 9. round, url, completeNum 내용을 담은 send
+                    # 4. 다음 라운드 정보들을 보내줌
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "next_round",
+                            "message": "다음 라운드 정보 주거나 게임 종료"
+                        },
+                    )
 
             # 주제 편집 (가장 최신으로 만들어진 것을 변경함)
             elif event == "changeTitle":
                 title = data["title"]
                 # player_id = data["playerId"]
-                # player id에 있는 가장 최신에 topic을 찾음
+
+                # 현재 subroom에 있는 가장 최신에 topic을 찾음
                 topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+
                 # topic의 title을 data에 있는 title로 바꿔줌
-                # print(topic.title)
                 topic.title = title
                 await sync_to_async(topic.save)()
-                # print(topic.title)
 
     async def renew_list(self, event):
         message_content = event["message"]
@@ -188,13 +194,66 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def start(self, event):
         message_content = event["message"]
-
+        self.round = message_content["round"]
         await self.send(text_data=json.dumps(message_content))
 
-    async def next_round(self, event):
+    async def show_loading(self, event):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
+
+    async def ai_image_url(self, event):
+        # 이번 라운드 주제 가져옴
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+
+        # ai image url 받음
+        result = await sync_to_async(create_image.delay)(topic.title)
+
+        # Celery 작업 호출
+        # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.test
+        await self.send(text_data=json.dumps({
+            'message': 'Image creation started',
+            'task_id': result.id
+        }))
+
+        # 작업 완료까지 대기하지 않고 클라이언트에게 결과를 전송합니다.
+        image_url = await sync_to_async(result.get)()
+        await self.send(text_data=json.dumps({
+            'message': 'Image creation completed',
+            'image_url': image_url
+        }))
+
+        # DB에 url 저장
+        topic.url = image_url
+        await sync_to_async(topic.save)()
+
+    async def next_round(self, event):
+        # 현재 룸안에 모든 인원
+        room_num = await self.get_room_count()
+
+        # room 가지고 옴
+        room = await sync_to_async(Room.objects.get)(id=self.room_id)
+
+        # 1. round에 1 더해줌
+        self.round += 1
+
+        # 마지막 라운드인 경우
+        # 2. room 인원수 < round
+        if room_num < self.round:
+            # 2-1. 게임 종료 group_send 함 (임시)
+            await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
+
+        # 3. present_sub_room을 현재 subroom의 next_sub_room으로 변경
+        self.present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.present_sub_room.id)
+
+        # 4. 다음 라운드로 이동해
+        await self.send(text_data=json.dumps({
+            "event": "moveNextRound",
+            "data": {
+                "round": self.round,
+                "complete": room.completeNum,
+            }
+        }))
 
     @sync_to_async
     def get_room_count(self):
@@ -207,7 +266,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
     def save_topic(self, title, player_id):
         # subRoom 찾음
         sub_room = SubRoom.objects.get(id=player_id)
-        Topic.objects.create(title=title, url=None, sub_room=sub_room)
+        topic = Topic.objects.create(title=title, url=None, sub_room=sub_room)
+        return topic
 
     async def update_player_list(self):
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
