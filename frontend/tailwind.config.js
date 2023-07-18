@@ -5,6 +5,8 @@ export default {
     extend: {
       fontFamily: {
         bmjua: ["BMJUA", "sans-serif"],
+        crayon: ["crayon","sans-serif"]
+
       },
       keyframes: {
         fade: { to: { opacity: 1 } },

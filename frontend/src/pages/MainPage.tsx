@@ -3,7 +3,31 @@ import sun from "../assets/images/sun.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 
+import { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+
+
+
 function MainPage() {
+
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const handleKeyDown = () => {
+      navigate('/playerroom');
+    };
+  
+    document.addEventListener('keydown', handleKeyDown);
+  
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+
+
+
+
   return (
     <div className="h-screen w-screen bg-[#E7F5FF] overflow-hidden">
       <div className="relative">

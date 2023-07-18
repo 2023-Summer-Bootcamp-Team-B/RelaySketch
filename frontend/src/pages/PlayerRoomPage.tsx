@@ -6,6 +6,7 @@ import small_border from "../assets/images/small_box_border.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 import cloud3 from "../assets/images/구름3.svg";
+import {SetStateAction, useState} from 'react'
 
 type ArrType = { id: number; empty: boolean };
 
@@ -19,6 +20,14 @@ function PlayerRoomPage() {
     { id: 6, empty: true },
   ];
 
+  const [content, setContent] = useState('클릭하여 내용을 편집하세요.');
+
+  const handleContentChange = (event: { target: { textContent: SetStateAction<string>; }; }) => {
+    setContent(event.target.textContent);
+  };
+
+
+
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
       <img src={sketch} alt="sketch" className="absolute z-10 pb-[60px]" />
@@ -26,7 +35,7 @@ function PlayerRoomPage() {
         {arr1.map((x: ArrType) =>
           x.empty ? (
             <div
-              className="relative z-20 w-[300px] h-[100px] items-center justify-center mt-8 ml-2"
+              className="relative z-20 w-[300px] h-[100px] items-center justify-center mt-8 ml-4"
               key={x.id}
             >
               <img
@@ -49,7 +58,7 @@ function PlayerRoomPage() {
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
-              <p className="absolute z-30  ml-[70px] mt-[28px] font-crayon text-[40px]">
+              <p className="absolute z-30  ml-[70px] mt-[28px] font-crayon text-[40px]" >
                 PLAYER{x.id}
               </p>
               <div className="absolute bg-[#E7F5FF] z-39 h-[100%] w-[91%] top-1 left-2.5" />
@@ -92,11 +101,11 @@ function PlayerRoomPage() {
           </div>
         </button>
 
-        <div>
+        <div className="">
           <img
             src={cloud1}
             alt="cloud1"
-            className="absolute z-0 bottom-96 w-96 right-[200px]"
+            className="absolute z-0 bottom-96 w-96 right-[200px] animate-slider_left"
           />
         </div>
 
@@ -104,7 +113,7 @@ function PlayerRoomPage() {
           <img
             src={cloud3}
             alt="cloud3"
-            className="absolute z-0 top-10 right-[200px]"
+            className="absolute z-0 top-10 right-[200px] animate-slider_left_invisible"
           />
         </div>
 
@@ -112,7 +121,7 @@ function PlayerRoomPage() {
           <img
             src={cloud1}
             alt="cloud1"
-            className="absolute z-0 left-[200px] bottom"
+            className="absolute z-0 left-[200px] bottom animate-slider_right"
           />
         </div>
 
@@ -120,7 +129,7 @@ function PlayerRoomPage() {
           <img
             src={cloud2}
             alt="cloud2"
-            className="absolute z-0 left-[200px]"
+            className="absolute z-0 left-[200px] animate-slider_right"
           />
         </div>
       </div>
