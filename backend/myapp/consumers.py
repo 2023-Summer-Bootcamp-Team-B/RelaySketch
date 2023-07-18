@@ -14,6 +14,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.sub_room_id = None
         # 게임중 자신이 주제를 넣고 있는 subroom
         self.present_sub_room = None
+        self.round = 0
 
     async def connect(self, text_data=None):
         if text_data is not None:
@@ -49,6 +50,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 "playerId": sub_room.id,
             }
         }))
+
+        # 현재 연결된 subroom 초기화
+        self.present_sub_room = sub_room
+
+        if self.present_sub_room is None:
+            print("present_sub_room 없어")
+        print(self.present_sub_room.id)
 
         # 서브룸을 전부 가져오는 로직을 구현한 뒤, 해당 데이터를 전송합니다.
         sub_rooms = await sync_to_async(SubRoom.objects.filter)(room=room, delete_at=None)
@@ -131,8 +139,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             if message == "startGame":
                 # self.round 값을 1 변경
                 self.round = 1
-                # 현재 연결된 subroom 초기화
-                self.present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
+
                 # room에 있는 모든 인원에게 게임을 시작 신호 보냄
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -175,10 +182,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 )
                 # 라운드 변경
                 # 1. room 인원수 == 완료 인원수
-                if roomNum == room.completeNum:
-                    room.completeNum = 0
+                if roomNum <= room.completeNum:
+                    #room.completeNum = 0
                     await sync_to_async(room.save)()
-                    #print(room.completeNum)
+
                 # 2. group_send로 로딩 화면 출력 시키라고 함
                     await self.channel_layer.group_send(
                         self.room_group_name,
@@ -192,6 +199,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     )
                 # 3. rebbitMQ함수 실행(AI image url 추가 됨)
                 # 4. round에 1 더해줌
+                self.round  += 1
                 # 5. room 인원수 < round
                 # 5-1. 게임 종료 group_send 함
                 # 6. present_sub_room을 현재 subroom의 next_sub_room으로 변경
@@ -202,12 +210,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             # 주제 편집 (가장 최신으로 만들어진 것을 변경함)
             elif message == "changeTitle":
                 title = data["title"]
-                playerId = data["playerId"]
+                #playerId = data["playerId"]
                 # player id에 있는 가장 최신에 topic을 찾음
-                subroom = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
-                topic = await sync_to_async(Topic.get_last_topic)(subroom)
+                topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
                 # topic의 title을 data에 있는 title로 바꿔줌
-                #print(topic.title)
                 topic.title = title
                 await sync_to_async(topic.save)()
                 #print(topic.title)
