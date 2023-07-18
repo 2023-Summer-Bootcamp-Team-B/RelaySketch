@@ -4,7 +4,7 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import Room, SubRoom, Topic
-from .tasks import create_image
+from .tasks import create_image, translate_text
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -136,8 +136,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         {"type": "next_round", "message": {"event": "loading", "data": "로딩중 입니다."}},
                     )
                 # 3. rabbitMQ함수 실행(AI image url 추가 됨)
+                    # papago 번역
+                    translated_result = await sync_to_async(translate_text.delay)(title)
+
+                    translated_text = await sync_to_async(translated_result.get)()
                     # Celery 작업 호출
-                    result = await sync_to_async(create_image.delay)(title)
+                    result = await sync_to_async(create_image.delay)(translated_text)
 
                     # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.
                     await self.send(text_data=json.dumps({
