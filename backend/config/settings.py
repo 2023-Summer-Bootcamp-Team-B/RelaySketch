@@ -87,7 +87,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 ASGI_APPLICATION = "config.asgi.application"
 
-BROKER_URL = "amqp://admin:admin@localhost:5672/"
+BROKER_URL = "amqp://admin:admin@rabbitmq"
 
 
 # Database
@@ -181,7 +181,7 @@ CORS_ALLOW_METHODS = (
 )
 
 # Celery
-CELERY_BROKER_URL = "amqp://admin:admin@localhost:5672/"
+CELERY_BROKER_URL = "amqp://admin:admin@rabbitmq"
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"

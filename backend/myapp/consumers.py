@@ -4,6 +4,7 @@ from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import Room, SubRoom, Topic
+from .tasks import create_image
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -80,10 +81,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
-            message = res.get("message")
+            event = res.get("event")
             data = res.get("data")
             # 게임을 시작을 알림
-            if message == "startGame":
+            if event == "startGame":
                 # self.round 값을 1 변경
                 self.round = 1
                 # 현재 연결된 subroom 초기화
@@ -99,7 +100,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     },
                 )
             # subroom의 주제 입력 이벤트
-            elif message == "inputTitle":
+            elif event == "inputTitle":
                 title = data["title"]
                 player_id = data["playerId"]
 
@@ -134,7 +135,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         self.room_group_name,
                         {"type": "next_round", "message": {"event": "loading", "data": "로딩중 입니다."}},
                     )
-                # 3. rebbitMQ함수 실행(AI image url 추가 됨)
+                # 3. rabbitMQ함수 실행(AI image url 추가 됨)
+                    # Celery 작업 호출
+                    result = await sync_to_async(create_image.delay)(title)
+
+                    # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.
+                    await self.send(text_data=json.dumps({
+                        'message': 'Image creation started',
+                        'task_id': result.id
+                    }))
+
+                    # 작업 완료까지 대기하지 않고 클라이언트에게 결과를 전송합니다.
+                    image_url = await sync_to_async(result.get)()
+                    await self.send(text_data=json.dumps({
+                        'message': 'Image creation completed',
+                        'image_url': image_url
+                    }))
                 # 4. round에 1 더해줌
                 # 5. room 인원수 < round
                 # 5-1. 게임 종료 group_send 함
@@ -144,7 +160,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # 9. round, url, completeNum 내용을 담은 send
 
             # 주제 편집 (가장 최신으로 만들어진 것을 변경함)
-            elif message == "changeTitle":
+            elif event == "changeTitle":
                 title = data["title"]
                 # player_id = data["playerId"]
                 # player id에 있는 가장 최신에 topic을 찾음

@@ -59,6 +59,7 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -73,6 +74,12 @@ services:
     depends_on:
       - django
       - rabbitmq
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   celery_beat:
@@ -88,6 +95,12 @@ services:
       - django
       - rabbitmq
       - celery_worker
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
