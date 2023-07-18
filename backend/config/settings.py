@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "myapp",
     "gunicorn",
-    "uvicorn"
+    "uvicorn",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
