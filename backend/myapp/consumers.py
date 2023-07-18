@@ -138,6 +138,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             event = res.get("event")
             data = res.get("data")
 
+            if event == "nameChanged":  # "change_name" 이벤트로 변경된 이름 처리
+                await self.handle_name_change(data)
+
+
             if event == "startGame":
                 # "게임시작" 출력
                 print(data)
@@ -200,3 +204,55 @@ class RoomConsumer(AsyncWebsocketConsumer):
         message_content = event["message"]
 
         await self.send(text_data=json.dumps(message_content))
+
+    async def handle_name_change(self, data):
+        player_id = data.get("playerId")
+        new_name = data.get("name")
+
+
+        sub_room = await self.get_sub_room_by_id(player_id)
+        if sub_room:
+            sub_room.first_player = new_name
+            await sync_to_async(sub_room.save)()
+
+            # 이름 변경 성공 메시지를 해당 클라이언트로 전송
+            await self.send(text_data=json.dumps({"event": "changeName", "data": "이름 변경 성공"}))
+
+            # 변경된 플레이어 리스트를 전체 클라이언트에게 전송
+            await self.send_player_list()
+
+
+    async def get_sub_room_by_id(self, player_id):
+        try:
+            return await sync_to_async(SubRoom.objects.get)(id=player_id)
+        except SubRoom.DoesNotExist:
+            return None
+
+    async def send_player_list(self):
+        # 현재 방에 있는 모든 플레이어 정보를 가져오고 프론트엔드로 해당 데이터를 전송
+        room = await sync_to_async(Room.objects.get)(id=self.room_id)
+        sub_rooms = await sync_to_async(SubRoom.objects.filter)(room=room, delete_at=None)
+
+        players_data = await sync_to_async(
+            lambda: [
+                {
+                    "player_id": subroom.id,
+                    "name": subroom.first_player,
+                    "isHost": subroom.is_host,
+                }
+                for subroom in sub_rooms
+            ]
+        )()
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "renew_list",
+                "message": {
+                    "event": "renewList",
+                    "data": {
+                        "players": players_data,
+                    },
+                },
+            },
+        )
