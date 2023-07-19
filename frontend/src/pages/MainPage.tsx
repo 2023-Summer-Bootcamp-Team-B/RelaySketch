@@ -1,18 +1,35 @@
+import axios from "axios";
+import { debounce } from "lodash";
+import { observer } from "mobx-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import sketch from "../assets/images/sketch_book_white.svg";
 import sun from "../assets/images/sun.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-function MainPage() {
+const MainPage = observer(() => {
   const navigate = useNavigate();
 
+  const handleClickConnect = async () => {
+    try {
+      const res = await axios.post("http://localhost:8000/api/add_room/");
+      navigate(`/playerroom/${res.data.result.room_id}`);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const handleKeyDown = () => {
-      navigate("/playerroom");
-    };
+    const handleKeyDown = debounce(async () => {
+      try {
+        const res = await axios.post("http://localhost:8000/api/add_room/");
+        navigate(`/playerroom/${res.data.result.room_id}`);
+      } catch (err) {
+        console.log(err);
+      }
+    }, 100);
 
     document.addEventListener("keydown", handleKeyDown);
 
@@ -22,7 +39,11 @@ function MainPage() {
   }, []);
 
   return (
-    <div className="h-screen w-screen bg-[#E7F5FF] overflow-hidden">
+    <button
+      className="h-screen w-screen bg-[#E7F5FF] overflow-hidden"
+      type="submit"
+      onClick={handleClickConnect}
+    >
       <div className="relative">
         <div className="absolute  w-[500px] left-[708px] top-[380px] animate-slider_left_invisible ">
           <img src={cloud2} alt="cloud 1" className="w-full h-full " />
@@ -54,14 +75,14 @@ function MainPage() {
 
             <div className="absolute inset-0 flex items-center justify-center duration-75 transform translate-y-[180px] scale-1 z-2 animate-pulse">
               <span className="text-[40px] font-hs mb-3 whitespace-nowrap">
-                PRESS ANY KEY TO PLAY
+                PRESS ANY BUTTON TO PLAY
               </span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
-}
+});
 
 export default MainPage;
