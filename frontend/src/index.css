@@ -6,3 +6,8 @@
   font-family: 'BMJUA';
   src: url('/src/assets/fonts/BMJUA.ttf');
 }
+
+@font-face {
+  font-family: 'crayon';
+  src: url('/src/assets/fonts/Pangolin.ttf');
+}
