@@ -10,15 +10,15 @@ type ResultPropsType = {
 
 const Result = ({ name, input, image, isLast }: ResultPropsType) => (
   <>
-    <div className=" text-right text-lg md:text-2xl mb-4 relative z-10">
+    <div className=" text-right text-lg md:text-3xl mb-4 mr-2 relative z-10">
       <span className="mr-4">{input}</span>
       <span>{name}</span>
     </div>
     {!isLast && (
       <div className=" flex items-start mb-4 ">
         <div className=" flex mt-4 relative z-10 h-[35vh]">
-          <img src={sunny} alt="" className=" w-[2vw] h-[4vh] ml-2 " />
-          <span className="text-lg md:text-2xl ml-1 ">태양</span>
+          <img src={sunny} alt="" className=" w-[3vw] h-[5vh] ml-4 " />
+          <span className="text-lg md:text-2xl ml-1 mt-2 ">태양</span>
         </div>
         <div className=" h-[39vh]">
           <img
