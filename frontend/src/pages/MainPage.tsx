@@ -3,30 +3,23 @@ import sun from "../assets/images/sun.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 function MainPage() {
-
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const handleKeyDown = () => {
-      navigate('/playerroom');
+      navigate("/playerroom");
     };
-  
-    document.addEventListener('keydown', handleKeyDown);
-  
+
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-  
-
-
-
 
   return (
     <div className="h-screen w-screen bg-[#E7F5FF] overflow-hidden">
@@ -52,15 +45,15 @@ function MainPage() {
             alt="backgroundsun"
           />
           <div className="absolute inset-0 flex items-center justify-center pt-5 z-2 w-auto h-auto ">
-            <p className="text-center transform -translate-y-[70px] font-crayon text-[110px]">
+            <p className="text-center transform -translate-y-[70px] font-hs text-[110px]">
               RELAY
             </p>
-            <p className="absolute text-center transform translate-y-[60px] font-crayon text-[110px]">
+            <p className="absolute text-center transform translate-y-[60px] font-hs text-[110px]">
               SKETCH
             </p>
 
             <div className="absolute inset-0 flex items-center justify-center duration-75 transform translate-y-[180px] scale-1 z-2 animate-pulse">
-              <span className="text-[40px] font-crayon mb-3 whitespace-nowrap">
+              <span className="text-[40px] font-hs mb-3 whitespace-nowrap">
                 PRESS ANY KEY TO PLAY
               </span>
             </div>

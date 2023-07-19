@@ -17,7 +17,9 @@ const PlayersSection = ({ players }: PlayersSectionPropsType) => (
       <img src={border} alt="" className="w-[18vw] h-[71.3vh]" />
     </div>
     <div className=" mr-4 text-center absolute left-[19.8vw] bottom-[14vh] ">
-      <Header className=" text-3xl md:text-4xl xl:text-5xl ">플레이어</Header>
+      <Header className=" text-3xl md:text-4xl xl:text-5xl mb-4 ">
+        플레이어
+      </Header>
       <PlayerList players={players} />
     </div>
   </>

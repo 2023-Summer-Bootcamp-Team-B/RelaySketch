@@ -20,7 +20,7 @@ function ResultsPage() {
   };
 
   return (
-    <div className=" h-screen w-screen flex justify-center items-center font-bmjua bg-[#E7F5FF] ">
+    <div className=" h-screen w-screen flex justify-center items-center font-hs bg-[#E7F5FF] ">
       <PlayersSection players={playerArray} />
       <ResultsSection resultsSet={resultsSet} />
     </div>

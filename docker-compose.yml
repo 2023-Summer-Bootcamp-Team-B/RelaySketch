@@ -60,6 +60,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
     command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -80,6 +82,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   celery_beat:
@@ -101,6 +105,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
