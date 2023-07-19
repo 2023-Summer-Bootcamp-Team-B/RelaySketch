@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'BMJUA';
-  src: url('/src/assets/fonts/BMJUA.ttf');
+  font-family: "HS";
+  src: url("/src/assets/fonts/HS유지체.ttf");
 }

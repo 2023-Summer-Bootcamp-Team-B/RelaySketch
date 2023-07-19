@@ -22,7 +22,7 @@ function Background({
   handleSubmit,
 }: BackgroundProps) {
   return (
-    <div className="w-full min-h-screen h-full border m-auto bg-[#E7F5FF] font-bmjua mx-auto relative flex flex-col items-center overflow-hidden">
+    <div className="w-full min-h-screen h-full border m-auto bg-[#E7F5FF] font-hs mx-auto relative flex flex-col items-center overflow-hidden">
       <div
         className=" z-50 w-[1000px] fixed bottom-1/2 right-1/2
       h-660 translate-x-1/2 translate-y-1/2
@@ -36,8 +36,8 @@ function Background({
         <div className="flex relative">
           <div className="relative w-[180px] h-20">
             <div className="flex items-center bg-white w-[178px] h-[76px] pl-3">
-              <img src={체크} alt="check" className=" w-[60px] bottom-7 z-40" />
-              <span className="text-[56px] flex px-2 z-40">n/4</span>
+              <img src={체크} alt="check" className=" w-[54px] bottom-7 z-40" />
+              <span className="text-[50px] flex px-2 z-40">0/4</span>
             </div>
             <img
               src={인원수테두리}
@@ -85,10 +85,10 @@ function Background({
             <img
               src={버튼테두리}
               alt="buttonline"
-              className=" absolute bottom-[27px] left-[-5.5px] w-auto h-[127px] z-30"
+              className=" absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
             />
             <button
-              className="text-[42px] px-6 z-20 py-[12px] h-[100px] absolute bg-white whitespace-nowrap"
+              className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute bg-white whitespace-nowrap"
               type="submit"
               onClick={handleSubmit}
             >

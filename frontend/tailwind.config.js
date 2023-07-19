@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        bmjua: ["BMJUA", "sans-serif"],
+        hs: ["HS", "sans-serif"],
       },
     },
   },
