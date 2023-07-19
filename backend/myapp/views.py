@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Room
 
+
 # Create your views here.
 def send_message(request):
     credentials = pika.PlainCredentials("admin", "admin")
@@ -21,6 +22,7 @@ def send_message(request):
     connection.close()
 
     return HttpResponse("Message sent to RabbitMQ!")
+
 
 @api_view(['POST'])
 def add_room(request):
