@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/playerroom" element={<PlayerRoomPage />} />
+        <Route path="/playerroom/:id" element={<PlayerRoomPage />} />
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/guess" element={<GuessImagePage />} />

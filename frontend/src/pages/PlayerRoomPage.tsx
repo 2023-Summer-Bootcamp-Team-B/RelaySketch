@@ -1,5 +1,6 @@
 /* eslint-disable react/no-array-index-key */
-import { SetStateAction, useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import invite from "../assets/images/invite_link.svg";
 import play from "../assets/images/play.svg";
@@ -8,10 +9,13 @@ import small_border from "../assets/images/small_box_border.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 import cloud3 from "../assets/images/구름3.svg";
+import WebsocketStore from "../stores/WebsocketStore";
 
 type ArrType = { id: number; empty: boolean };
 
 function PlayerRoomPage() {
+  const param = useParams();
+  const { connect } = WebsocketStore;
   const arr1 = [
     { id: 1, empty: false },
     { id: 2, empty: false },
@@ -21,9 +25,13 @@ function PlayerRoomPage() {
     { id: 6, empty: true },
   ];
 
-  const [content, setContent] = useState("클릭하여 내용을 편집하세요.");
+  useEffect(() => {
+    connect(`ws://localhost:8000/ws/room/${param.id}/`);
+  }, []);
 
-  const handleContentChange = (event) => {
+  const [, setContent] = useState("클릭하여 내용을 편집하세요.");
+
+  const handleContentChange = (event: any) => {
     setContent(event.target.textContent);
   };
 
@@ -59,8 +67,7 @@ function PlayerRoomPage() {
               />
               <p
                 className="absolute z-30  ml-[70px] mt-[28px] font-hs text-[40px]"
-                contentEditable
-                onClick={handleContentChange}
+                onChange={handleContentChange}
               >
                 PLAYER{x.id}
               </p>
