@@ -22,7 +22,7 @@ const ResultsList = ({ round, results }: ResultsListPropsType) => {
   const downloadHandler = () => {};
 
   return (
-    <ul className=" w-[42vw] h-[65vh] overflow-auto p-2 bg-[white] list-none ">
+    <ul className=" w-[42.3vw] h-[65vh] overflow-auto scrollbar-hide p-2 bg-[white] list-none ">
       {results.map((result) => (
         <li key={result.name}>
           <Result
