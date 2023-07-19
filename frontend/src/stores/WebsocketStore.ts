@@ -3,6 +3,8 @@ import { makeAutoObservable } from "mobx";
 class WebsocketStore {
   ws: WebSocket | null = null;
 
+  pingIntervalId: NodeJS.Timeout | null = null;
+
   messages: any[] = [];
 
   constructor() {
@@ -11,14 +13,34 @@ class WebsocketStore {
 
   connect = (url: string) => {
     this.ws = new WebSocket(url);
-    console.log(this.ws);
 
     this.ws.onmessage = (event) => {
-      this.messages.push(JSON.parse(event.data));
+      const message = JSON.parse(event.data);
+
+      console.log(message);
+
+      if (message.event === "ping") {
+        this.send({ event: "pong", data: "pong" });
+      }
+
+      this.messages.push(message);
     };
 
-    this.ws.onclose = () => {
+    this.ws.onopen = () => {
+      this.pingIntervalId = setInterval(() => {
+        this.send({ event: "ping", data: "ping" });
+      }, 50000);
+    };
+
+    this.ws.onclose = (event) => {
+      console.log(event.code);
       this.ws = null;
+      if (this.pingIntervalId) {
+        clearInterval(this.pingIntervalId);
+        this.pingIntervalId = null;
+      }
+      // Attempt to reconnect after a delay.
+      setTimeout(() => this.connect(url), 300);
     };
   };
 
@@ -30,7 +52,11 @@ class WebsocketStore {
 
   send = (data: any) => {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(data));
+      try {
+        this.ws.send(JSON.stringify(data));
+      } catch (error) {
+        console.error("Failed to send a message:", error);
+      }
     } else {
       console.error("Socket is not connected");
     }

@@ -16,10 +16,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
         # 게임중 자신이 주제를 넣고 있는 subroom
         self.present_sub_room = None
         self.last_activity_time = None
-        self.ping_interval = 5  # 핑 메시지 전송 간격 (초)
-        self.timeout = 10  # 연결 타임아웃 시간 (초)
+        self.ping_interval = 50  # 핑 메시지 전송 간격 (초)
+        self.timeout = 60  # 연결 타임아웃 시간 (초)
         self.ping_task = None
         self.round = 0
+
+    async def send(self, text_data=None, bytes_data=None, close=False):
+        try:
+            await super().send(text_data, bytes_data, close)
+        except Exception as e:
+            print(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
         if text_data is not None:
@@ -33,7 +39,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
         self.last_activity_time = time.time()
-        self.ping_task = asyncio.ensure_future(self.send_ping())
+        self.ping_task = asyncio.create_task(self.send_ping())
 
         # 서브 게임방 생성 로직
         room = await sync_to_async(Room.objects.get)(id=self.room_id)
@@ -74,6 +80,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.ping_task:
             self.ping_task.cancel()
 
+        # 웹소켓 연결을 비활성화하며 유저를 방 그룹에서 제거
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
         # 서브 게임방 테이블을 삭제
         sub_room = await sync_to_async(SubRoom.objects.get)(id=self.sub_room_id)
         if sub_room:
@@ -90,14 +99,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
         # 서브룸을 전부 가져오는 로직을 구현한 뒤, 해당 데이터를 전송합니다.
         await self.send_player_list()
 
-        # 웹소켓 연결을 비활성화하며 유저를 방 그룹에서 제거
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data:
             res = json.loads(text_data)
             event = res.get("event")
             data = res.get("data")
+            print(res)
 
             if event == "nameChanged":  # "change_name" 이벤트로 변경된 이름 처리
                 await self.handle_name_change(data)
@@ -189,13 +196,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(topic.save)()
 
             elif event == "ping":
+                self.last_activity_time = time.time()
                 print("ping received")
                 await self.send(text_data=json.dumps({"event": "pong", "data": "pong"}))
-                self.last_activity_time = time.time()
 
             elif event == "pong":
-                print("pong received")
                 self.last_activity_time = time.time()
+                print("pong received")
 
             elif event == "submitTopic":
                 await self.handle_topic_submission(data)
@@ -205,18 +212,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
             try:
                 await self.send(text_data=json.dumps({"event": "ping", "data": "ping"}))
                 await asyncio.sleep(self.ping_interval)
-            except asyncio.CancelledError:
-                break
-            # except Exception as e:
-            #     # 에러 처리 (예: 연결이 끊어짐)
-            #     break
-
-            if self.last_activity_time is not None:
+                self.last_activity_time = time.time()
                 elapsed_time = time.time() - self.last_activity_time
                 if elapsed_time > self.timeout:
                     await self.close()
-                    print("연결이 타임아웃되었습니다.")
                     break
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                print(f"Unexpected error occurred: {e}")
+                break
 
     async def handle_topic_submission(self, data):
         # 주제 제출 처리 로직 작성
@@ -253,7 +258,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         # Celery 작업 호출
         result = await sync_to_async(create_image.delay)(translated_text)
 
-        # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.test
+        # 작업의 결과를 기다리지 않고 즉시 응답을 보냅니다.
         await self.send(
             text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
         )
