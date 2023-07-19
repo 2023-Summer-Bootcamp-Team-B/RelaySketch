@@ -20,6 +20,11 @@ uvicorn = {version = "*", extras = ["standard"]}
 django-cors-headers = "*"
 asgiref = "*"
 channels-redis = "*"
+celery = "*"
+django-celery-beat = "*"
+django-celery-results = "*"
+openai = "*"
+requests = "*"
 
 [dev-packages]
 

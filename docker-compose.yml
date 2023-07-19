@@ -59,6 +59,55 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+    command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
+
+  celery_worker:
+    container_name: celery_worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    ports: []
+    volumes:
+      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
+    depends_on:
+      - django
+      - rabbitmq
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+    command: sh -c "pipenv run celery -A config worker --loglevel=info"
+
+  celery_beat:
+    container_name: celery_beat
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    ports: []
+    volumes:
+      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
+    depends_on:
+      - django
+      - rabbitmq
+      - celery_worker
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+    command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
     container_name: frontend
