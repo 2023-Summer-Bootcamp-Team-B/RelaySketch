@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import invite from "../assets/images/invite_link.svg";
 import play from "../assets/images/play.svg";
@@ -14,6 +14,7 @@ import WebsocketStore from "../stores/WebsocketStore";
 type ArrType = { id: number; empty: boolean };
 
 function PlayerRoomPage() {
+  const navigate = useNavigate();
   const param = useParams();
   const { connect } = WebsocketStore;
   const arr1 = [
@@ -95,7 +96,13 @@ function PlayerRoomPage() {
           </div>
         </button>
 
-        <button className="relative" type="button">
+        <button
+          className="relative"
+          type="button"
+          onClick={() => {
+            navigate("/input");
+          }}
+        >
           <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
             <img
               src={small_border}

@@ -7,6 +7,14 @@ class WebsocketStore {
 
   messages: any[] = [];
 
+  round = 0;
+
+  total = 0;
+
+  imgSrc = "";
+
+  // isNextRound = false;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -21,6 +29,12 @@ class WebsocketStore {
 
       if (message.event === "ping") {
         this.send({ event: "pong", data: "pong" });
+      } else if (message.event === "nextRound") {
+        this.round = message.data.round;
+      } else if (message.event === "renewList") {
+        this.total = message.data.players.length;
+      } else if (message.event === "image") {
+        this.imgSrc = message.data.url;
       }
 
       this.messages.push(message);
@@ -40,7 +54,7 @@ class WebsocketStore {
         this.pingIntervalId = null;
       }
       // Attempt to reconnect after a delay.
-      setTimeout(() => this.connect(url), 300);
+      // setTimeout(() => this.connect(url), 300);
     };
   };
 
@@ -61,6 +75,12 @@ class WebsocketStore {
       console.error("Socket is not connected");
     }
   };
+
+  // setIsNextRound = (isNextRound: boolean) => {
+  //   runInAction(() => {
+  //     this.isNextRound = isNextRound;
+  //   });
+  // };
 }
 
 export default new WebsocketStore();

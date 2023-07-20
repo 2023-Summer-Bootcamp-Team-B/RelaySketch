@@ -10,6 +10,8 @@ type BackgroundProps = {
   children: React.ReactNode;
   title: string;
   input: string;
+  round: number;
+  total: number;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
 };
@@ -18,6 +20,8 @@ function Background({
   children,
   title,
   input,
+  round,
+  total,
   handleInput,
   handleSubmit,
 }: BackgroundProps) {
@@ -29,7 +33,9 @@ function Background({
       transform"
       >
         <div className="flex pt-10">
-          <span className="text-[82px] "> 1/4</span>{" "}
+          <span className="text-[82px] ">
+            {round}/{total}
+          </span>{" "}
           <span className="text-[56px] mx-auto mt-3 pl-12">{title}</span>
           <span className="text-[82px] z-40">29.9 </span>
         </div>

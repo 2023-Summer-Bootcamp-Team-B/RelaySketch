@@ -1,10 +1,13 @@
+import { observer } from "mobx-react";
 import { useState } from "react";
 
-import AI이미지 from "../assets/images/AI이미지.svg";
+// import AI이미지 from "../assets/images/AI이미지.svg";
 import 스케치북테두리 from "../assets/images/스케치북테두리.svg";
 import Background from "../components/Background";
+import WebsocketStore from "../stores/WebsocketStore";
 
-function GuessImagePage() {
+const GuessImagePage = observer(() => {
+  const { round, total, imgSrc } = WebsocketStore;
   const [input, setInput] = useState("");
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.currentTarget.value);
@@ -18,6 +21,8 @@ function GuessImagePage() {
         <Background
           title="이미지를 맞혀보세요!"
           input={input}
+          round={round}
+          total={total}
           handleInput={handleInput}
           handleSubmit={handleSubmit}
         >
@@ -27,7 +32,7 @@ function GuessImagePage() {
             className=" w-[500px] h-[400px] z-40 relative mx-auto ml-[80px] pb-10"
           />
           <img
-            src={AI이미지}
+            src={imgSrc}
             alt="aiimage"
             className="bg-white w-[450px] h-[300px] z-10 absolute mx-auto right-[275px] top-[50px]"
           />
@@ -35,6 +40,6 @@ function GuessImagePage() {
       </div>
     </div>
   );
-}
+});
 
 export default GuessImagePage;
