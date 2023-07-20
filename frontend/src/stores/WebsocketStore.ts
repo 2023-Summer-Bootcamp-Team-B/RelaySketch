@@ -13,6 +13,14 @@ class WebsocketStore {
     makeAutoObservable(this);
   }
 
+  setError = (error: string | null) => {
+    this.error = error;
+  };
+
+  setWs = (ws: WebSocket | null) => {
+    this.ws = ws;
+  };
+
   connect = (url: string) => {
     this.ws = new WebSocket(url);
 
@@ -26,7 +34,7 @@ class WebsocketStore {
       }
 
       if (message.error === "방이 가득 찼습니다.") {
-        this.error = message.error;
+        this.setError(message.error);
       }
 
       this.messages.push(message);
@@ -40,7 +48,7 @@ class WebsocketStore {
 
     this.ws.onclose = (event) => {
       console.log(event.code);
-      this.ws = null;
+      this.setWs(null);
       if (this.pingIntervalId) {
         clearInterval(this.pingIntervalId);
         this.pingIntervalId = null;

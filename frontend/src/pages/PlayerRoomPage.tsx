@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,11 +13,11 @@ import WebsocketStore from "../stores/WebsocketStore";
 
 type ArrType = { id: number; empty: boolean };
 
-function PlayerRoomPage() {
+const PlayerRoomPage = observer(() => {
   console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
   const param = useParams();
-  const { send, error } = WebsocketStore;
+  const { send, error, setWs, setError } = WebsocketStore;
   const arr1 = [
     { id: 1, empty: false },
     { id: 2, empty: false },
@@ -42,9 +43,17 @@ function PlayerRoomPage() {
     send(event.target.textContent);
   };
 
-  if (error) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+    return () => {
+      setWs(null);
+      setError(null);
+      navigate("/");
+    };
+  }, [error]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
@@ -161,6 +170,6 @@ function PlayerRoomPage() {
       </div>
     </div>
   );
-}
+});
 
 export default PlayerRoomPage;

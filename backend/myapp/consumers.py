@@ -7,8 +7,6 @@ from .models import Room, SubRoom, Topic
 from .tasks import create_image, translate_text
 import logging
 
-logger = logging.getLogger(__name__)
-
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,13 +24,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def send(self, text_data=None, bytes_data=None, close=False):
         if not self.connection_open:
-            logger.error("WebSocket connection is not open. Skipping send.")
+            print("WebSocket connection is not open. Skipping send.")
             return
 
         try:
             await super().send(text_data, bytes_data, close)
         except Exception as e:
-            logger.error(f"Failed to send message: {e}")
+            print(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
         if text_data is not None:
@@ -50,7 +48,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         room = await self.get_room_by_id(self.room_id)
         if room is None:
-            logger.error("No room with the specified ID found.")
+            print("No room with the specified ID found.")
             await self.close(1008)
             return
 
@@ -77,8 +75,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         self.present_sub_room = sub_room
         if self.present_sub_room is None:
-            logger.error("present_sub_room 없어")
-        logger.info(self.present_sub_room.id)
+            print("present_sub_room 없어")
+        print(self.present_sub_room.id)
 
         await self.send_player_list()
 
@@ -102,14 +100,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None, **kwargs):
         if not self.connection_open:
-            logger.error("WebSocket connection is not open. Skipping send.")
+            print("WebSocket connection is not open. Skipping send.")
             return
 
         if text_data:
             res = json.loads(text_data)
             event = res.get("event")
             data = res.get("data")
-            logger.info(res)
+            print(res)
 
             if event == "nameChanged":
                 await self.handle_name_change(data)
@@ -180,12 +178,12 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             elif event == "ping":
                 self.last_activity_time = time.time()
-                logger.info("ping received")
+                print("ping received")
                 await self.send(text_data=json.dumps({"event": "pong", "data": "pong"}))
 
             elif event == "pong":
                 self.last_activity_time = time.time()
-                logger.info("pong received")
+                print("pong received")
 
             elif event == "submitTopic":
                 await self.handle_topic_submission(data)
@@ -203,7 +201,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             except asyncio.CancelledError:
                 await self.close()
             except Exception as e:
-                logger.error(f"Unexpected error occurred: {e}")
+                print(f"Unexpected error occurred: {e}")
                 await self.close()
 
     async def handle_topic_submission(self, data):

@@ -11,7 +11,7 @@ import cloud2 from "../assets/images/구름2.svg";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const MainPage = observer(() => {
-  const { disconnect } = WebsocketStore;
+  const { setError, error } = WebsocketStore;
   const navigate = useNavigate();
 
   const handleClickConnect = async () => {
@@ -44,14 +44,16 @@ const MainPage = observer(() => {
   useEffect(() => {
     debounce(async () => {
       try {
-        disconnect();
         const res = await axios.post("http://localhost:8000/api/add_room/");
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
         console.log(err);
       }
     }, 100);
-  }, []);
+    if (error) {
+      setError(null);
+    }
+  }, [navigate]);
 
   return (
     <button
