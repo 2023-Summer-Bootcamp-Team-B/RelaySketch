@@ -1,5 +1,4 @@
-/* eslint-disable react/no-array-index-key */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import invite from "../assets/images/invite_link.svg";
@@ -14,9 +13,10 @@ import WebsocketStore from "../stores/WebsocketStore";
 type ArrType = { id: number; empty: boolean };
 
 function PlayerRoomPage() {
+  console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
   const param = useParams();
-  const { connect } = WebsocketStore;
+  const { send, error } = WebsocketStore;
   const arr1 = [
     { id: 1, empty: false },
     { id: 2, empty: false },
@@ -26,15 +26,25 @@ function PlayerRoomPage() {
     { id: 6, empty: true },
   ];
 
+  const connect = useCallback(() => {
+    console.log("Connecting to websocket");
+    WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
+  }, [param.id]);
+
   useEffect(() => {
-    connect(`ws://localhost:8000/ws/room/${param.id}/`);
+    connect();
   }, []);
 
   const [, setContent] = useState("클릭하여 내용을 편집하세요.");
 
   const handleContentChange = (event: any) => {
     setContent(event.target.textContent);
+    send(event.target.textContent);
   };
+
+  if (error) {
+    navigate("/");
+  }
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
