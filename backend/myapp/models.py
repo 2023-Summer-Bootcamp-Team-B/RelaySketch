@@ -28,11 +28,11 @@ class SubRoom(models.Model):
     # Room 속한 Room
     next_room = models.ForeignKey('self', null=True, on_delete=models.SET_NULL)  # 다음 SubRoom
 
-    class Meta:
-        # first_player 필드가 같은 room에 속한 SubRoom들끼리만 unique해야 함
-        constraints = [
-            models.UniqueConstraint(fields=['first_player', 'room'], name='unique_first_player_in_room')
-        ]
+    # class Meta:
+    #     # first_player 필드가 같은 room에 속한 SubRoom들끼리만 unique해야 함
+    #     constraints = [
+    #         models.UniqueConstraint(fields=['first_player', 'room'], name='unique_first_player_in_room')
+    #     ]
 
     # SubRoom 객체가 delete 메서드를 호출할 때 호출되는 함수
     # 이 함수는 SubRoom 객체의 delete_at 필드를 현재 시간으로 설정하고 객체를 저장

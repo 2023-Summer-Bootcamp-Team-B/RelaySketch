@@ -7,6 +7,8 @@ class WebsocketStore {
 
   messages: any[] = [];
 
+  error: string | null = null;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -21,6 +23,10 @@ class WebsocketStore {
 
       if (message.event === "ping") {
         this.send({ event: "pong", data: "pong" });
+      }
+
+      if (message.error === "방이 가득 찼습니다.") {
+        this.error = message.error;
       }
 
       this.messages.push(message);
@@ -39,8 +45,6 @@ class WebsocketStore {
         clearInterval(this.pingIntervalId);
         this.pingIntervalId = null;
       }
-      // Attempt to reconnect after a delay.
-      setTimeout(() => this.connect(url), 300);
     };
   };
 
@@ -51,14 +55,21 @@ class WebsocketStore {
   };
 
   send = (data: any) => {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      try {
-        this.ws.send(JSON.stringify(data));
-      } catch (error) {
-        console.error("Failed to send a message:", error);
+    if (this.ws) {
+      if (this.ws.readyState === WebSocket.OPEN) {
+        try {
+          console.log(data);
+          this.ws.send(JSON.stringify(data));
+        } catch (error) {
+          console.error("Failed to send a message:", error);
+        }
+      } else if (
+        this.ws.readyState === WebSocket.CLOSING ||
+        this.ws.readyState === WebSocket.CLOSED
+      ) {
+        console.error("Socket is not connected");
+        this.disconnect();
       }
-    } else {
-      console.error("Socket is not connected");
     }
   };
 }
