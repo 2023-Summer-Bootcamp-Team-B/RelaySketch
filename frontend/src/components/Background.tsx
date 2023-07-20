@@ -1,7 +1,9 @@
+import React, { useState } from "react";
+
 import 구름1 from "../assets/images/구름1.svg";
 import 구름2 from "../assets/images/구름2.svg";
 import 구름3 from "../assets/images/구름3.svg";
-import 버튼테두리 from "../assets/images/버튼테두리.svg";
+import 버튼테두리1 from "../assets/images/버튼테두리1.svg";
 import 인원수테두리 from "../assets/images/인원수테두리.svg";
 import 입력창테두리 from "../assets/images/입력창테두리.svg";
 import 체크 from "../assets/images/체크.svg";
@@ -21,6 +23,14 @@ function Background({
   handleInput,
   handleSubmit,
 }: BackgroundProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const buttonText = isEditing ? "편집" : "입력";
+
+  const handleButtonClick = () => {
+    setIsEditing(!isEditing);
+  };
+
   return (
     <div className="w-full min-h-screen h-full border m-auto bg-[#E7F5FF] font-hs mx-auto relative flex flex-col items-center overflow-hidden">
       <div
@@ -83,16 +93,16 @@ function Background({
 
           <div className=" relative w-[188px]">
             <img
-              src={버튼테두리}
+              src={버튼테두리1}
               alt="buttonline"
               className=" absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
             />
             <button
-              className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute bg-white whitespace-nowrap"
+              className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
               type="submit"
-              onClick={handleSubmit}
+              onClick={handleButtonClick}
             >
-              편집
+              {buttonText}
             </button>
           </div>
         </div>

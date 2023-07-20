@@ -3,7 +3,7 @@ import { useState } from "react";
 import 햇님 from "../assets/images/햇님.svg";
 import Background from "../components/Background";
 
-function InputSubjectPage() {
+function InputTitlePage() {
   const [input, setInput] = useState("");
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.currentTarget.value);
@@ -27,4 +27,4 @@ function InputSubjectPage() {
   );
 }
 
-export default InputSubjectPage;
+export default InputTitlePage;
