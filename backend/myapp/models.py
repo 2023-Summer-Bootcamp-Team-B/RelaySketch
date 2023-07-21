@@ -40,6 +40,8 @@ class SubRoom(models.Model):
         self.delete_at = timezone.now()
         self.save()
 
+    def get_next(self):
+        return self.next_room
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -64,10 +66,11 @@ class SubRoom(models.Model):
 
         subroom = SubRoom.objects.create(first_player=first_player, room=room)
 
+
         if last_subroom:
             last_subroom.next_room = subroom
-            subroom.next_room = first_subroom
             last_subroom.save()
+            subroom.next_room = first_subroom
             subroom.save()
         else:
             subroom.next_room = subroom
