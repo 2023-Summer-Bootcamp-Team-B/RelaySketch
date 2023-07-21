@@ -191,40 +191,33 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.handle_topic_submission(data)
 
             elif event == "wantResult":
-                player_id = data.get('playerId', None)
+                player_id = data["playerId"]
+                subroom = await self.get_subroom_by_id(player_id)
 
                 # 게임 결과 데이터 생성
-                game_result = await self.generate_game_result(player_id)
+                game_result = await self.generate_game_result(subroom)
 
                 # 클라이언트에게 게임 결과 전송
                 await self.send_game_result(game_result)
 
-    async def generate_game_result(self, player_id):
+    async def generate_game_result(self,subroom):
         game_result = []
 
+        topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom, delete_at=None)
+        topics = await sync_to_async(list)(topics.order_by("created_at"))
         try:
-            # 플레이어 ID로 서브룸 가져오기
-            subroom = await self.get_subroom_by_id(player_id)
-            if subroom:
-                # 서브룸에 저장된 이미지 정보 가져오기
-                topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom)
-                topic = await sync_to_async(topics.first)()
-                if topic:
+            for topic in topics:
                     game_result.append({
-                        'playerId': subroom.id,
-                        'name': subroom.first_player,
                         'title': topic.title,
                         'img': topic.url,
-                        'round': self.round
                     })
-
-            # 결과 반환
-            return game_result
 
         except Exception as e:
             # 예외 처리
             print(f"Error: {e}")
-            return None
+
+        # 결과 반환
+        return game_result
 
     async def send_game_result(self, game_result):
         if game_result:
