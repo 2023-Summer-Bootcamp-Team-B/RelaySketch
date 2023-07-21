@@ -19,7 +19,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.present_sub_room = None
         self.last_activity_time = None
         self.ping_interval = 50
-        self.timeout = 60
+        self.timeout = 900
         self.ping_task = None
         self.round = 0
         self.time = None
@@ -258,8 +258,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         if room_num < self.round:
             await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
+            return
 
-        self.present_sub_room = await self.get_subroom_by_id(self.present_sub_room.id)
+
+        self.present_sub_room = await self.get_subroom_by_id(self.present_sub_room.next_room.id)
+
+        # 다음 이미지 전달
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+        image_url = topic.url
 
         await self.send(
             text_data=json.dumps(
@@ -268,6 +274,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "data": {
                         "round": self.round,
                         "complete": room.completeNum,
+                        "url": image_url
                     },
                 }
             )
@@ -348,3 +355,82 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             },
         )
+class GameResultConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_group_name = 'game_result_group'
+
+        # 방 그룹에 입장
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # 방 그룹에서 퇴장
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    # 클라이언트로부터의 메시지 처리
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        event = data.get('event', '')
+
+        if event == 'wantResult':
+            player_id = data.get('data', {}).get('playerId', None)
+
+            # 게임 결과 데이터 생성
+            game_result = await self.generate_game_result(player_id)
+
+            # 클라이언트에게 게임 결과 전송
+            await self.send_game_result(game_result)
+
+    # 게임 결과 데이터 생성 및 반환하는 로직
+    async def generate_game_result(self, player_id):
+        game_result = []
+
+        try:
+            # 플레이어 ID로 서브룸 가져오기
+            subroom = SubRoom.objects.filter(id=player_id).first()
+            if subroom:
+                # 서브룸에 저장된 이미지 정보 가져오기
+                topic = Topic.objects.filter(sub_room=subroom).first()
+                if topic:
+                    game_result.append({
+                        'playerId': subroom.id,
+                        'name': subroom.first_player,
+                        'title': topic.title,
+                        'img': topic.url,
+                        'round': subroom.round
+                    })
+
+            # 결과 반환
+            return game_result
+
+        except Exception as e:
+            # 예외 처리
+            print(f"Error: {e}")
+            return None
+
+    # 게임 결과를 클라이언트에게 전송
+    async def send_game_result(self, game_result):
+        if game_result:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_result_message',
+                    'game_result': game_result
+                }
+            )
+
+    # 게임 결과 메시지를 방 그룹으로 브로드캐스트
+    async def game_result_message(self, event):
+        game_result = event['game_result']
+
+        await self.send(text_data=json.dumps({
+            'event': 'gameResult',
+            'data': game_result
+        }))
