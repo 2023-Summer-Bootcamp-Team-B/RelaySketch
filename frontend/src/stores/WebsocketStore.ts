@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 
 class WebsocketStore {
   ws: WebSocket | null = null;
@@ -6,6 +6,14 @@ class WebsocketStore {
   pingIntervalId: NodeJS.Timeout | null = null;
 
   messages: any[] = [];
+
+  round = 0;
+
+  total = 0;
+
+  myId = "";
+
+  imgSrc = "";
 
   error: string | null = null;
 
@@ -17,19 +25,23 @@ class WebsocketStore {
     this.ws = new WebSocket(url);
 
     this.ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      runInAction(() => {
+        const message = JSON.parse(event.data);
 
-      console.log(message);
+        console.log(message);
 
-      if (message.event === "ping") {
-        this.send({ event: "pong", data: "pong" });
-      }
+        if (message.event === "ping") {
+          this.send({ event: "pong", data: "pong" });
+        } else if (message.event === "renewList") {
+          this.total = message.data.players.length;
+        }
 
-      if (message.error === "방이 가득 찼습니다.") {
-        this.error = message.error;
-      }
+        if (message.error === "방이 가득 찼습니다.") {
+          this.error = message.error;
+        }
 
-      this.messages.push(message);
+        this.messages.push(message);
+      });
     };
 
     this.ws.onopen = () => {

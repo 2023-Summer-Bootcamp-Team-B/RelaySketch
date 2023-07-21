@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import 구름1 from "../assets/images/구름1.svg";
 import 구름2 from "../assets/images/구름2.svg";
@@ -12,6 +12,7 @@ type BackgroundProps = {
   children: React.ReactNode;
   title: string;
   input: string;
+  total: number;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
 };
@@ -20,12 +21,41 @@ function Background({
   children,
   title,
   input,
+  total,
   handleInput,
   handleSubmit,
 }: BackgroundProps) {
   const [isEditing, setIsEditing] = useState(false);
-
+  const [timer, setTimer] = useState(30);
+  const [completeNum, setcompleteNum] = useState(0);
+  const timerDisplayRef = useRef<HTMLSpanElement>(null);
   const buttonText = isEditing ? "편집" : "입력";
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 0) {
+          onTimerEnd();
+          clearInterval(intervalId);
+          return 0; // 타이머가 0에 도달하면 0으로 설정 (마이너스 값 안나오게)
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (timerDisplayRef.current) {
+      timerDisplayRef.current.innerText = timer.toString();
+    }
+  }, [timer]);
+
+  const onTimerEnd = () => {
+    console.log("Timer ended! Perform your specific event here.");
+    // 0초가 됐을 때 이벤트 실행
+  };
 
   const handleButtonClick = () => {
     setIsEditing(!isEditing);
@@ -38,16 +68,23 @@ function Background({
       h-660 translate-x-1/2 translate-y-1/2
       transform"
       >
-        <div className="flex pt-10">
-          <span className="text-[82px] "> 1/4</span>{" "}
-          <span className="text-[56px] mx-auto mt-3 pl-12">{title}</span>
-          <span className="text-[82px] z-40">29.9 </span>
+        <div className="flex pt-10 relative">
+          <span className="text-[82px] ">1/4</span>
+          <span className="text-[56px] mx-auto mt-3 pl-12 absolute ml-[230px]">
+            {title}
+          </span>
+          <span
+            ref={timerDisplayRef}
+            className="text-[82px] z-40 px-5 absolute ml-[850px]"
+          />
         </div>
         <div className="flex relative">
           <div className="relative w-[180px] h-20">
             <div className="flex items-center bg-white w-[178px] h-[76px] pl-3">
               <img src={체크} alt="check" className=" w-[54px] bottom-7 z-40" />
-              <span className="text-[50px] flex px-2 z-40">0/4</span>
+              <span className="text-[50px] flex px-2 z-40">
+                {completeNum}/{total}
+              </span>
             </div>
             <img
               src={인원수테두리}

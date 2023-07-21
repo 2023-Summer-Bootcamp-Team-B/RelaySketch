@@ -1,9 +1,11 @@
+import { observer } from "mobx-react";
 import { useState } from "react";
 
 import 햇님 from "../assets/images/햇님.svg";
 import Background from "../components/Background";
+import WebsocketStore from "../stores/WebsocketStore";
 
-function InputTitlePage() {
+const InputTitlePage = observer(() => {
   const [input, setInput] = useState("");
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.currentTarget.value);
@@ -11,11 +13,13 @@ function InputTitlePage() {
   const handleSubmit = () => {
     console.log("InputSubjectPage에서 편집버튼 누름", input);
   };
+  const { total } = WebsocketStore;
 
   return (
     <Background
       title="주제를 입력하세요!"
       input={input}
+      total={total}
       handleInput={handleInput}
       handleSubmit={handleSubmit}
     >
@@ -26,6 +30,6 @@ function InputTitlePage() {
       />
     </Background>
   );
-}
+});
 
 export default InputTitlePage;
