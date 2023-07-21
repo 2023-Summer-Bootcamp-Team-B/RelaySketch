@@ -109,6 +109,7 @@ services:
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
+
   frontend:
     container_name: frontend
     build:
@@ -133,5 +134,41 @@ services:
       - ./nginx:/etc/nginx/conf.d # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/config:/etc/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: always
+    depends_on:
+      - django
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:8.2.2
+    restart: unless-stopped
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel"
+      GF_DATABASE_TYPE: "mysql"
+      GF_DATABASE_HOST: "mysql:3306"
+      GF_DATABASE_NAME: ${DB_DATABASE}
+      GF_DATABASE_USER: ${DB_USERNAME}
+      GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
+    ports:
+      - "3050:3000"
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana-data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "8m"
+        max-file: "10"
+
 volumes:
   staticfiles:
+  grafana-data: {}
