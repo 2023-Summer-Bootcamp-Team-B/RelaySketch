@@ -258,8 +258,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         if room_num < self.round:
             await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
+            return
 
-        self.present_sub_room = await self.get_subroom_by_id(self.present_sub_room.id)
+
+        self.present_sub_room = await self.get_subroom_by_id(self.present_sub_room.next_room.id)
+
+        # 다음 이미지 전달
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+        image_url = topic.url
 
         await self.send(
             text_data=json.dumps(
@@ -268,6 +274,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     "data": {
                         "round": self.round,
                         "complete": room.completeNum,
+                        "url": image_url
                     },
                 }
             )
