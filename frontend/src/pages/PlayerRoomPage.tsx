@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,11 +13,12 @@ import WebsocketStore from "../stores/WebsocketStore";
 
 type ArrType = { id: number; empty: boolean };
 
-function PlayerRoomPage() {
+const PlayerRoomPage = observer(() => {
   console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
   const param = useParams();
-  const { send, error } = WebsocketStore;
+  const { round, send, error } = WebsocketStore;
+  const prevRound = 0;
   const arr1 = [
     { id: 1, empty: false },
     { id: 2, empty: false },
@@ -35,11 +37,21 @@ function PlayerRoomPage() {
     connect();
   }, []);
 
+  useEffect(() => {
+    if (prevRound !== round) {
+      navigate("/input");
+    }
+  }, [round]);
+
   const [, setContent] = useState("클릭하여 내용을 편집하세요.");
 
   const handleContentChange = (event: any) => {
     setContent(event.target.textContent);
     send(event.target.textContent);
+  };
+
+  const gameStart = () => {
+    send({ event: "startGame", data: "게임 시작" });
   };
 
   if (error) {
@@ -106,13 +118,7 @@ function PlayerRoomPage() {
           </div>
         </button>
 
-        <button
-          className="relative"
-          type="button"
-          onClick={() => {
-            navigate("/input");
-          }}
-        >
+        <button className="relative" type="button" onClick={gameStart}>
           <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
             <img
               src={small_border}
@@ -167,6 +173,6 @@ function PlayerRoomPage() {
       </div>
     </div>
   );
-}
+});
 
 export default PlayerRoomPage;

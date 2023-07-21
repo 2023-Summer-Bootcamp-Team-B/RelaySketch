@@ -11,6 +11,7 @@ type BackgroundProps = {
   title: string;
   input: string;
   round: number;
+  completeNum: number;
   total: number;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
@@ -21,6 +22,7 @@ function Background({
   title,
   input,
   round,
+  completeNum,
   total,
   handleInput,
   handleSubmit,
@@ -43,7 +45,9 @@ function Background({
           <div className="relative w-[180px] h-20">
             <div className="flex items-center bg-white w-[178px] h-[76px] pl-3">
               <img src={체크} alt="check" className=" w-[54px] bottom-7 z-40" />
-              <span className="text-[50px] flex px-2 z-40">0/4</span>
+              <span className="text-[50px] flex px-2 z-40">
+                {completeNum}/{total}
+              </span>
             </div>
             <img
               src={인원수테두리}
