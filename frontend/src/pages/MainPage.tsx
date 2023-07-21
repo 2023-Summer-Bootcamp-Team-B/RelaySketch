@@ -8,8 +8,10 @@ import sketch from "../assets/images/sketch_book_white.svg";
 import sun from "../assets/images/sun.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
+import WebsocketStore from "../stores/WebsocketStore";
 
 const MainPage = observer(() => {
+  const { disconnect } = WebsocketStore;
   const navigate = useNavigate();
 
   const handleClickConnect = async () => {
@@ -21,21 +23,34 @@ const MainPage = observer(() => {
     }
   };
 
+  // useEffect(() => {
+  //   const handleKeyDown = debounce(async () => {
+  //     try {
+  //       disconnect();
+  //       const res = await axios.post("http://localhost:8000/api/add_room/");
+  //       navigate(`/playerroom/${res.data.result.room_id}`);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }, 100);
+
+  //   document.addEventListener("keydown", handleKeyDown);
+
+  //   return () => {
+  //     document.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const handleKeyDown = debounce(async () => {
+    debounce(async () => {
       try {
+        disconnect();
         const res = await axios.post("http://localhost:8000/api/add_room/");
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
         console.log(err);
       }
     }, 100);
-
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
   }, []);
 
   return (

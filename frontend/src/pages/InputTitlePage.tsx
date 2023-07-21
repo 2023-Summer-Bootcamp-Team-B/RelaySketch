@@ -11,6 +11,7 @@ function InputTitlePage() {
   const handleSubmit = () => {
     console.log("InputSubjectPage에서 편집버튼 누름", input);
   };
+
   return (
     <Background
       title="주제를 입력하세요!"
