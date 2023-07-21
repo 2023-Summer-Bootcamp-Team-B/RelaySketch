@@ -21,6 +21,11 @@ django-cors-headers = "*"
 asgiref = "*"
 channels-redis = "*"
 django-prometheus = "*"
+celery = "*"
+django-celery-beat = "*"
+django-celery-results = "*"
+openai = "*"
+requests = "*"
 
 [dev-packages]
 
