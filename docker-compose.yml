@@ -99,20 +99,27 @@ services:
       - django
 
   grafana:
-    image: grafana/grafana
     container_name: grafana
+    image: grafana/grafana:8.2.2
+    restart: unless-stopped
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel"
+      GF_DATABASE_TYPE: "mysql"
+      GF_DATABASE_HOST: "mysql:3306"
+      GF_DATABASE_NAME: ${DB_DATABASE}
+      GF_DATABASE_USER: ${DB_USERNAME}
+      GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
     ports:
-      - 3050:3000
+      - "3050:3000"
     volumes:
-      - ./grafana/volume:/var/lib/grafana
-    restart: always
-    depends_on:
-      - prometheus
-
-
-
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana-data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "8m"
+        max-file: "10"
 
 volumes:
   staticfiles:
-
-
+  grafana-data: {}
