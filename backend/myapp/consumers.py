@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,7 +20,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.present_sub_room = None
         self.last_activity_time = None
         self.ping_interval = 50
-        self.timeout = 60
+        self.timeout = 200
         self.ping_task = None
         self.round = 0
         self.time = None
@@ -171,7 +172,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     )
             elif event == "changeTitle":
                 title = data["title"]
-                player_id = data["playerId"]
 
                 topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
 
@@ -189,6 +189,58 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             elif event == "submitTopic":
                 await self.handle_topic_submission(data)
+
+            elif event == "wantResult":
+                player_id = data.get('playerId', None)
+
+                # 게임 결과 데이터 생성
+                game_result = await self.generate_game_result(player_id)
+
+                # 클라이언트에게 게임 결과 전송
+                await self.send_game_result(game_result)
+
+    async def generate_game_result(self, player_id):
+        game_result = []
+
+        try:
+            # 플레이어 ID로 서브룸 가져오기
+            subroom = await self.get_subroom_by_id(player_id)
+            if subroom:
+                # 서브룸에 저장된 이미지 정보 가져오기
+                topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom)
+                topic = await sync_to_async(topics.first)()
+                if topic:
+                    game_result.append({
+                        'playerId': subroom.id,
+                        'name': subroom.first_player,
+                        'title': topic.title,
+                        'img': topic.url,
+                        'round': self.round
+                    })
+
+            # 결과 반환
+            return game_result
+
+        except Exception as e:
+            # 예외 처리
+            print(f"Error: {e}")
+            return None
+
+    async def send_game_result(self, game_result):
+        if game_result:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_result_message',
+                    'message': {
+                        'game_result': game_result
+                    }
+                }
+            )
+
+    async def game_result_message(self, event):
+        game_result = event["message"]
+        await self.send(text_data=json.dumps({"event": "gameResult", "data": game_result}))
 
     async def send_ping(self):
         while True:
