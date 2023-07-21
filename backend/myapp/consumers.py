@@ -19,7 +19,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.present_sub_room = None
         self.last_activity_time = None
         self.ping_interval = 50
-        self.timeout = 900
+        self.timeout = 60
         self.ping_task = None
         self.round = 0
         self.time = None
