@@ -230,7 +230,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message_content))
 
     async def ai_image_url(self, event):
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
 
         translated_result = await sync_to_async(translate_text.delay)(topic.title)
 
@@ -260,11 +260,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
             return
 
-
-        self.present_sub_room = await self.get_subroom_by_id(self.present_sub_room.next_room.id)
-
+        self.present_sub_room = await sync_to_async(self.present_sub_room.get_next)()
+        print(self.present_sub_room)
         # 다음 이미지 전달
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
         image_url = topic.url
 
         await self.send(
