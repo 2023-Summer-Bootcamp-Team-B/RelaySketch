@@ -40,8 +40,9 @@ class SubRoom(models.Model):
         self.delete_at = timezone.now()
         self.save()
 
-    def get_next(self):
-        return self.next_room
+    def get_next_id(self):
+        next_sub_room_id = self.next_room.id
+        return next_sub_room_id
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -65,7 +66,6 @@ class SubRoom(models.Model):
         first_player = f'플레이어 {max_number}'
 
         subroom = SubRoom.objects.create(first_player=first_player, room=room)
-
 
         if last_subroom:
             last_subroom.next_room = subroom
@@ -111,5 +111,6 @@ class Topic(models.Model):
         self.save()
 
     @classmethod
-    def get_last_topic(cls, subroom):
+    def get_last_topic(cls, subroom_id):
+        subroom = SubRoom.objects.get(id=subroom_id)
         return cls.objects.filter(sub_room=subroom, delete_at=None).order_by('-created_at').first()
