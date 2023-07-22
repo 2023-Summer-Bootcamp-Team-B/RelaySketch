@@ -7,4 +7,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("myapp.routing")),
     re_path(r"static/(?P<path>.*)$", serve, {"document_root": settings.STATIC_ROOT}, name="static"),
+    path('', include('django_prometheus.urls'))
 ]

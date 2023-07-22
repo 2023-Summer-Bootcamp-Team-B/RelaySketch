@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,7 +17,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_id = None
         self.room_group_name = None
         self.sub_room_id = None
-        self.present_sub_room = None
+        self.present_sub_room_id = None
         self.last_activity_time = None
         self.ping_interval = 50
         self.timeout = 60
@@ -64,6 +65,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         sub_room = await sync_to_async(SubRoom.add_subroom)(room)
         self.sub_room_id = sub_room.id
 
+        self.present_sub_room_id = sub_room.id
+
         await self.send(
             text_data=json.dumps(
                 {
@@ -74,11 +77,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
-
-        self.present_sub_room = sub_room
-        if self.present_sub_room is None:
-            logger.error("present_sub_room 없어")
-        logger.info(self.present_sub_room.id)
 
         await self.send_player_list()
 
@@ -114,7 +112,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             if event == "nameChanged":
                 await self.handle_name_change(data)
             elif event == "startGame":
-                self.present_sub_room = await self.get_subroom_by_id(self.sub_room_id)
+                self.present_sub_room_id = self.sub_room_id
 
                 self.round = 1
                 await self.channel_layer.group_send(
@@ -124,13 +122,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {"event": "gameStart", "round": self.round},
                     },
                 )
+
             elif event == "inputTitle":
                 title = data["title"]
                 player_id = data["playerId"]
 
                 room_num = await self.get_room_count()
 
-                await self.save_topic(title, player_id)
+                await self.save_topic(title, self.present_sub_room_id)
 
                 room = await self.get_room_by_id(self.room_id)
 
@@ -169,11 +168,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         self.room_group_name,
                         {"type": "next_round", "message": "다음 라운드 정보 주거나 게임 종료"},
                     )
+
             elif event == "changeTitle":
                 title = data["title"]
-                player_id = data["playerId"]
 
-                topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+                topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
                 topic.title = title
                 await sync_to_async(topic.save)()
@@ -189,6 +188,51 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             elif event == "submitTopic":
                 await self.handle_topic_submission(data)
+
+            elif event == "wantResult":
+                player_id = data["playerId"]
+                subroom = await self.get_subroom_by_id(player_id)
+
+                # 게임 결과 데이터 생성
+                game_result = await self.generate_game_result(subroom)
+
+                # 클라이언트에게 게임 결과 전송
+                await self.send_game_result(game_result)
+
+    async def generate_game_result(self,subroom):
+        game_result = []
+
+        topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom, delete_at=None)
+        topics = await sync_to_async(list)(topics.order_by("created_at"))
+        try:
+            for topic in topics:
+                    game_result.append({
+                        'title': topic.title,
+                        'img': topic.url,
+                    })
+
+        except Exception as e:
+            # 예외 처리
+            print(f"Error: {e}")
+
+        # 결과 반환
+        return game_result
+
+    async def send_game_result(self, game_result):
+        if game_result:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_result_message',
+                    'message': {
+                        'game_result': game_result
+                    }
+                }
+            )
+
+    async def game_result_message(self, event):
+        game_result = event["message"]
+        await self.send(text_data=json.dumps({"event": "gameResult", "data": game_result}))
 
     async def send_ping(self):
         while True:
@@ -230,7 +274,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message_content))
 
     async def ai_image_url(self, event):
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
         translated_result = await sync_to_async(translate_text.delay)(topic.title)
 
@@ -259,12 +303,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if room_num < self.round:
             await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
             return
+        present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.present_sub_room_id)
+        self.present_sub_room_id = await sync_to_async(present_sub_room.get_next_id)()
 
-        self.present_sub_room = await sync_to_async(self.present_sub_room.get_next)()
-        print(self.present_sub_room)
         # 다음 이미지 전달
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
-        image_url = topic.url
+        while True:
+            topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
+            image_url = topic.url
+            if image_url is not None:
+                break
 
         await self.send(
             text_data=json.dumps(
@@ -309,8 +356,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         return SubRoom.objects.filter(room=room, delete_at=None).exists()
 
     @sync_to_async
-    def save_topic(self, title, player_id):
-        sub_room = SubRoom.objects.get(id=player_id)
+    def save_topic(self, title, present_sub_room_id):
+        sub_room = SubRoom.objects.get(id=present_sub_room_id)
         topic = Topic.objects.create(title=title, url=None, sub_room=sub_room)
         return topic
 
