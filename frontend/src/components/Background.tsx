@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React, { useState, useEffect, useRef } from "react";
 
 import 구름1 from "../assets/images/구름1.svg";
@@ -7,14 +8,15 @@ import 버튼테두리1 from "../assets/images/버튼테두리1.svg";
 import 인원수테두리 from "../assets/images/인원수테두리.svg";
 import 입력창테두리 from "../assets/images/입력창테두리.svg";
 import 체크 from "../assets/images/체크.svg";
+import WebsocketStore from "../stores/WebsocketStore";
 
 type BackgroundProps = {
   children: React.ReactNode;
   title: string;
   input: string;
   total: number;
+  completeNum: number;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSubmit: () => void;
 };
 
 function Background({
@@ -22,14 +24,14 @@ function Background({
   title,
   input,
   total,
+  completeNum,
   handleInput,
-  handleSubmit,
 }: BackgroundProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // changeTitle
+  const [isFirstButtonClick, setIsFirstButtonClick] = useState(true);
   const [timer, setTimer] = useState(30);
-  const [completeNum, setcompleteNum] = useState(0);
+  const [titleName, setTitleName] = useState(""); // 주제
   const timerDisplayRef = useRef<HTMLSpanElement>(null);
-  const buttonText = isEditing ? "편집" : "입력";
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -57,8 +59,22 @@ function Background({
     // 0초가 됐을 때 이벤트 실행
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Update the input field value
+    setInput(e.target.value);
+    // Update the titleName with the input field value
+    setTitleName(e.target.value);
+  };
+
   const handleButtonClick = () => {
-    setIsEditing(!isEditing);
+    if (isFirstButtonClick) {
+      setIsFirstButtonClick(false);
+    }
+    setIsEditing(true);
+    // Set the titleName to the current value of the input field
+    setTitleName(input);
+    console.log("Button clicked!");
+    console.log("Title Name:", titleName);
   };
 
   return (
@@ -124,7 +140,7 @@ function Background({
               className=" w-[570px] h-[100px] text-[42px] absolute pl-6 ml-3 z-30 outline-none"
               type="text"
               value={input}
-              onChange={handleInput}
+              onChange={handleInput} // 입력창
             />
           </div>
 
@@ -139,7 +155,7 @@ function Background({
               type="submit"
               onClick={handleButtonClick}
             >
-              {buttonText}
+              {isFirstButtonClick ? "입력" : "수정"}
             </button>
           </div>
         </div>

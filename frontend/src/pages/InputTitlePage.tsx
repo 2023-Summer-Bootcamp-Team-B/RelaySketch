@@ -14,12 +14,14 @@ const InputTitlePage = observer(() => {
     console.log("InputSubjectPage에서 편집버튼 누름", input);
   };
   const { total } = WebsocketStore;
+  const { completeNum } = WebsocketStore;
 
   return (
     <Background
       title="주제를 입력하세요!"
       input={input}
       total={total}
+      completeNum={completeNum}
       handleInput={handleInput}
       handleSubmit={handleSubmit}
     >

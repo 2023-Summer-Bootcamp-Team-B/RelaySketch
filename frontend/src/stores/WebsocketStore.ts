@@ -7,9 +7,17 @@ class WebsocketStore {
 
   messages: any[] = [];
 
+  isEditing = false;
+
+  completeNum = 0;
+
+  input = "";
+
+  timer = 30;
+
   round = 0;
 
-  total = 0;
+  total = 0; // 총 플레이어 수
 
   myId = "";
 
@@ -34,13 +42,15 @@ class WebsocketStore {
           this.send({ event: "pong", data: "pong" });
         } else if (message.event === "renewList") {
           this.total = message.data.players.length;
-        }
+        } else if (message.event === "completePeople") {
+          this.completeNum = message.data.completeNum;
 
-        if (message.error === "방이 가득 찼습니다.") {
-          this.error = message.error;
-        }
+          if (message.error === "방이 가득 찼습니다.") {
+            this.error = message.error;
+          }
 
-        this.messages.push(message);
+          this.messages.push(message);
+        }
       });
     };
 
