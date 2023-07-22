@@ -129,7 +129,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
                 room_num = await self.get_room_count()
 
-                await self.save_topic(title, player_id)
+                await self.save_topic(title, self.present_sub_room_id)
 
                 room = await self.get_room_by_id(self.room_id)
 
@@ -168,6 +168,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         self.room_group_name,
                         {"type": "next_round", "message": "다음 라운드 정보 주거나 게임 종료"},
                     )
+
             elif event == "changeTitle":
                 title = data["title"]
 
@@ -304,7 +305,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return
         present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.present_sub_room_id)
         self.present_sub_room_id = await sync_to_async(present_sub_room.get_next_id)()
-        print(self.sub_room_id,"present_sub_room :",self.present_sub_room_id)
+        #print(self.sub_room_id,"present_sub_room :",self.present_sub_room_id)
 
         # 다음 이미지 전달
         while True:
@@ -356,8 +357,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         return SubRoom.objects.filter(room=room, delete_at=None).exists()
 
     @sync_to_async
-    def save_topic(self, title, player_id):
-        sub_room = SubRoom.objects.get(id=player_id)
+    def save_topic(self, title, present_sub_room_id):
+        sub_room = SubRoom.objects.get(id=present_sub_room_id)
         topic = Topic.objects.create(title=title, url=None, sub_room=sub_room)
         return topic
 
