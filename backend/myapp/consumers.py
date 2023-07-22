@@ -17,10 +17,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.room_id = None
         self.room_group_name = None
         self.sub_room_id = None
-        self.present_sub_room = None
+        self.present_sub_room_id = None
         self.last_activity_time = None
         self.ping_interval = 50
-        self.timeout = 200
+        self.timeout = 60
         self.ping_task = None
         self.round = 0
         self.time = None
@@ -65,6 +65,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
         sub_room = await sync_to_async(SubRoom.add_subroom)(room)
         self.sub_room_id = sub_room.id
 
+        self.present_sub_room_id = sub_room.id
+
         await self.send(
             text_data=json.dumps(
                 {
@@ -75,11 +77,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 }
             )
         )
-
-        self.present_sub_room = sub_room
-        if self.present_sub_room is None:
-            logger.error("present_sub_room 없어")
-        logger.info(self.present_sub_room.id)
 
         await self.send_player_list()
 
@@ -115,7 +112,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             if event == "nameChanged":
                 await self.handle_name_change(data)
             elif event == "startGame":
-                self.present_sub_room = await self.get_subroom_by_id(self.sub_room_id)
+                self.present_sub_room_id = self.sub_room_id
 
                 self.round = 1
                 await self.channel_layer.group_send(
@@ -125,6 +122,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {"event": "gameStart", "round": self.round},
                     },
                 )
+
             elif event == "inputTitle":
                 title = data["title"]
                 player_id = data["playerId"]
@@ -173,7 +171,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             elif event == "changeTitle":
                 title = data["title"]
 
-                topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room.id)
+                topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
                 topic.title = title
                 await sync_to_async(topic.save)()
@@ -275,7 +273,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message_content))
 
     async def ai_image_url(self, event):
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
+        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
         translated_result = await sync_to_async(translate_text.delay)(topic.title)
 
@@ -304,12 +302,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if room_num < self.round:
             await self.send(text_data=json.dumps({"event": "end", "data": "게임이 종료 됐습니다."}))
             return
+        present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.present_sub_room_id)
+        self.present_sub_room_id = await sync_to_async(present_sub_room.get_next_id)()
+        print(self.sub_room_id,"present_sub_room :",self.present_sub_room_id)
 
-        self.present_sub_room = await sync_to_async(self.present_sub_room.get_next)()
-        print(self.present_sub_room)
         # 다음 이미지 전달
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room)
-        image_url = topic.url
+        while True:
+            topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
+            image_url = topic.url
+            if image_url is not None:
+                break
 
         await self.send(
             text_data=json.dumps(
