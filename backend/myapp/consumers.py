@@ -305,7 +305,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return
         present_sub_room = await sync_to_async(SubRoom.objects.get)(id=self.present_sub_room_id)
         self.present_sub_room_id = await sync_to_async(present_sub_room.get_next_id)()
-        #print(self.sub_room_id,"present_sub_room :",self.present_sub_room_id)
 
         # 다음 이미지 전달
         while True:

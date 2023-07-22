@@ -43,8 +43,6 @@ class SubRoom(models.Model):
     def get_next_id(self):
         next_sub_room_id = self.next_room.id
         return next_sub_room_id
-    def get_frist_player(self):
-        return
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
