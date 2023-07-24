@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]  # Ip 주소 추가
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0", "django"]  # Ip 주소 추가
 
 # Application definition
 
@@ -50,11 +50,13 @@ INSTALLED_APPS = [
     "myapp",
     "gunicorn",
     "uvicorn",
+    "django_prometheus",
     "django_celery_beat",
     "django_celery_results",
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -160,6 +163,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
     "http://frontend:3000",
+    "http://prometheus:9090",
+    "http://localhost:9090",
+    "http://127.0.0.1:9090",
+    "http://0.0.0.0:9090",
 ]
 
 CORS_ALLOW_HEADERS = (
@@ -179,6 +186,10 @@ CORS_ALLOW_METHODS = (
     "POST",
     "PUT",
 )
+
+PROMETHEUS_METRICS_EXPORT_PORT_RANGE = range(8001, 8050)
+
+PROMETHEUS_EXPORT_MIGRATIONS = True
 
 # Celery
 CELERY_BROKER_URL = "amqp://admin:admin@rabbitmq"

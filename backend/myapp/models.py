@@ -40,6 +40,9 @@ class SubRoom(models.Model):
         self.delete_at = timezone.now()
         self.save()
 
+    def get_next_id(self):
+        next_sub_room_id = self.next_room.id
+        return next_sub_room_id
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -66,8 +69,8 @@ class SubRoom(models.Model):
 
         if last_subroom:
             last_subroom.next_room = subroom
-            subroom.next_room = first_subroom
             last_subroom.save()
+            subroom.next_room = first_subroom
             subroom.save()
         else:
             subroom.next_room = subroom
@@ -95,6 +98,7 @@ class SubRoom(models.Model):
 # Topic 모델
 class Topic(models.Model):
     title = models.CharField(max_length=128)  # 제목
+    player_id = models.IntegerField(default=0) # 생성한 플레이어 아이디
     url = models.CharField(max_length=512, null=True, blank=True)  # URL
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간
@@ -108,5 +112,6 @@ class Topic(models.Model):
         self.save()
 
     @classmethod
-    def get_last_topic(cls, subroom):
+    def get_last_topic(cls, subroom_id):
+        subroom = SubRoom.objects.get(id=subroom_id)
         return cls.objects.filter(sub_room=subroom, delete_at=None).order_by('-created_at').first()
