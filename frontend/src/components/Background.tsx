@@ -13,25 +13,15 @@ import WebsocketStore from "../stores/WebsocketStore";
 type BackgroundProps = {
   children: React.ReactNode;
   title: string;
-  input: string;
-  total: number;
-  completeNum: number;
-  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function Background({
-  children,
-  title,
-  input,
-  total,
-  completeNum,
-  handleInput,
-}: BackgroundProps) {
-  const [isEditing, setIsEditing] = useState(false); // changeTitle
-  const [isFirstButtonClick, setIsFirstButtonClick] = useState(true);
+const Background = observer(({ children, title }: BackgroundProps) => {
+  const [clickEditButton, setClickEditButton] = useState(false); // changeTitle
+  const [input, setInput] = useState("");
+  const [clickInputButton, setClickInputButton] = useState(true);
   const [timer, setTimer] = useState(30);
-  const [titleName, setTitleName] = useState(""); // 주제
   const timerDisplayRef = useRef<HTMLSpanElement>(null);
+  const { completeNum, total } = WebsocketStore;
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -56,25 +46,22 @@ function Background({
 
   const onTimerEnd = () => {
     console.log("Timer ended! Perform your specific event here.");
-    // 0초가 됐을 때 이벤트 실행
+    // 0초가 됐을 때 강제 라운드 변경 이벤트
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Update the input field value
     setInput(e.target.value);
-    // Update the titleName with the input field value
-    setTitleName(e.target.value);
   };
 
   const handleButtonClick = () => {
-    if (isFirstButtonClick) {
-      setIsFirstButtonClick(false);
+    if (clickInputButton) {
+      setClickInputButton(false);
     }
-    setIsEditing(true);
-    // Set the titleName to the current value of the input field
-    setTitleName(input);
+    setClickEditButton(true);
+
+    WebsocketStore.sendDataToBackend(input, playerId, clickEditButton); // Replace 'input' with the data you want to send
     console.log("Button clicked!");
-    console.log("Title Name:", titleName);
   };
 
   return (
@@ -150,18 +137,28 @@ function Background({
               alt="buttonline"
               className=" absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
             />
-            <button
-              className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
-              type="submit"
-              onClick={handleButtonClick}
-            >
-              {isFirstButtonClick ? "입력" : "수정"}
-            </button>
+            {clickInputButton ? (
+              <button
+                className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
+                type="submit"
+                onClick={handleButtonClick}
+              >
+                입력
+              </button>
+            ) : (
+              <button
+                className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
+                type="submit"
+                onClick={handleButtonClick}
+              >
+                수정
+              </button>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-}
+});
 
 export default Background;

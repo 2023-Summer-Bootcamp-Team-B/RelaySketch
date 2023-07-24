@@ -13,8 +13,6 @@ class WebsocketStore {
 
   input = "";
 
-  timer = 30;
-
   round = 0;
 
   total = 0; // 총 플레이어 수
@@ -44,6 +42,8 @@ class WebsocketStore {
           this.total = message.data.players.length;
         } else if (message.event === "completePeople") {
           this.completeNum = message.data.completeNum;
+        } else if (message.event === "connected") {
+          this.myId = message.data.playerId;
 
           if (message.error === "방이 가득 찼습니다.") {
             this.error = message.error;
@@ -94,6 +94,35 @@ class WebsocketStore {
       }
     }
   };
+
+  sendDataToBackend(input, playerId, clickEditButton) {
+    if (!input || typeof input !== "string" || input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    let event = "inputTitle";
+    if (clickEditButton) {
+      event = "changeTitle";
+    }
+
+    const data = {
+      event,
+      data: {
+        title: input,
+        playerId,
+      },
+    };
+
+    // Here, you can use the WebSocket instance to send data to the backend
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      try {
+        this.ws.send(JSON.stringify(data));
+      } catch (error) {
+        console.error("Failed to send data:", error);
+      }
+    }
+  }
 }
 
 export default new WebsocketStore();

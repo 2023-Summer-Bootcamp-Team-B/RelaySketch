@@ -1,30 +1,9 @@
-import { observer } from "mobx-react";
-import { useState } from "react";
-
 import 햇님 from "../assets/images/햇님.svg";
 import Background from "../components/Background";
-import WebsocketStore from "../stores/WebsocketStore";
 
-const InputTitlePage = observer(() => {
-  const [input, setInput] = useState("");
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.currentTarget.value);
-  };
-  const handleSubmit = () => {
-    console.log("InputSubjectPage에서 편집버튼 누름", input);
-  };
-  const { total } = WebsocketStore;
-  const { completeNum } = WebsocketStore;
-
+function InputTitlePage() {
   return (
-    <Background
-      title="주제를 입력하세요!"
-      input={input}
-      total={total}
-      completeNum={completeNum}
-      handleInput={handleInput}
-      handleSubmit={handleSubmit}
-    >
+    <Background title="주제를 입력하세요!">
       <img
         src={햇님}
         alt="sun"
@@ -32,6 +11,6 @@ const InputTitlePage = observer(() => {
       />
     </Background>
   );
-});
+}
 
 export default InputTitlePage;
