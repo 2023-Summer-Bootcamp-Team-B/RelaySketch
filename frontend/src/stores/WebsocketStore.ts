@@ -13,11 +13,11 @@ class WebsocketStore {
 
   input = "";
 
-  round = 0;
-
   total = 0; // 총 플레이어 수
 
   myId = 0;
+
+  round = 0;
 
   imgSrc = "";
 
@@ -44,6 +44,8 @@ class WebsocketStore {
           this.completeNum = message.data.completeNum;
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
+        } else if (message.event === "gameStart") {
+          this.round = message.round;
 
           if (message.error === "방이 가득 찼습니다.") {
             this.error = message.error;
@@ -100,14 +102,14 @@ class WebsocketStore {
       console.error("Invalid input data");
       return;
     }
-    function zzz() {
+    function titleToBackend() {
       if (!type) {
         return "inputTitle";
       }
       return "changeTitle";
     }
     const data = {
-      event: zzz(),
+      event: titleToBackend(),
       data: {
         title: input,
         playerId,
