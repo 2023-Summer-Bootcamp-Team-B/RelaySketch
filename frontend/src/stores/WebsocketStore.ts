@@ -17,7 +17,7 @@ class WebsocketStore {
 
   total = 0; // 총 플레이어 수
 
-  myId = "";
+  myId = 0;
 
   imgSrc = "";
 
@@ -95,33 +95,25 @@ class WebsocketStore {
     }
   };
 
-  sendDataToBackend(input, playerId, clickEditButton) {
-    if (!input || typeof input !== "string" || input.trim() === "") {
+  sendDataToBackend(input: string, playerId: number, type: boolean) {
+    if (input.trim() === "") {
       console.error("Invalid input data");
       return;
     }
-
-    let event = "inputTitle";
-    if (clickEditButton) {
-      event = "changeTitle";
+    function zzz() {
+      if (!type) {
+        return "inputTitle";
+      }
+      return "changeTitle";
     }
-
     const data = {
-      event,
+      event: zzz(),
       data: {
         title: input,
         playerId,
       },
     };
-
-    // Here, you can use the WebSocket instance to send data to the backend
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      try {
-        this.ws.send(JSON.stringify(data));
-      } catch (error) {
-        console.error("Failed to send data:", error);
-      }
-    }
+    this.send(JSON.stringify(data));
   }
 }
 

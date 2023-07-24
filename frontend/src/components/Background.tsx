@@ -21,22 +21,7 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [clickInputButton, setClickInputButton] = useState(true);
   const [timer, setTimer] = useState(30);
   const timerDisplayRef = useRef<HTMLSpanElement>(null);
-  const { completeNum, total } = WebsocketStore;
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer === 0) {
-          onTimerEnd();
-          clearInterval(intervalId);
-          return 0; // 타이머가 0에 도달하면 0으로 설정 (마이너스 값 안나오게)
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
+  const { completeNum, total, myId } = WebsocketStore;
 
   useEffect(() => {
     if (timerDisplayRef.current) {
@@ -60,9 +45,24 @@ const Background = observer(({ children, title }: BackgroundProps) => {
     }
     setClickEditButton(true);
 
-    WebsocketStore.sendDataToBackend(input, playerId, clickEditButton); // Replace 'input' with the data you want to send
+    WebsocketStore.sendDataToBackend(input, myId, clickEditButton); // Replace 'input' with the data you want to send
     console.log("Button clicked!");
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 0) {
+          onTimerEnd();
+          clearInterval(intervalId);
+          return 0; // 타이머가 0에 도달하면 0으로 설정 (마이너스 값 안나오게)
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="w-full min-h-screen h-full border m-auto bg-[#E7F5FF] font-hs mx-auto relative flex flex-col items-center overflow-hidden">
