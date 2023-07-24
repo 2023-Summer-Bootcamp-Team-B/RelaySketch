@@ -11,6 +11,8 @@ class WebsocketStore {
 
   total = 0;
 
+  playerList: any[] = [];
+
   completeNum = 0;
 
   nowLoading = false;
@@ -20,6 +22,8 @@ class WebsocketStore {
   imgSrc = "";
 
   endGame = false;
+
+  gameResult: any[] = [];
 
   // isNextRound = false;
   error: string | null = null;
@@ -43,21 +47,25 @@ class WebsocketStore {
           this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
           this.total = message.data.players.length;
+          this.playerList = message.data.players;
         } else if (message.event === "gameStart") {
           this.endGame = false;
+          this.gameResult = [];
           this.round = message.round;
         } else if (message.event === "completeUpdate") {
           this.completeNum = message.data.completeNum;
         } else if (message.event === "loading_and_url") {
           this.nowLoading = true;
-        } else if (message.message === "Image creation completed") {
-          this.imgSrc = message.image_url;
-          this.nowLoading = false;
         } else if (message.event === "moveNextRound") {
           this.round = message.data.round;
+          this.imgSrc = message.data.url;
+          this.nowLoading = false;
           this.completeNum = 0;
         } else if (message.event === "end") {
           this.endGame = true;
+          this.nowLoading = false;
+        } else if (message.event === "gameResult") {
+          this.gameResult = message.data;
         }
 
         if (message.error === "방이 가득 찼습니다.") {

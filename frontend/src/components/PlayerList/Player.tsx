@@ -11,7 +11,7 @@ const Player = ({ name, turn }: PlayerPropsType) => {
     : " w-[13vw] h-[9vh] mt-[1.5vh] flex items-center justify-center";
 
   return (
-    <li className={classes}>
+    <div className={classes}>
       <img
         src={border}
         alt=""
@@ -20,7 +20,7 @@ const Player = ({ name, turn }: PlayerPropsType) => {
       <span className="relative text-xl md:text-2xl lg:text-3xl xl:text-4xl">
         {name}
       </span>
-    </li>
+    </div>
   );
 };
 

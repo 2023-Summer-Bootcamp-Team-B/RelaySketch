@@ -7,7 +7,7 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const InputSubjectPage = observer(() => {
-  const { myId, nowLoading, round, completeNum, total, send } = WebsocketStore;
+  const { myId, nowLoading, send } = WebsocketStore;
   const navigate = useNavigate();
   const [input, setInput] = useState("");
 
@@ -29,9 +29,6 @@ const InputSubjectPage = observer(() => {
     <Background
       title="주제를 입력하세요!"
       input={input}
-      round={round}
-      completeNum={completeNum}
-      total={total}
       handleInput={handleInput}
       handleSubmit={handleSubmit}
     >

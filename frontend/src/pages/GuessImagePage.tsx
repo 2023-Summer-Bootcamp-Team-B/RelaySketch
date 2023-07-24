@@ -8,8 +8,7 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const GuessImagePage = observer(() => {
-  const { myId, nowLoading, round, completeNum, total, imgSrc, endGame, send } =
-    WebsocketStore;
+  const { myId, nowLoading, imgSrc, endGame, send } = WebsocketStore;
   const navigate = useNavigate();
   const [input, setInput] = useState("");
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,9 +33,6 @@ const GuessImagePage = observer(() => {
         <Background
           title="이미지를 맞혀보세요!"
           input={input}
-          round={round}
-          completeNum={completeNum}
-          total={total}
           handleInput={handleInput}
           handleSubmit={handleSubmit}
         >
