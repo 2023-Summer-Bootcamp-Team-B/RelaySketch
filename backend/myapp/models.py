@@ -98,6 +98,7 @@ class SubRoom(models.Model):
 # Topic 모델
 class Topic(models.Model):
     title = models.CharField(max_length=128)  # 제목
+    player_id = models.IntegerField(default=0) # 생성한 플레이어 아이디
     url = models.CharField(max_length=512, null=True, blank=True)  # URL
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
     delete_at = models.DateTimeField(null=True, blank=True)  # 삭제 시간

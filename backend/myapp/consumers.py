@@ -111,6 +111,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             if event == "nameChanged":
                 await self.handle_name_change(data)
+
             elif event == "startGame":
                 self.present_sub_room_id = self.sub_room_id
 
@@ -127,9 +128,14 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 title = data["title"]
                 player_id = data["playerId"]
 
+                # 중복 inputTitle 확인
+                last_topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
+                if last_topic is not None and player_id == last_topic.player_id:
+                    return
+
                 room_num = await self.get_room_count()
 
-                await self.save_topic(title, self.present_sub_room_id)
+                await self.save_topic(title, self.present_sub_room_id, player_id)
 
                 room = await self.get_room_by_id(self.room_id)
 
@@ -199,17 +205,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # 클라이언트에게 게임 결과 전송
                 await self.send_game_result(game_result)
 
-    async def generate_game_result(self,subroom):
+    async def generate_game_result(self, subroom):
         game_result = []
 
         topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom, delete_at=None)
         topics = await sync_to_async(list)(topics.order_by("created_at"))
+
         try:
             for topic in topics:
-                    game_result.append({
-                        'title': topic.title,
-                        'img': topic.url,
-                    })
+                # topic 쓴 사람 찾음
+                player = await sync_to_async(SubRoom.objects.get)(id=topic.player_id)
+
+                game_result.append({
+                    'title': topic.title,
+                    'player_name': player.first_player,
+                    'img': topic.url,
+                })
 
         except Exception as e:
             # 예외 처리
@@ -356,9 +367,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
         return SubRoom.objects.filter(room=room, delete_at=None).exists()
 
     @sync_to_async
-    def save_topic(self, title, present_sub_room_id):
+    def save_topic(self, title, present_sub_room_id, player_id):
         sub_room = SubRoom.objects.get(id=present_sub_room_id)
-        topic = Topic.objects.create(title=title, url=None, sub_room=sub_room)
+        topic = Topic.objects.create(title=title, url=None, player_id=player_id, sub_room=sub_room)
         return topic
 
     async def handle_name_change(self, data):
