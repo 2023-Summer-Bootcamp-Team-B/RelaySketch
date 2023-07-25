@@ -40,7 +40,7 @@ class WebsocketStore {
           this.send({ event: "pong", data: "pong" });
         } else if (message.event === "renewList") {
           this.total = message.data.players.length;
-        } else if (message.event === "completePeople") {
+        } else if (message.event === "completeUpdate") {
           this.completeNum = message.data.completeNum;
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
@@ -97,25 +97,36 @@ class WebsocketStore {
     }
   };
 
-  sendDataToBackend(input: string, playerId: number, type: boolean) {
+  sendDataToBackend(input: string, id: number) {
     if (input.trim() === "") {
       console.error("Invalid input data");
       return;
     }
-    function titleToBackend() {
-      if (!type) {
-        return "inputTitle";
-      }
-      return "changeTitle";
-    }
+
     const data = {
-      event: titleToBackend(),
+      event: "inputTitle",
       data: {
         title: input,
-        playerId,
+        playerId: id,
       },
     };
-    this.send(JSON.stringify(data));
+    this.send(data);
+  }
+
+  sendChangeTitleEvent(input: string, id: number) {
+    if (input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    const data = {
+      event: "changeTitle",
+      data: {
+        title: input,
+        playerId: id,
+      },
+    };
+    this.send(data);
   }
 }
 
