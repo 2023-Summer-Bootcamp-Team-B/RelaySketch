@@ -84,7 +84,7 @@ function PlayerRoomPage() {
               </p>
               <div className="absolute bg-[#E7F5FF] z-39 h-[98%] w-[91%] top-2 left-2.5" />
             </div>
-          )
+          ),
         )}
 
         <button className="relative" type="button">
