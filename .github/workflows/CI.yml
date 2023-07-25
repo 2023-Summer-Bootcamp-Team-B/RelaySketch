@@ -46,7 +46,10 @@ jobs:
 
       - name: Run tests
         working-directory: backend
-        run: pipenv run python manage.py test
+        run: |
+          pipenv run python manage.py makemigrations
+          pipenv run python manage.py migrate
+          pipenv run python manage.py test
 
   frontend:
     runs-on: ubuntu-latest
