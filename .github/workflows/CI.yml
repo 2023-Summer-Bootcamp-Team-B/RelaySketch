@@ -6,6 +6,18 @@ on:
   pull_request:
     branches: ["feature"]
 
+env:
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  DB_USER_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
+  DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+  RABBITMQ_DEFAULT_USER: ${{ secrets.RABBITMQ_DEFAULT_USER }}
+  RABBITMQ_DEFAULT_PASS: ${{ secrets.RABBITMQ_DEFAULT_PASS }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+  NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+
 jobs:
   backend:
     runs-on: ubuntu-latest
