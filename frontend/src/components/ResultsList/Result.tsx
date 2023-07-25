@@ -1,3 +1,5 @@
+import { observer } from "mobx-react";
+
 import sketchBook from "../../assets/images/sketchbook.png";
 import sunny from "../../assets/images/sun.svg";
 
@@ -7,7 +9,7 @@ type ResultPropsType = {
   image: string | undefined;
 };
 
-const Result = ({ name, title, image }: ResultPropsType) => (
+const Result = observer(({ name, title, image }: ResultPropsType) => (
   <>
     <div className=" text-right text-lg md:text-3xl mb-4 mr-2 relative z-10">
       <span className="mr-4">{title}</span>
@@ -33,6 +35,6 @@ const Result = ({ name, title, image }: ResultPropsType) => (
       </div>
     </div>
   </>
-);
+));
 
 export default Result;

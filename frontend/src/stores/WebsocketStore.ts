@@ -17,7 +17,9 @@ class WebsocketStore {
 
   nowLoading = false;
 
-  myId = "";
+  myId = -1;
+
+  hostId = -1;
 
   imgSrc = "";
 
@@ -25,7 +27,10 @@ class WebsocketStore {
 
   gameResult: any[] = [];
 
-  // isNextRound = false;
+  currentIdx = 0;
+
+  nameOfCurrentResult = "";
+
   error: string | null = null;
 
   constructor() {
@@ -48,6 +53,7 @@ class WebsocketStore {
         } else if (message.event === "renewList") {
           this.total = message.data.players.length;
           this.playerList = message.data.players;
+          this.hostId = message.data.players[0].player_id;
         } else if (message.event === "gameStart") {
           this.endGame = false;
           this.gameResult = [];
@@ -65,7 +71,9 @@ class WebsocketStore {
           this.endGame = true;
           this.nowLoading = false;
         } else if (message.event === "gameResult") {
-          this.gameResult = message.data;
+          this.currentIdx += 1;
+          this.gameResult = message.data.game_result;
+          this.nameOfCurrentResult = message.data.game_result[0].player_name;
         }
 
         if (message.error === "방이 가득 찼습니다.") {
@@ -116,12 +124,6 @@ class WebsocketStore {
       }
     }
   };
-
-  // setNowLoading = (nowLoading: boolean) => {
-  //   runInAction(() => {
-  //     this.nowLoading = nowLoading;
-  //   });
-  // };
 }
 
 export default new WebsocketStore();
