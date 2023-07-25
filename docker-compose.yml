@@ -142,7 +142,7 @@ services:
       - django # django 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
       - frontend # frontend 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
     volumes:
-      - ./nginx:/etc/nginx/conf.d # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
 
   prometheus:
