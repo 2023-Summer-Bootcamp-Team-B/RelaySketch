@@ -26,6 +26,8 @@ django-celery-beat = "*"
 django-celery-results = "*"
 openai = "*"
 requests = "*"
+django-storages = "*"
+boto3 = "*"
 
 [dev-packages]
 
