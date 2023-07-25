@@ -17,6 +17,7 @@ env:
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
   NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+  USE_SQLITE: ${{ secrets.USE_SQLITE }}
 
 jobs:
   backend:
