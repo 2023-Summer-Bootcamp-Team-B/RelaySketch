@@ -97,7 +97,7 @@ BROKER_URL = "amqp://admin:admin@rabbitmq"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if 'test' in sys.argv:
+if os.getenv('USE_SQLITE', 'false') == 'true':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
