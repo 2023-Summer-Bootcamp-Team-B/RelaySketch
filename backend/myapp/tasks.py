@@ -1,18 +1,24 @@
 import os
+import uuid
 from celery import shared_task
 import openai
 import requests
+from storages.backends.s3boto3 import S3Boto3Storage
+from datetime import datetime
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client_id = os.getenv("NAVER_CLIENT_ID")
 client_secret = os.getenv("NAVER_CLIENT_SECRET")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 
 @shared_task
 def create_image(title):
     response = openai.Image.create(prompt=title, n=1, size="256x256")
     image_url = response["data"][0]["url"]
-    return image_url
+    s3_image_url = upload_image_to_s3(image_url, "image")
+    return f"https://{AWS_STORAGE_BUCKET_NAME}.s3-{AWS_S3_REGION_NAME}.amazonaws.com/{s3_image_url}"
 
 
 @shared_task
@@ -40,3 +46,21 @@ def translate_text(text):
     else:
         # 처리 실패 시 예외 처리 등을 수행할 수 있습니다.
         raise Exception("Translation failed")
+
+
+def upload_image_to_s3(image_url, filename):
+    from io import BytesIO
+    import requests
+
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        image_data = BytesIO(response.content)
+        storage = S3Boto3Storage()
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        random_string = str(uuid.uuid4().hex[:6])
+        unique_filename = f"{filename}_{now}_{random_string}.png"
+        s3_image_url = storage.save(unique_filename, image_data)
+        return s3_image_url
+    else:
+        # 처리 실패 시 예외 처리 등을 수행할 수 있습니다.
+        raise Exception("Failed to upload image to S3")
