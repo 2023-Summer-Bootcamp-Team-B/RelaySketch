@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "HS";
+  src: url("/src/assets/fonts/HS유지체.ttf");
+}
+
+@font-face {
+  font-family: "crayon";
+  src: url("/src/assets/fonts/Pangolin.ttf");
+}
