@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import 햇님 from "../assets/images/햇님.svg";
@@ -7,17 +7,8 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const InputSubjectPage = observer(() => {
-  const { myId, nowLoading, send } = WebsocketStore;
+  const { nowLoading } = WebsocketStore;
   const navigate = useNavigate();
-  const [input, setInput] = useState("");
-
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.currentTarget.value);
-  };
-  const handleSubmit = () => {
-    console.log("InputSubjectPage에서 편집버튼 누름", input);
-    send({ event: "inputTitle", data: { title: input, playerId: myId } });
-  };
 
   useEffect(() => {
     if (nowLoading) {
@@ -26,12 +17,7 @@ const InputSubjectPage = observer(() => {
   }, [nowLoading]);
 
   return (
-    <Background
-      title="주제를 입력하세요!"
-      input={input}
-      handleInput={handleInput}
-      handleSubmit={handleSubmit}
-    >
+    <Background title="주제를 입력하세요!">
       <img
         src={햇님}
         alt="sun"

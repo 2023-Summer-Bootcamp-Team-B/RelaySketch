@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // import AI이미지 from "../assets/images/AI이미지.svg";
@@ -8,16 +8,8 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const GuessImagePage = observer(() => {
-  const { myId, nowLoading, imgSrc, endGame, send } = WebsocketStore;
+  const { nowLoading, imgSrc, endGame } = WebsocketStore;
   const navigate = useNavigate();
-  const [input, setInput] = useState("");
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.currentTarget.value);
-  };
-  const handleSubmit = () => {
-    console.log("GuessImagePage에서 편집버튼 누름", input);
-    send({ event: "inputTitle", data: { title: input, playerId: myId } });
-  };
 
   useEffect(() => {
     if (nowLoading) {
@@ -30,12 +22,7 @@ const GuessImagePage = observer(() => {
   return (
     <div>
       <div>
-        <Background
-          title="이미지를 맞혀보세요!"
-          input={input}
-          handleInput={handleInput}
-          handleSubmit={handleSubmit}
-        >
+        <Background title="이미지를 맞혀보세요!">
           <img
             src={스케치북테두리}
             alt="sketchline"

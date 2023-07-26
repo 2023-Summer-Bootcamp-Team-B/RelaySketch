@@ -11,6 +11,10 @@ class WebsocketStore {
 
   total = 0;
 
+  input = "";
+
+  isEditing = false;
+
   playerList: any[] = [];
 
   completeNum = 0;
@@ -128,6 +132,38 @@ class WebsocketStore {
       }
     }
   };
+
+  sendDataToBackend(input: string, id: number) {
+    if (input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    const data = {
+      event: "inputTitle",
+      data: {
+        title: input,
+        playerId: id,
+      },
+    };
+    this.send(data);
+  }
+
+  sendChangeTitleEvent(input: string, id: number) {
+    if (input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    const data = {
+      event: "changeTitle",
+      data: {
+        title: input,
+        playerId: id,
+      },
+    };
+    this.send(data);
+  }
 }
 
 export default new WebsocketStore();
