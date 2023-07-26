@@ -13,7 +13,7 @@ RUN chmod +x /wait
 WORKDIR /backend
 
 # 파일 복사
-COPY Pipfile Pipfile.lock ./
+COPY Pipfile ./
 
 # pipenv 설치 및 의존성 설치
 RUN python -m pip install --upgrade pip
