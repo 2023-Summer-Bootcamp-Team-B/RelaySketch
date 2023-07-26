@@ -28,7 +28,7 @@ const PlayerRoomPage = observer(() => {
   ];
   const connect = useCallback(() => {
     console.log("Connecting to websocket");
-    WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
+    WebsocketStore.connect(`ws://localhost/ws/room/${param.id}/`);
   }, [param.id]);
   useEffect(() => {
     connect();
@@ -87,7 +87,7 @@ const PlayerRoomPage = observer(() => {
               </p>
               <div className="absolute bg-[#E7F5FF] z-39 h-[98%] w-[91%] top-2 left-2.5" />
             </div>
-          ),
+          )
         )}
         <button className="relative" type="button">
           <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">

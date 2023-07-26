@@ -31,6 +31,7 @@
     "@babel/plugin-proposal-decorators": "^7.22.7",
     "@babel/preset-env": "^7.22.9",
     "@types/lodash": "^4.14.195",
+    "@types/node": "^20.4.5",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.61.0",

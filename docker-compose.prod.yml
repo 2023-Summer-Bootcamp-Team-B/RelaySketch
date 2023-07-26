@@ -1,35 +1,16 @@
 version: "3"
 
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    restart: always # 컨테이너가 종료되면 항상 재시작
-    ports:
-      - "3307:3306" # 호스트의 3307 포트와 컨테이너의 3306 포트를 연결
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
-      TZ: Asia/Seoul # 타임존을 서울로 설정
-
   redis:
     image: redis:alpine
     container_name: redis
     command: redis-server --port 6379
-    hostname: redis
     restart: always
-    ports:
-      - "6379:6379"
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3.7.14-management-alpine # RabbitMQ 관리자 페이지를 사용하기 위해 alpine 버전 사용
+    image: rabbitmq:3.7.14-management-alpine
     restart: always
-    ports:
-      - "5672:5672" # RabbitMQ 서버 포트
-      - "15672:15672" # RabbitMQ 관리자 페이지 포트
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
@@ -37,23 +18,12 @@ services:
   django:
     container_name: django
     build:
-      context: ./backend # Docker 빌드 컨텍스트를 backend 폴더로 설정
-      dockerfile: Dockerfile # Dockerfile 경로
+      context: ./backend
+      dockerfile: Dockerfile.prod
     restart: always
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
-      - staticfiles:/backend/static # static 파일을 호스트와 컨테이너 간에 공유
     depends_on:
-      - mysql # mysql 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
-      - rabbitmq # rabbitmq 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
-      - redis # redis 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
-    logging:
-      driver: "json-file" # 로그 드라이버를 json-file로 설정
-      options:
-        max-size: "10m" # 로그 파일의 최대 크기를 10MB로 설정
-        max-file: "3" # 최대 3개의 로그 파일 보존
+      - rabbitmq
+      - redis
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
@@ -67,17 +37,16 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
     container_name: celery_worker
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     restart: always
-    ports: []
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
     depends_on:
       - django
       - rabbitmq
@@ -94,17 +63,16 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   celery_beat:
     container_name: celery_beat
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     restart: always
-    ports: []
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
     depends_on:
       - django
       - rabbitmq
@@ -122,39 +90,35 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
     container_name: frontend
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+      dockerfile: Dockerfile.prod
     depends_on:
-      - django # django 컨테이너가 실행되고 나서 frontend 컨테이너가 실행되도록 설정
+      - django
 
   nginx:
     container_name: nginx
     build:
       context: ./nginx
-      dockerfile: Dockerfile # Dockerfile 경로
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     depends_on:
-      - django # django 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
-      - frontend # frontend 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
+      - django
+      - frontend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
-      - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
+      - ./nginx/nginx.conf:/etc/nginx/nignx.conf
+      - staticfiles:/staticfiles
 
   prometheus:
     image: prom/prometheus
     container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/config:/etc/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     restart: always
@@ -164,8 +128,6 @@ services:
   influxdb:
     image: bitnami/influxdb:latest
     container_name: influxdb
-    ports:
-      - "8086:8086"
     environment:
       INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
       INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
@@ -179,7 +141,7 @@ services:
     environment:
       GF_INSTALL_PLUGINS: "grafana-clock-panel"
       GF_DATABASE_TYPE: "mysql"
-      GF_DATABASE_HOST: "mysql:3306"
+      GF_DATABASE_HOST: ${DB_HOST}
       GF_DATABASE_NAME: ${DB_DATABASE}
       GF_DATABASE_USER: ${DB_USERNAME}
       GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
