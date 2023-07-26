@@ -16,7 +16,7 @@ const MainPage = observer(() => {
 
   const handleClickConnect = async () => {
     try {
-      const res = await axios.post("http://localhost/api/add_room/");
+      const res = await axios.post("http://15.165.125.132/api/add_room/");
       navigate(`/playerroom/${res.data.result.room_id}`);
     } catch (err) {
       console.log(err);
