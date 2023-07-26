@@ -149,7 +149,7 @@ services:
     image: prom/prometheus
     container_name: prometheus
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./prometheus/config:/etc/prometheus
     command:
@@ -157,6 +157,18 @@ services:
     restart: always
     depends_on:
       - django
+
+  influxdb:
+    image: bitnami/influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+      - "8085:8088"
+    environment:
+      INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
+      INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+      INFLUXDB_DB: ${DB_DATABASE}
 
   grafana:
     container_name: grafana
