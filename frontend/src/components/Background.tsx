@@ -20,6 +20,10 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [input, setInput] = useState("");
   const [timer, setTimer] = useState(30);
   const timerDisplayRef = useRef<HTMLSpanElement>(null);
+  const [, setClickEditButton] = useState(false);
+  const [clickInputButton, setClickInputButton] = useState(true);
+  const [, setIsSendingChangeTitle] = useState(false);
+
   const { completeNum, total, myId } = WebsocketStore;
 
   useEffect(() => {
@@ -38,18 +42,19 @@ const Background = observer(({ children, title }: BackgroundProps) => {
     setInput(e.target.value);
   };
 
-  const handleButtonAClick = () => {
-    if (input.trim() === "") {
-      console.error("Invalid input data");
-      return;
-    }
+  const handleButtonClickA = () => {
+    setClickInputButton(false);
+    setClickEditButton(false);
+    setShowButtonB(true);
     WebsocketStore.sendDataToBackend(input, myId);
-    setShowButtonB(true); // Show the "B" button after "A" is clicked
-    console.log("Button A clicked!");
+    console.log("입력 버튼 클릭!");
   };
-  const handleButtonBClick = () => {
+
+  const handleButtonClickB = () => {
+    setIsSendingChangeTitle(true);
     WebsocketStore.sendChangeTitleEvent(input, myId);
-    console.log("Button B clicked!");
+    console.log("수정 버튼 클릭!");
+    setIsSendingChangeTitle(false); // Set isSendingChangeTitle to false immediately after sending the event
   };
 
   useEffect(() => {
@@ -138,32 +143,27 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             <img
               src={버튼테두리1}
               alt="buttonline"
-              className=" absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
+              className="absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
             />
-            <button
-              className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
-              type="submit"
-              onClick={handleButtonAClick}
-            >
-              A
-            </button>
-          </div>
-          {showButtonB && (
-            <div className=" relative w-[188px]">
-              <img
-                src={버튼테두리1}
-                alt="buttonline"
-                className=" absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
-              />
+            {clickInputButton ? (
               <button
                 className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
                 type="submit"
-                onClick={handleButtonBClick}
+                onClick={handleButtonClickA}
               >
-                B
+                입력
               </button>
-            </div>
-          )}
+            ) : null}
+            {showButtonB ? (
+              <button
+                className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
+                type="submit"
+                onClick={handleButtonClickB}
+              >
+                수정
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
