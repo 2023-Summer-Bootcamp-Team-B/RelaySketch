@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import GuessImagePage from "./pages/GuessImagePage";
-import InputSubjectPage from "./pages/InputSubjectPage";
+import InputTitlePage from "./pages/InputTitlePage";
 import LoadingPage from "./pages/LoadingPage";
 import MainPage from "./pages/MainPage";
 import PlayerRoomPage from "./pages/PlayerRoomPage";
@@ -16,7 +16,7 @@ function App() {
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/guess" element={<GuessImagePage />} />
-        <Route path="/input" element={<InputSubjectPage />} />
+        <Route path="/input" element={<InputTitlePage />} />
       </Routes>
     </Router>
   );
