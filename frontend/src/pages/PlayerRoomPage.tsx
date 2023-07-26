@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -11,12 +12,12 @@ import cloud3 from "../assets/images/구름3.svg";
 import WebsocketStore from "../stores/WebsocketStore";
 
 type ArrType = { id: number; empty: boolean };
-
-function PlayerRoomPage() {
+const PlayerRoomPage = observer(() => {
   console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
   const param = useParams();
-  const { send, error } = WebsocketStore;
+  const { round, send, error } = WebsocketStore;
+  const prevRound = 0;
   const arr1 = [
     { id: 1, empty: false },
     { id: 2, empty: false },
@@ -25,27 +26,29 @@ function PlayerRoomPage() {
     { id: 5, empty: false },
     { id: 6, empty: true },
   ];
-
   const connect = useCallback(() => {
     console.log("Connecting to websocket");
     WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
   }, [param.id]);
-
   useEffect(() => {
     connect();
   }, []);
-
+  useEffect(() => {
+    if (prevRound !== round) {
+      navigate("/input");
+    }
+  }, [round]);
   const [, setContent] = useState("클릭하여 내용을 편집하세요.");
-
   const handleContentChange = (event: any) => {
     setContent(event.target.textContent);
     send(event.target.textContent);
   };
-
+  const gameStart = () => {
+    send({ event: "startGame", data: "게임 시작" });
+  };
   if (error) {
     navigate("/");
   }
-
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
       <img src={sketch} alt="sketch" className="absolute z-10 pb-[60px]" />
@@ -86,7 +89,6 @@ function PlayerRoomPage() {
             </div>
           ),
         )}
-
         <button className="relative" type="button">
           <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">
             <img
@@ -105,28 +107,24 @@ function PlayerRoomPage() {
             <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
-
-        <button className="relative" type="button">
+        <button className="relative" type="button" onClick={gameStart}>
           <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
             <img
               src={small_border}
               alt="small_border"
               className="absolute z-30 w-full h-auto"
             />
-
             <img
               src={play}
               alt=""
               className="absolute z-30 mt-1 ml-2 left-0 w-[60px] h-auto"
             />
-
             <p className="absolute z-30  ml-[50px] font-hs text-[40px]">
               Start
             </p>
             <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
-
         <div className="">
           <img
             src={cloud1}
@@ -134,7 +132,6 @@ function PlayerRoomPage() {
             className="absolute z-0 bottom-96 w-96 right-[200px] animate-slider_left"
           />
         </div>
-
         <div>
           <img
             src={cloud3}
@@ -142,7 +139,6 @@ function PlayerRoomPage() {
             className="absolute z-0 top-10 right-[200px] animate-slider_left_invisible"
           />
         </div>
-
         <div>
           <img
             src={cloud1}
@@ -150,7 +146,6 @@ function PlayerRoomPage() {
             className="absolute z-0 left-[200px] bottom animate-slider_right"
           />
         </div>
-
         <div>
           <img
             src={cloud2}
@@ -161,6 +156,5 @@ function PlayerRoomPage() {
       </div>
     </div>
   );
-}
-
+});
 export default PlayerRoomPage;

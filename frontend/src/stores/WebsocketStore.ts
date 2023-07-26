@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 
 class WebsocketStore {
   ws: WebSocket | null = null;
@@ -6,6 +6,20 @@ class WebsocketStore {
   pingIntervalId: NodeJS.Timeout | null = null;
 
   messages: any[] = [];
+
+  isEditing = false;
+
+  completeNum = 0;
+
+  input = "";
+
+  total = 0; // 총 플레이어 수
+
+  myId = 0;
+
+  round = 0;
+
+  imgSrc = "";
 
   error: string | null = null;
 
@@ -17,19 +31,29 @@ class WebsocketStore {
     this.ws = new WebSocket(url);
 
     this.ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      runInAction(() => {
+        const message = JSON.parse(event.data);
 
-      console.log(message);
+        console.log(message);
 
-      if (message.event === "ping") {
-        this.send({ event: "pong", data: "pong" });
-      }
+        if (message.event === "ping") {
+          this.send({ event: "pong", data: "pong" });
+        } else if (message.event === "renewList") {
+          this.total = message.data.players.length;
+        } else if (message.event === "completeUpdate") {
+          this.completeNum = message.data.completeNum;
+        } else if (message.event === "connected") {
+          this.myId = message.data.playerId;
+        } else if (message.event === "gameStart") {
+          this.round = message.round;
 
-      if (message.error === "방이 가득 찼습니다.") {
-        this.error = message.error;
-      }
+          if (message.error === "방이 가득 찼습니다.") {
+            this.error = message.error;
+          }
 
-      this.messages.push(message);
+          this.messages.push(message);
+        }
+      });
     };
 
     this.ws.onopen = () => {
@@ -72,6 +96,38 @@ class WebsocketStore {
       }
     }
   };
+
+  sendDataToBackend(input: string, id: number) {
+    if (input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    const data = {
+      event: "inputTitle",
+      data: {
+        title: input,
+        playerId: id,
+      },
+    };
+    this.send(data);
+  }
+
+  sendChangeTitleEvent(input: string, id: number) {
+    if (input.trim() === "") {
+      console.error("Invalid input data");
+      return;
+    }
+
+    const data = {
+      event: "changeTitle",
+      data: {
+        title: input,
+        playerId: id,
+      },
+    };
+    this.send(data);
+  }
 }
 
 export default new WebsocketStore();

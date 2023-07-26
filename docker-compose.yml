@@ -62,6 +62,10 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
     command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -84,6 +88,10 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   celery_beat:
@@ -107,8 +115,11 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
-
 
   frontend:
     container_name: frontend
@@ -131,21 +142,33 @@ services:
       - django # django 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
       - frontend # frontend 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
     volumes:
-      - ./nginx:/etc/nginx/conf.d # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
 
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./prometheus/config:/etc/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--config.file=/etc/prometheus/prometheus.yml"
     restart: always
     depends_on:
       - django
+
+  influxdb:
+    image: bitnami/influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+      - "8085:8088"
+    environment:
+      INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
+      INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+      INFLUXDB_DB: ${DB_DATABASE}
 
   grafana:
     container_name: grafana
@@ -170,5 +193,5 @@ services:
         max-file: "10"
 
 volumes:
-  staticfiles:
+  staticfiles: {}
   grafana-data: {}
