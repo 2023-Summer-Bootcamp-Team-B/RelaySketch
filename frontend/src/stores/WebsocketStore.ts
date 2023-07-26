@@ -70,6 +70,10 @@ class WebsocketStore {
         } else if (message.event === "end") {
           this.endGame = true;
           this.nowLoading = false;
+          this.currentIdx = 0;
+          this.nameOfCurrentResult = "";
+          this.round = 0;
+          this.completeNum = 0;
         } else if (message.event === "gameResult") {
           this.currentIdx += 1;
           this.gameResult = message.data.game_result;
