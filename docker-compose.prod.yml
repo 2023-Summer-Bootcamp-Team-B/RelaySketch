@@ -17,9 +17,7 @@ services:
 
   django:
     container_name: django
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    image: maaayreel/relaysketch-backend:latest
     restart: always
     depends_on:
       - rabbitmq
@@ -43,9 +41,7 @@ services:
 
   celery_worker:
     container_name: celery_worker
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    image: maaayreel/relaysketch-backend:latest
     restart: always
     depends_on:
       - django
@@ -69,9 +65,7 @@ services:
 
   celery_beat:
     container_name: celery_beat
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    image: maaayreel/relaysketch-backend:latest
     restart: always
     depends_on:
       - django
@@ -96,17 +90,13 @@ services:
 
   frontend:
     container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+    image: maaayreel/relaysketch-frontend:latest
     depends_on:
       - django
 
   nginx:
     container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
+    image: maaayreel/relaysketch-nginx:latest
     ports:
       - "80:80"
     depends_on:
@@ -126,7 +116,7 @@ services:
       - django
 
   influxdb:
-    image: bitnami/influxdb:latest
+    image: bitnami/influxdb:2.7.1
     container_name: influxdb
     environment:
       INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}

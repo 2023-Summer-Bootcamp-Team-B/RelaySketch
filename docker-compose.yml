@@ -162,7 +162,7 @@ services:
       - django
 
   influxdb:
-    image: bitnami/influxdb:latest
+    image: bitnami/influxdb:2.7.1
     container_name: influxdb
     ports:
       - "8086:8086"
