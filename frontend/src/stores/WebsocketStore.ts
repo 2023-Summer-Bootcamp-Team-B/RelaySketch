@@ -45,20 +45,15 @@ class WebsocketStore {
         } else if (message.event === "renewList") {
           this.players = message.data.players;
           this.total = this.players.length;
-          for (let i = 0; i < this.total; i++) {
+          for (let i = 0; i < this.total; i += 1) {
             if (this.players[i].isHost) {
               this.hostId = this.players[i].player_id;
             }
-            console.log("유저 접속 완료\n" + this.players[i].player_id);
           }
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
-          console.log("지금 현재 내아이디" + this.myId);
-          console.log("지금 현재 인원수" + this.total);
         } else if (message.event === "completeUpdate") {
           this.completeNum = message.data.completeNum;
-        } else if (message.event === "connected") {
-          this.myId = message.data.playerId;
         } else if (message.event === "gameStart") {
           this.round = message.round;
 

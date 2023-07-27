@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+/* eslint-disable no-param-reassign */
+import { observer } from "mobx-react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { observer } from "mobx-react";
+import crown from "../assets/images/crown.png";
 import invite from "../assets/images/invite_link.svg";
 import play from "../assets/images/play.svg";
 import sketch from "../assets/images/sketch_book_white.svg";
@@ -9,10 +11,7 @@ import small_border from "../assets/images/small_box_border.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
 import cloud3 from "../assets/images/구름3.svg";
-import crown from "../assets/images/crown.png";
-import WebsocketStore from "../stores/WebsocketStore.ts";
-import sun from "../assets/images/sun.svg";
-import { delay } from "lodash";
+import WebsocketStore from "../stores/WebsocketStore";
 
 type ArrType = {
   index: number;
@@ -28,10 +27,10 @@ const PlayerRoomPage = observer(() => {
   const navigate = useNavigate();
   const param = useParams();
   const { send, error } = WebsocketStore;
-  const [isModal_E_Open, setIsModal_E_Open] = useState(false);
-  //const [isModal_C_Open, setIsModal_C_Open] = useState(true);
-  const [value_length_state, set_value_State] = useState("");
-  const [hint_state, set_hint_State] = useState("");
+  const [IsmodalEOpen, SetismodalEOpen] = useState(false);
+  // const [isModal_C_Open, setIsModal_C_Open] = useState(true);
+  const [ValueLengthState, SetValueState] = useState("");
+  const [HintState, SetHintState] = useState("");
   const prevRound = 0;
 
   const roomstate = [
@@ -43,26 +42,22 @@ const PlayerRoomPage = observer(() => {
     { index: 6, empty: true, playerId: 0, playerName: "" },
   ];
 
-  const defaultName = (myId: number) => {
-    return (
-      "플레이어 " +
-      roomstate[roomstate.findIndex((item) => item.playerId === myId)].index
-    );
-  };
+  const defaultName = (Id: number) =>
+    `플레이어 ${
+      roomstate[roomstate.findIndex((item) => item.playerId === Id)].index
+    }`;
 
-  const Modal_TextError = () => {
-    return (
-      <div className="fixed top-5  z-30 ">
-        <div className="modal-content w-[500px] h-[100px] bg-white flex items-center justify-center rounded-full border-4 border-[#020202] opacity-90">
-          <p className="font-hs text-3xl text-center">
-            {value_length_state}!
-            <br />
-            {hint_state}
-          </p>
-        </div>
+  const ModalTextError = () => (
+    <div className="fixed top-5  z-30 ">
+      <div className="modal-content w-[500px] h-[100px] bg-white flex items-center justify-center rounded-full border-4 border-[#020202] opacity-90">
+        <p className="font-hs text-3xl text-center">
+          {ValueLengthState}!
+          <br />
+          {HintState}
+        </p>
       </div>
-    );
-  };
+    </div>
+  );
   /*
   const Modal_Copy_Link = () => {
     return (
@@ -78,21 +73,20 @@ const PlayerRoomPage = observer(() => {
         </div>
       </div>
     );
-  };*/
+  }; */
 
   const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     const name = defaultName(myId);
 
     if (inputValue.length <= 2 || inputValue.length >= 9) {
-      setIsModal_E_Open(false);
+      SetismodalEOpen(false);
       event.target.value = name;
 
       send({
         event: "nameChanged",
-        data: { playerId: myId, name: name },
+        data: { playerId: myId, name },
       });
-      return;
     } else {
       send({
         event: "nameChanged",
@@ -114,25 +108,26 @@ const PlayerRoomPage = observer(() => {
     navigator.clipboard
       .writeText(currentUrl)
       .then(() => {
-        set_value_State("Link Copied!");
-        set_hint_State("");
-        setIsModal_E_Open(true);
+        SetValueState("Link Copied!");
+        SetHintState("");
+        SetismodalEOpen(true);
         setTimeout(() => {
-          setIsModal_E_Open(false);
+          SetismodalEOpen(false);
         }, 3000);
       })
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       .catch((error) => {
         console.error("Failed to copy link: ", error);
       });
   };
 
-  for (let i = 0; i < total; i++) {
-    console.log("방장님 id: " + hostId);
+  for (let i = 0; i < total; i += 1) {
+    console.log(`방장님 id: ${hostId}`);
     roomstate[i].empty = false;
     roomstate[i].playerId = player[i].player_id;
     roomstate[i].playerName = player[i].name;
-    console.log(`${i}번째 아이디: ` + roomstate[i].playerId);
-    console.log(`${i}번째 이름: ` + roomstate[i].playerName);
+    console.log(`${i}번째 아이디: ${roomstate[i].playerId}`);
+    console.log(`${i}번째 이름: ${roomstate[i].playerName}`);
   }
 
   const connect = useCallback(() => {
@@ -154,29 +149,30 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
-        ) != -1
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
+        ) !== -1
       ) {
-        set_value_State("This text is too Many");
-        set_hint_State("name can`t be duplicated");
-        setIsModal_E_Open(true);
+        SetValueState("This text is too Many");
+        SetHintState("name can`t be duplicated");
+        SetismodalEOpen(true);
         return;
       }
 
       if (inputValue.length <= 2) {
-        set_value_State("This text is too Short");
-        set_hint_State("need 2~8 char");
-        setIsModal_E_Open(true);
+        SetValueState("This text is too Short");
+        SetHintState("need 2~8 char");
+        SetismodalEOpen(true);
 
         return;
-      } else if (inputValue.length >= 9) {
-        set_value_State("This text is too Long");
-        setIsModal_E_Open(true);
-        set_hint_State("need 2~8 char");
+      }
+      if (inputValue.length >= 9) {
+        SetValueState("This text is too Long");
+        SetismodalEOpen(true);
+        SetHintState("need 2~8 char");
         return;
       }
 
-      setIsModal_E_Open(false);
+      SetismodalEOpen(false);
 
       send({
         event: "nameChanged",
@@ -186,9 +182,7 @@ const PlayerRoomPage = observer(() => {
       event.target.blur(); // 마지막으로 더이상 값을 입력받지 못하게 종료합니다.
     }
   };
-  const gameStart = () => {
-    send({ event: "startGame", data: "게임 시작" });
-  };
+  
   if (error) {
     navigate("/");
   }
@@ -222,7 +216,7 @@ const PlayerRoomPage = observer(() => {
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
-              {x.playerId == hostId && (
+              {x.playerId === hostId && (
                 <img
                   src={crown}
                   alt="room owner"
@@ -231,7 +225,7 @@ const PlayerRoomPage = observer(() => {
               )}
 
               <div className="absolute z-30  ml-[12px] mt-[9px] font-hs text-[40px]">
-                {x.playerId == myId ? (
+                {x.playerId === myId ? (
                   <input
                     className="absolute z-29 w-[272px] h-[94px] bg-[#7EC8FF]  mt-[1px] text-center  rounded-[5px] ring-2 ring-black border-2 border-[#010101]"
                     defaultValue={x.playerName}
@@ -245,13 +239,14 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
-        <button className="relative" type="button">
-          <div
-            className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]"
-            onClick={handleCopyLinkToClipboard}
-          >
+        <button
+          className="relative"
+          type="button"
+          onClick={handleCopyLinkToClipboard}
+        >
+          <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">
             <img
               src={small_border}
               alt="small_border"
@@ -269,8 +264,8 @@ const PlayerRoomPage = observer(() => {
           </div>
         </button>
 
-        {myId == hostId ? (
-          <button className="relative" type="button">
+        {myId === hostId ? (
+          <button className="relative" type="button" onClick={handlePlay}>
             <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
               <img
                 src={small_border}
@@ -280,7 +275,6 @@ const PlayerRoomPage = observer(() => {
 
               <img
                 src={play}
-                onClick={handlePlay}
                 alt="play button"
                 className="absolute z-30 mt-1 ml-2 left-0 w-[60px] h-auto"
               />
@@ -338,8 +332,8 @@ const PlayerRoomPage = observer(() => {
         </div>
       </div>
       {
-        isModal_E_Open && <Modal_TextError /> /*||
-        (isModal_C_Open && <Modal_Copy_Link />)*/
+        IsmodalEOpen && <ModalTextError /> /* ||
+        (isModal_C_Open && <Modal_Copy_Link />) */
       }
     </div>
   );

@@ -8,7 +8,7 @@ import sketch from "../assets/images/sketch_book_white.svg";
 import sun from "../assets/images/sun.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
-import WebsocketStore from "../stores/WebsocketStore.ts";
+import WebsocketStore from "../stores/WebsocketStore";
 
 const MainPage = observer(() => {
   const { disconnect } = WebsocketStore;
