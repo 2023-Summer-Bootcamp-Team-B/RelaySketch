@@ -24,7 +24,7 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [clickInputButton, setClickInputButton] = useState(true);
   const [, setIsSendingChangeTitle] = useState(false);
 
-  const { completeNum, total, myId } = WebsocketStore;
+  const { completeNum, round, total, myId, send } = WebsocketStore;
 
   useEffect(() => {
     if (timerDisplayRef.current) {
@@ -35,6 +35,13 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const onTimerEnd = () => {
     console.log("Timer ended! Perform your specific event here.");
     // 0초가 됐을 때 강제 라운드 변경 이벤트
+    send({
+      event: "inputTitle",
+      data: {
+        title: "스폰지밥",
+        playerId: myId,
+      },
+    });
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +87,9 @@ const Background = observer(({ children, title }: BackgroundProps) => {
       transform"
       >
         <div className="flex pt-10 relative">
-          <span className="text-[82px] ">1/4</span>
+          <span className="text-[82px] ">
+            {round}/{total}
+          </span>
           <span className="text-[56px] mx-auto mt-3 pl-12 absolute ml-[230px]">
             {title}
           </span>

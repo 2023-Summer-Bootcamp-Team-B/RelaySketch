@@ -7,9 +7,7 @@ class WebsocketStore {
 
   messages: any[] = [];
 
-  isEditing = false;
-
-  completeNum = 0;
+  round = 0;
 
   input = "";
 
@@ -17,11 +15,21 @@ class WebsocketStore {
 
   total = 0; // 총 플레이어 수
 
-  myId = 0;
+  completeNum = 0;
 
-  round = 0;
+  nowLoading = false;
+
+  myId = -1;
 
   imgSrc = "";
+
+  endGame = false;
+
+  gameResult: any[] = [];
+
+  currentIdx = 0;
+
+  nameOfCurrentResult = "";
 
   players = <any>[];
 
@@ -42,6 +50,8 @@ class WebsocketStore {
 
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
+        } else if (message.event === "connected") {
+          this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
           this.players = message.data.players;
           this.total = this.players.length;
@@ -50,19 +60,37 @@ class WebsocketStore {
               this.hostId = this.players[i].player_id;
             }
           }
-        } else if (message.event === "connected") {
-          this.myId = message.data.playerId;
+        } else if (message.event === "gameStart") {
+          this.endGame = false;
+          this.gameResult = [];
+          this.round = message.round;
         } else if (message.event === "completeUpdate") {
           this.completeNum = message.data.completeNum;
-        } else if (message.event === "gameStart") {
-          this.round = message.round;
-
-          if (message.error === "방이 가득 찼습니다.") {
-            this.error = message.error;
-          }
-
-          this.messages.push(message);
+        } else if (message.event === "loading_and_url") {
+          this.nowLoading = true;
+        } else if (message.event === "moveNextRound") {
+          this.round = message.data.round;
+          this.imgSrc = message.data.url;
+          this.nowLoading = false;
+          this.completeNum = 0;
+        } else if (message.event === "end") {
+          this.endGame = true;
+          this.nowLoading = false;
+          this.currentIdx = 0;
+          this.nameOfCurrentResult = "";
+          this.round = 0;
+          this.completeNum = 0;
+        } else if (message.event === "gameResult") {
+          this.currentIdx += 1;
+          this.gameResult = message.data.game_result;
+          this.nameOfCurrentResult = message.data.game_result[0].player_name;
         }
+
+        if (message.error === "방이 가득 찼습니다.") {
+          this.error = message.error;
+        }
+
+        this.messages.push(message);
       });
     };
 
