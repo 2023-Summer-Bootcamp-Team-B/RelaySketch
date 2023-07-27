@@ -154,7 +154,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue
+          (item) => !(item.playerId === myId) && item.playerName === inputValue,
         ) != -1
       ) {
         set_value_State("This text is too Many");
@@ -245,7 +245,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          )
+          ),
         )}
         <button className="relative" type="button">
           <div
