@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import axios from "axios";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
@@ -25,16 +26,17 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
   const navigate = useNavigate();
-  const imgUrlList: string[] = gameResult.map((result) => result.img);
+  const imgUrlList = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
 
-  const newGameHandler = async () => {
+  const newGameHandler = () => {
     navigate("/");
   };
 
-  const downloadHandler = () => {
-    Object.entries(imgUrlList).forEach(async ([i, imgUrl]) => {
-      await axios({
+  const downloadHandler = async () => {
+    const promises: Promise<any>[] = [];
+    Object.entries(imgUrlList).forEach(([i, imgUrl]) => {
+      const promise = axios({
         url: imgUrl,
         method: "GET",
         responseType: "arraybuffer",
@@ -47,7 +49,11 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
         .catch((err) => {
           console.log(err);
         });
+
+      promises.push(promise);
     });
+
+    await Promise.all(promises);
     zip
       .generateAsync({ type: "blob" })
       .then((content) => saveAs(content, "images.zip"));
@@ -67,7 +73,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   useEffect(() => {
     setTimeout(() => {
       setHidden(false);
-    }, index * 3000);
+    }, index * 2000);
   }, [gameResult]);
 
   useEffect(() => {

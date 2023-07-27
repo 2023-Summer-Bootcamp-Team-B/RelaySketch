@@ -71,7 +71,7 @@ const MainPage = observer(() => {
 
             <div className="absolute inset-0 flex items-center justify-center duration-75 transform translate-y-[180px] scale-1 z-2 animate-pulse">
               <span className="text-[40px] font-hs mb-3 whitespace-nowrap">
-                PRESS ANY BUTTON TO PLAY
+                시작하려면 아무 곳이나 클릭하세요
               </span>
             </div>
           </div>
