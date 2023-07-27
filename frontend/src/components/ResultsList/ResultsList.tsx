@@ -10,7 +10,7 @@ const ResultsList = observer(() => {
   const {
     myId,
     hostId,
-    playerList,
+    players,
     gameResult,
     currentIdx,
     nameOfCurrentResult,
@@ -18,7 +18,7 @@ const ResultsList = observer(() => {
   } = WebsocketStore;
 
   const showResultHandler = () => {
-    const id = playerList[currentIdx].player_id;
+    const id = players[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
 
@@ -49,7 +49,7 @@ const ResultsList = observer(() => {
         )}
         {/* 방장이 아니면 일반 메시지를 띄움 */}
         {gameResult.length === 0 && myId !== hostId && (
-          <div className="h-auto border-dashed border-2 border-black rounded-[25px] w-fit h-[8vh] p-8 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
+          <div className="h-auto border-dashed border-2 border-black rounded-[25px] w-fit p-8 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
             <span className="text-xl md:text-2xl xl:text-3xl 2xl:text-4xl">
               결과 보기를
               <br />

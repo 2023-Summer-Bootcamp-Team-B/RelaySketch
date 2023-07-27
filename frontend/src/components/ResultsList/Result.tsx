@@ -20,7 +20,7 @@ type ResultPropsType = {
 };
 
 const Result = observer(({ name, title, image, index }: ResultPropsType) => {
-  const { gameResult, total, currentIdx, myId, hostId, playerList, send } =
+  const { gameResult, total, currentIdx, myId, hostId, players, send } =
     WebsocketStore;
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
@@ -54,7 +54,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   };
 
   const showResultHandler = () => {
-    const id = playerList[currentIdx].player_id;
+    const id = players[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
 

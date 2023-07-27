@@ -9,19 +9,11 @@ class WebsocketStore {
 
   round = 0;
 
-  total = 0;
-
   input = "";
 
-<<<<<<< HEAD
-  isEditing = false;
-=======
   hostId = 0;
 
   total = 0; // 총 플레이어 수
->>>>>>> c7a9b58b39ee84504bb9d38d05d3c4ecc32c1b83
-
-  playerList: any[] = [];
 
   completeNum = 0;
 
@@ -29,11 +21,8 @@ class WebsocketStore {
 
   myId = -1;
 
-  hostId = -1;
-
   imgSrc = "";
 
-<<<<<<< HEAD
   endGame = false;
 
   gameResult: any[] = [];
@@ -41,9 +30,8 @@ class WebsocketStore {
   currentIdx = 0;
 
   nameOfCurrentResult = "";
-=======
+
   players = <any>[];
->>>>>>> c7a9b58b39ee84504bb9d38d05d3c4ecc32c1b83
 
   error: string | null = null;
 
@@ -62,14 +50,8 @@ class WebsocketStore {
 
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
-<<<<<<< HEAD
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
-        } else if (message.event === "renewList") {
-          this.total = message.data.players.length;
-          this.playerList = message.data.players;
-          this.hostId = message.data.players[0].player_id;
-=======
         } else if (message.event === "renewList") {
           this.players = message.data.players;
           this.total = this.players.length;
@@ -78,11 +60,6 @@ class WebsocketStore {
               this.hostId = this.players[i].player_id;
             }
           }
-        } else if (message.event === "connected") {
-          this.myId = message.data.playerId;
-        } else if (message.event === "completeUpdate") {
-          this.completeNum = message.data.completeNum;
->>>>>>> c7a9b58b39ee84504bb9d38d05d3c4ecc32c1b83
         } else if (message.event === "gameStart") {
           this.endGame = false;
           this.gameResult = [];
