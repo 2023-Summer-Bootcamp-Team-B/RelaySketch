@@ -58,22 +58,6 @@ const PlayerRoomPage = observer(() => {
       </div>
     </div>
   );
-  /*
-  const Modal_Copy_Link = () => {
-    return (
-      <div className="fixed w-auto h-auto flex items-center justify-center z-50 animate-bounce_x ">
-        <div className="fixed -left-[500px] top-1/2 ">
-          <div className="modal-content w-[250px] h-[100px] bg-white flex items-center justify-center rounded-full">
-            <img
-              src={sun}
-              className="absolute animate-wiggle w-1/3 h-auto  mr-[180px] mb-[70px]"
-            ></img>
-            <p className="absoulte font-hs text-3xl  ">Link Copied</p>
-          </div>
-        </div>
-      </div>
-    );
-  }; */
 
   const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
@@ -182,7 +166,7 @@ const PlayerRoomPage = observer(() => {
       event.target.blur(); // 마지막으로 더이상 값을 입력받지 못하게 종료합니다.
     }
   };
-  
+
   if (error) {
     navigate("/");
   }
