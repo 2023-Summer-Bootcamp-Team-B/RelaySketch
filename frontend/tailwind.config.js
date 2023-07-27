@@ -58,11 +58,24 @@ export default {
             transform: "translateX(1000px)",
           },
           "50%": {
-            transform: "translateX(-1400px)",
+            transform: "translateX(-700px)",
           },
           "100%": {
             transform: "translateX(1000px)",
           },
+        },
+
+        bounce_x: {
+          "0%": {
+            transform: "translateX(-600px)",
+            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)",
+          },
+          "50%": {
+            transform: "translateX(-200px)",
+            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
+          },
+
+          "100%": {},
         },
       },
       animation: {
@@ -73,8 +86,8 @@ export default {
         slider_right: "slider_right 120s linear infinite",
         slider_left_fast: "slider_left 60s linear infinite",
         slider_left_invisible: "slider_left_invisible 60s linear infinite",
+        bounce_x: "bounce_x 10s linear infinite ",
         wiggle: "wiggle 3s linear infinite",
-        crayon: ["crayon", "sans-serif"],
       },
     },
   },
