@@ -30,15 +30,19 @@ const PlayerRoomPage = observer(() => {
     console.log("Connecting to websocket");
     WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
   }, [param.id]);
+
   useEffect(() => {
     connect();
   }, []);
+
   useEffect(() => {
     if (prevRound !== round) {
       navigate("/input");
     }
   }, [round]);
+
   const [, setContent] = useState("클릭하여 내용을 편집하세요.");
+
   const handleContentChange = (event: any) => {
     setContent(event.target.textContent);
     send(event.target.textContent);
@@ -51,6 +55,7 @@ const PlayerRoomPage = observer(() => {
   if (error) {
     navigate("/");
   }
+
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
       <img src={sketch} alt="sketch" className="absolute z-10 pb-[60px]" />

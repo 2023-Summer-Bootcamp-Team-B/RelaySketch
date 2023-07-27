@@ -26,6 +26,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   const zip = new JSZip();
   const navigate = useNavigate();
   const imgUrlList = gameResult.map((result) => result.img);
+  const count = gameResult.length - 1;
 
   const newGameHandler = async () => {
     navigate("/");
@@ -68,7 +69,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   useEffect(() => {
     setTimeout(() => {
       setHidden(false);
-    }, index * 5000);
+    }, index * 3000);
   }, [gameResult]);
 
   useEffect(() => {
@@ -103,7 +104,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
             </div>
           </div>
           {/* 마지막 결과가 아닌 경우 */}
-          {currentIdx !== total && index === total - 1 && (
+          {currentIdx !== total && index === count && (
             <div className=" flex items-center justify-center">
               <Button
                 type="button"
@@ -134,7 +135,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
             </div>
           )}
           {/* 마지막 결과인 경우 */}
-          {currentIdx === total && index === total - 1 && (
+          {currentIdx === total && index === count && (
             <div className=" flex items-center justify-center">
               <Button
                 type="button"

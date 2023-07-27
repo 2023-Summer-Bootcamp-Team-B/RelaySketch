@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// import AI이미지 from "../assets/images/AI이미지.svg";
 import 스케치북테두리 from "../assets/images/스케치북테두리.svg";
 import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
