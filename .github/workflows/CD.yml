@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "./grafana/grafana.ini"
+          source: "grafana.ini"
           target: "compose/grafana"
 
       - name: Copy docker-compose.prod.yml to EC2
