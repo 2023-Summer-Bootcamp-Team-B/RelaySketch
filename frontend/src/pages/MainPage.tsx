@@ -13,7 +13,6 @@ import WebsocketStore from "../stores/WebsocketStore";
 const MainPage = observer(() => {
   const { disconnect } = WebsocketStore;
   const navigate = useNavigate();
-
   const handleClickConnect = async () => {
     try {
       const res = await axios.post("http://localhost:8000/api/add_room/");
@@ -22,24 +21,6 @@ const MainPage = observer(() => {
       console.log(err);
     }
   };
-
-  // useEffect(() => {
-  //   const handleKeyDown = debounce(async () => {
-  //     try {
-  //       disconnect();
-  //       const res = await axios.post("http://localhost:8000/api/add_room/");
-  //       navigate(`/playerroom/${res.data.result.room_id}`);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   }, 100);
-
-  //   document.addEventListener("keydown", handleKeyDown);
-
-  //   return () => {
-  //     document.removeEventListener("keydown", handleKeyDown);
-  //   };
-  // }, []);
 
   useEffect(() => {
     debounce(async () => {

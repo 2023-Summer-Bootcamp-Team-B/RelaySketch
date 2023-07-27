@@ -13,6 +13,8 @@ class WebsocketStore {
 
   input = "";
 
+  hostId = 0;
+
   total = 0; // 총 플레이어 수
 
   myId = 0;
@@ -20,6 +22,8 @@ class WebsocketStore {
   round = 0;
 
   imgSrc = "";
+
+  players = <any>[];
 
   error: string | null = null;
 
@@ -39,11 +43,17 @@ class WebsocketStore {
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
         } else if (message.event === "renewList") {
-          this.total = message.data.players.length;
-        } else if (message.event === "completeUpdate") {
-          this.completeNum = message.data.completeNum;
+          this.players = message.data.players;
+          this.total = this.players.length;
+          for (let i = 0; i < this.total; i += 1) {
+            if (this.players[i].isHost) {
+              this.hostId = this.players[i].player_id;
+            }
+          }
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
+        } else if (message.event === "completeUpdate") {
+          this.completeNum = message.data.completeNum;
         } else if (message.event === "gameStart") {
           this.round = message.round;
 
