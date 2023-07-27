@@ -1,6 +1,6 @@
 type TitlePropsType = {
   className?: string;
-  children: JSX.Element | string;
+  children: JSX.Element | string | string[];
 };
 
 const Title = ({ className, children }: TitlePropsType) => (

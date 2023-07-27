@@ -14,8 +14,8 @@ export default {
           to: { "margin-top": "-3rem" },
         },
         tilting: {
-          from: { transform: "rotate(-35deg)" },
-          to: { transform: "rotate(15deg)" },
+          from: { transform: "rotate(-30deg)" },
+          to: { transform: "rotate(5deg)" },
         },
 
         handwriting: {

@@ -117,9 +117,11 @@ const PlayerRoomPage = observer(() => {
     console.log("Connecting to websocket");
     WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
   }, [param.id]);
+
   useEffect(() => {
     connect();
   }, []);
+
   useEffect(() => {
     if (prevRound !== round) {
       navigate("/input");
@@ -169,6 +171,7 @@ const PlayerRoomPage = observer(() => {
   if (error) {
     navigate("/");
   }
+
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
       <img src={sketch} alt="sketch" className="absolute z-10 pb-[60px]" />
