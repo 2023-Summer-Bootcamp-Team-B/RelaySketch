@@ -62,7 +62,7 @@ jobs:
           echo "AWS_S3_REGION_NAME=\"${{ secrets.AWS_S3_REGION_NAME }}\"" >> .env
 
       - name: Copy env file to EC2
-        uses: appleboy/scp-action@7af00892de6f8397c5c3393cfb3b32ae7f91b94b
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -72,14 +72,14 @@ jobs:
           target: "compose"
 
       - name: Copy docker-compose.prod.yml to EC2
-        uses: appleboy/scp-action@7af00892de6f8397c5c3393cfb3b32ae7f91b94b
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           source: "docker-compose.prod.yml"
-          target: "compose/docker-compose.yml"
+          target: "compose"
 
       - name: Deploy to EC2 Server
         uses: appleboy/ssh-action@master
@@ -90,11 +90,6 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
-            if [ -f .env ]; then
               docker-compose down
-              docker-compose pull
-              docker-compose up -d
-            else
-              echo ".env file does not exist"
-              exit 1
-            fi
+              docker-compose -f docker-compose.prod.yml pull
+              docker-compose -f docker-compose.prod.yml up -d
