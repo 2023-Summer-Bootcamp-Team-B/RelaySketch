@@ -1,20 +1,22 @@
+import { observer } from "mobx-react";
+
 import Player from "./Player";
+import WebsocketStore from "../../stores/WebsocketStore";
 
-type PlayerSet = {
-  name: string;
-  myTurn: boolean;
-};
+const PlayerList = observer(() => {
+  const { players, nameOfCurrentResult } = WebsocketStore;
 
-type PlayerListPropsType = {
-  players: PlayerSet[];
-};
-
-const PlayerList = ({ players }: PlayerListPropsType) => (
-  <ul className=" w-[16vw] h-[67vh] flex flex-col items-center text-lg md:text-2xl lg:text-3xl bg-[white] pt-[2vh] overflow-auto list-none">
-    {players.map((player: PlayerSet) => (
-      <Player name={player.name} turn={player.myTurn} key={player.name} />
-    ))}
-  </ul>
-);
+  return (
+    <ul className=" w-[16vw] h-[67vh] flex flex-col items-center text-lg md:text-2xl lg:text-3xl bg-[white] pt-[2vh] overflow-auto list-none">
+      {players.map((player: any) => (
+        <Player
+          name={player.name}
+          turn={player.name === nameOfCurrentResult}
+          key={player.player_id}
+        />
+      ))}
+    </ul>
+  );
+});
 
 export default PlayerList;

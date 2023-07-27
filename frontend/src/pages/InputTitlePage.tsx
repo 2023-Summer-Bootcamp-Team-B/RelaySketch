@@ -1,7 +1,21 @@
+import { observer } from "mobx-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import 햇님 from "../assets/images/햇님.svg";
 import Background from "../components/Background";
+import WebsocketStore from "../stores/WebsocketStore";
 
-function InputTitlePage() {
+const InputTitlePage = observer(() => {
+  const { nowLoading } = WebsocketStore;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (nowLoading) {
+      navigate("/loading");
+    }
+  }, [nowLoading]);
+
   return (
     <Background title="주제를 입력하세요!">
       <img
@@ -11,6 +25,6 @@ function InputTitlePage() {
       />
     </Background>
   );
-}
+});
 
 export default InputTitlePage;
