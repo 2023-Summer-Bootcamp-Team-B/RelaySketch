@@ -25,31 +25,29 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
   const navigate = useNavigate();
-  const imgUrlList = gameResult.map((result) => result.img);
+  const imgUrlList: string[] = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
 
   const newGameHandler = async () => {
     navigate("/");
   };
 
-  const downloadHandler = async () => {
-    // eslint-disable-next-line no-restricted-syntax, guard-for-in
-    for (const i in imgUrlList) {
-      // eslint-disable-next-line no-await-in-loop
+  const downloadHandler = () => {
+    Object.entries(imgUrlList).forEach(async ([i, imgUrl]) => {
       await axios({
-        url: imgUrlList[i],
+        url: imgUrl,
         method: "GET",
         responseType: "arraybuffer",
         withCredentials: false,
       })
-        .then(async ({ data }) => {
+        .then(({ data }) => {
           const fileName = `image_${i}.png`;
           zip.file(fileName, data, { binary: true });
         })
         .catch((err) => {
           console.log(err);
         });
-    }
+    });
     zip
       .generateAsync({ type: "blob" })
       .then((content) => saveAs(content, "images.zip"));
@@ -77,7 +75,6 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   }, [gameResult]);
 
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {!hidden && (
         <div ref={ref}>
@@ -164,6 +161,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
           )}
         </div>
       )}
+      <br />
     </>
   );
 });
