@@ -28,7 +28,6 @@ const PlayerRoomPage = observer(() => {
   const param = useParams();
   const { send, error } = WebsocketStore;
   const [IsmodalEOpen, SetismodalEOpen] = useState(false);
-  // const [isModal_C_Open, setIsModal_C_Open] = useState(true);
   const [ValueLengthState, SetValueState] = useState("");
   const [HintState, SetHintState] = useState("");
   const prevRound = 0;
@@ -163,7 +162,7 @@ const PlayerRoomPage = observer(() => {
         data: { playerId: myId, name: inputValue },
       });
 
-      event.target.blur(); // 마지막으로 더이상 값을 입력받지 못하게 종료합니다.
+      event.target.blur();
     }
   };
 
@@ -214,7 +213,7 @@ const PlayerRoomPage = observer(() => {
                     className="absolute z-29 w-[272px] h-[94px] bg-[#7EC8FF]  mt-[1px] text-center  rounded-[5px] ring-2 ring-black border-2 border-[#010101]"
                     defaultValue={x.playerName}
                     onKeyDown={handleInputKeyDown}
-                    onBlur={handleInputBlur} // onBlur 이벤트 핸들러 추가
+                    onBlur={handleInputBlur}
                   />
                 ) : (
                   <span className="absolute w-[271px] h-[95px] bg-[#E7F5FF] flex items-center justify-center">
@@ -315,10 +314,7 @@ const PlayerRoomPage = observer(() => {
           />
         </div>
       </div>
-      {
-        IsmodalEOpen && <ModalTextError /> /* ||
-        (isModal_C_Open && <Modal_Copy_Link />) */
-      }
+      {IsmodalEOpen && <ModalTextError />}
     </div>
   );
 });
