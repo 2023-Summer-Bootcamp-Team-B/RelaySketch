@@ -69,7 +69,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           source: ".env"
-          target: "/compose"
+          target: "compose"
 
       - name: Copy docker-compose.prod.yml to EC2
         uses: appleboy/scp-action@7af00892de6f8397c5c3393cfb3b32ae7f91b94b
@@ -79,7 +79,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           source: "docker-compose.prod.yml"
-          target: "/compose/docker-compose.yml"
+          target: "compose/docker-compose.yml"
 
       - name: Deploy to EC2 Server
         uses: appleboy/ssh-action@master
