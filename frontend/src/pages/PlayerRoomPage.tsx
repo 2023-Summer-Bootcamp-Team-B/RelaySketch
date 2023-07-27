@@ -152,8 +152,8 @@ const PlayerRoomPage = observer(() => {
       }
       if (inputValue.length >= 9) {
         SetValueState("This text is too Long");
-        SetismodalEOpen(true);
         SetHintState("need 2~8 char");
+        SetismodalEOpen(true);
         return;
       }
 
@@ -292,28 +292,28 @@ const PlayerRoomPage = observer(() => {
           <img
             src={cloud1}
             alt="cloud1"
-            className="absolute z-0 bottom-96 w-96 right-[200px] animate-slider_left"
+            className="absolute z-0 bottom-96 right-[200px] animate-slider_left w-[600px] h-auto"
           />
         </div>
         <div>
           <img
             src={cloud3}
             alt="cloud3"
-            className="absolute z-0 top-10 right-[200px] animate-slider_left_invisible"
+            className="absolute z-0 top-10 right-[200px] w-[300px] h-auto animate-slider_left_invisible"
           />
         </div>
         <div>
           <img
             src={cloud1}
             alt="cloud1"
-            className="absolute z-0 left-[200px] bottom animate-slider_right"
+            className="absolute z-0 left-[200px] w-[500px] h-auto bottom animate-slider_right"
           />
         </div>
         <div>
           <img
             src={cloud2}
             alt="cloud2"
-            className="absolute z-0 left-[200px] animate-slider_right"
+            className="absolute z-0 left-[200px] w-[300px] h-auto animate-slider_right"
           />
         </div>
       </div>
