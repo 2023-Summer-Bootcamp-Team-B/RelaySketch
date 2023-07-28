@@ -37,7 +37,7 @@ services:
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
+    command: sh -c "/wait && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
     container_name: celery_worker
