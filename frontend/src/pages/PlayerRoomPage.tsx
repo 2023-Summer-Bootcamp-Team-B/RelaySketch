@@ -7,6 +7,7 @@ import crown from "../assets/images/crown.png";
 import invite from "../assets/images/invite_link.svg";
 import play from "../assets/images/play.svg";
 import sketch from "../assets/images/sketch_book_white.svg";
+import new_button from "../assets/images/new_button.png";
 import small_border from "../assets/images/small_box_border.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
@@ -134,7 +135,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -143,16 +144,16 @@ const PlayerRoomPage = observer(() => {
         return;
       }
 
-      if (inputValue.length <= 2) {
-        SetValueState("This text is too Short");
-        SetHintState("need 2~8 char");
+      if (inputValue.length <= 1) {
+        SetValueState("닉네임을 입력하세요!");
+        SetHintState("need 1~5 char");
         SetismodalEOpen(true);
 
         return;
       }
-      if (inputValue.length >= 9) {
-        SetValueState("This text is too Long");
-        SetHintState("need 2~8 char");
+      if (inputValue.length >= 6) {
+        SetValueState("닉네임이 너무 길어요!");
+        SetHintState("need 1~5 char");
         SetismodalEOpen(true);
         return;
       }
@@ -225,7 +226,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"
@@ -234,7 +235,7 @@ const PlayerRoomPage = observer(() => {
         >
           <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">
             <img
-              src={small_border}
+              src={new_button}
               alt="small_border"
               className="absolute z-30"
             />
@@ -246,7 +247,7 @@ const PlayerRoomPage = observer(() => {
             <span className="absolute z-30 ml-[50px] font-hs text-[40px]">
               초대
             </span>
-            <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
+            <div className="absolute z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
 
@@ -254,7 +255,7 @@ const PlayerRoomPage = observer(() => {
           <button className="relative" type="button" onClick={handlePlay}>
             <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
               <img
-                src={small_border}
+                src={new_button}
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
@@ -268,20 +269,20 @@ const PlayerRoomPage = observer(() => {
               <p className="absolute z-30  ml-[50px] font-hs text-[40px]">
                 시작
               </p>
-              <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
+              <div className="absolute z-39 h-[96%] w-[91%] top-0.5" />
             </div>
           </button>
         ) : (
           <button className="relative" type="button">
             <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
               <img
-                src={small_border}
+                src={new_button}
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
 
               <p className="absolute z-30  ml-[10px] font-hs text-[40px]">
-                Ready..
+                준비중..
               </p>
               <div className="absolute bg-gray z-39 h-[96%] w-[91%] top-0.5" />
             </div>

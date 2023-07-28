@@ -5,8 +5,8 @@ import 구름1 from "../assets/images/구름1.svg";
 import 구름2 from "../assets/images/구름2.svg";
 import 구름3 from "../assets/images/구름3.svg";
 import 버튼테두리1 from "../assets/images/버튼테두리1.svg";
-import 인원수테두리 from "../assets/images/인원수테두리.svg";
-import 입력창테두리 from "../assets/images/입력창테두리.svg";
+import 인원수테두리 from "../assets/images/인원수테두리1.svg";
+import 입력창테두리 from "../assets/images/입력창테두리1.svg";
 import 체크 from "../assets/images/체크.svg";
 import WebsocketStore from "../stores/WebsocketStore";
 
