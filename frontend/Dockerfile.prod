@@ -29,5 +29,7 @@ COPY --from=build /frontend/dist ./dist
 COPY package*.json ./
 RUN npm ci --only=production && npm install -g serve
 
+EXPOSE 3000
+
 # 빌드된 애플리케이션을 실행합니다.
 CMD ["serve", "-s", "dist", "-l", "3000"]
