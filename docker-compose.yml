@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 
 services:
   mysql:
@@ -67,6 +67,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -94,6 +96,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   celery_beat:
@@ -122,6 +126,8 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
@@ -147,6 +153,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
+      - ./nginx/log:/var/log/nginx # nginx 로그를 호스트와 컨테이너 간에 공유
 
   prometheus:
     image: prom/prometheus
@@ -196,11 +203,12 @@ services:
 
   elasticsearch:
     build:
-      context: docker-example/logging-example/elasticsearch
+      context: ./logging/elasticsearch
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: 8.5.2
     volumes:
-      - ./docker-example/logging-example/elasticsearch/config:/usr/share/elasticsearch/config:ro,Z
+      - ./logging/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch:/usr/share/elasticsearch/data:Z
     ports:
       - 9200:9200
@@ -214,12 +222,13 @@ services:
 
   logstash:
     build:
-      context: docker-example/logging-example/logstash
+      context: ./logging/logstash
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: 8.5.2
     volumes:
-      - /Users/byeongseon/Desktop/Bootcamp/Project/logging-example/logstash/config:/usr/share/logstash/config:ro,Z
-      - /Users/byeongseon/Desktop/Bootcamp/Project/logging-example/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+      - ./logging/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
       - 5044:5044
       - 50000:50000/tcp
@@ -234,11 +243,12 @@ services:
 
   kibana:
     build:
-      context: docker-example/logging-example/kibana
+      context: ./logging/kibana
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: 8.5.2
     volumes:
-      - /Users/byeongseon/Desktop/Bootcamp/Project/logging-example/kibana/config:/usr/share/kibana/config:ro,Z
+      - ./logging/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
@@ -249,22 +259,20 @@ services:
 
   filebeat:
     build:
-      context: docker-example/logging-example/filebeat
+      context: ./logging/filebeat
+      dockerfile: Dockerfile
       args:
         ELASTIC_VERSION: 8.5.2
     entrypoint: "filebeat -e -strict.perms=false"
     volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro,Z
-      - /var/run/docker.sock:/var/run/docker.sock:ro,Z
-      - ./docker-example/logging-example/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - ./logging/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ./nginx/log:/var/log/nginx # nginx log path (require same option on nginx container)
     depends_on:
       - logstash
       - elasticsearch
       - kibana
 
-
 volumes:
   elasticsearch:
   staticfiles:
-  grafana-data: { }
+  grafana-data: {}
