@@ -1,19 +1,6 @@
 version: "3.7"
 
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    restart: always # 컨테이너가 종료되면 항상 재시작
-    ports:
-      - "3307:3306" # 호스트의 3307 포트와 컨테이너의 3306 포트를 연결
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_USER_PASSWORD}
-      TZ: Asia/Seoul # 타임존을 서울로 설정
-
   redis:
     image: redis:alpine
     container_name: redis
@@ -46,7 +33,6 @@ services:
       - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
       - staticfiles:/backend/static # static 파일을 호스트와 컨테이너 간에 공유
     depends_on:
-      - mysql # mysql 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
       - rabbitmq # rabbitmq 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
       - redis # redis 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
     logging:
@@ -69,7 +55,7 @@ services:
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
+    command: sh -c "/wait && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
     container_name: celery_worker
@@ -100,36 +86,6 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
-  celery_beat:
-    container_name: celery_beat
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: always
-    ports: []
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
-    depends_on:
-      - django
-      - rabbitmq
-      - celery_worker
-    environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_HOST: ${DB_HOST}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
-      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    command: sh -c "pipenv run celery -A config beat --loglevel=info"
-
   frontend:
     container_name: frontend
     build:
@@ -155,124 +111,6 @@ services:
       - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
       - ./nginx/log:/var/log/nginx # nginx 로그를 호스트와 컨테이너 간에 공유
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/config:/etc/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-    restart: always
-    depends_on:
-      - django
-
-  influxdb:
-    image: bitnami/influxdb:2.7.1
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    environment:
-      INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
-      INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
-      INFLUXDB_HTTP_AUTH_ENABLED: "false"
-      INFLUXDB_DB: ${DB_DATABASE}
-
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:8.2.2
-    restart: unless-stopped
-    environment:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel"
-      GF_DATABASE_TYPE: "mysql"
-      GF_DATABASE_HOST: "mysql:3306"
-      GF_DATABASE_NAME: ${DB_DATABASE}
-      GF_DATABASE_USER: ${DB_USERNAME}
-      GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
-    ports:
-      - "3050:3000"
-    volumes:
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
-      - grafana-data:/var/lib/grafana
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "8m"
-        max-file: "10"
-
-  elasticsearch:
-    build:
-      context: ./logging/elasticsearch
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_VERSION: 8.5.2
-    volumes:
-      - ./logging/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
-      - elasticsearch:/usr/share/elasticsearch/data:Z
-    ports:
-      - 9200:9200
-      - 9300:9300
-    environment:
-      node.name: elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      ELASTIC_PASSWORD: changeme
-      discovery.type: single-node
-    restart: unless-stopped
-
-  logstash:
-    build:
-      context: ./logging/logstash
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_VERSION: 8.5.2
-    volumes:
-      - ./logging/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
-      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
-    ports:
-      - 5044:5044
-      - 50000:50000/tcp
-      - 50000:50000/udp
-      - 9600:9600
-    environment:
-      LS_JAVA_OPTS: -Xms256m -Xmx256m
-      LOGSTASH_INTERNAL_PASSWORD: changeme
-    depends_on:
-      - elasticsearch
-    restart: unless-stopped
-
-  kibana:
-    build:
-      context: ./logging/kibana
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_VERSION: 8.5.2
-    volumes:
-      - ./logging/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
-    ports:
-      - 5601:5601
-    environment:
-      KIBANA_SYSTEM_PASSWORD: changeme
-    depends_on:
-      - elasticsearch
-    restart: unless-stopped
-
-  filebeat:
-    build:
-      context: ./logging/filebeat
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_VERSION: 8.5.2
-    entrypoint: "filebeat -e -strict.perms=false"
-    volumes:
-      - ./logging/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - ./nginx/log:/var/log/nginx # nginx log path (require same option on nginx container)
-    depends_on:
-      - logstash
-      - elasticsearch
-      - kibana
-
 volumes:
   elasticsearch:
   staticfiles:
-  grafana-data: {}
