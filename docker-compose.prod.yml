@@ -1,0 +1,151 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    command: redis-server --port 6379
+    restart: always
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.7.14-management-alpine
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
+  django:
+    container_name: django
+    image: maaayreel/relaysketch-backend:latest
+    restart: always
+    depends_on:
+      - rabbitmq
+      - redis
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    command: sh -c "/wait && pipenv run python manage.py makemigrations && pipenv run python manage.py migrate && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
+
+  celery_worker:
+    container_name: celery_worker
+    image: maaayreel/relaysketch-backend:latest
+    restart: always
+    depends_on:
+      - django
+      - rabbitmq
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    command: sh -c "pipenv run celery -A config worker --loglevel=info"
+
+  celery_beat:
+    container_name: celery_beat
+    image: maaayreel/relaysketch-backend:latest
+    restart: always
+    depends_on:
+      - django
+      - rabbitmq
+      - celery_worker
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    command: sh -c "pipenv run celery -A config beat --loglevel=info"
+
+  frontend:
+    container_name: frontend
+    image: maaayreel/relaysketch-frontend:latest
+    depends_on:
+      - django
+
+  nginx:
+    container_name: nginx
+    image: maaayreel/relaysketch-nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+      - frontend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nignx.conf
+      - staticfiles:/staticfiles
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: always
+    depends_on:
+      - django
+
+  influxdb:
+    image: bitnami/influxdb:2.7.1
+    container_name: influxdb
+    environment:
+      INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
+      INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+      INFLUXDB_DB: ${DB_DATABASE}
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:8.2.2
+    restart: unless-stopped
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel"
+      GF_DATABASE_TYPE: "mysql"
+      GF_DATABASE_HOST: ${DB_HOST}
+      GF_DATABASE_NAME: ${DB_DATABASE}
+      GF_DATABASE_USER: ${DB_USERNAME}
+      GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
+    ports:
+      - "3050:3000"
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana-data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "8m"
+        max-file: "10"
+
+volumes:
+  staticfiles: {}
+  grafana-data: {}

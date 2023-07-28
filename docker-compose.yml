@@ -58,6 +58,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
@@ -84,6 +85,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
@@ -111,6 +113,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
       DB_USER_PASSWORD: ${DB_USER_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
@@ -159,11 +162,10 @@ services:
       - django
 
   influxdb:
-    image: bitnami/influxdb:latest
+    image: bitnami/influxdb:2.7.1
     container_name: influxdb
     ports:
       - "8086:8086"
-      - "8085:8088"
     environment:
       INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
       INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
