@@ -65,6 +65,8 @@ services:
 
   frontend:
     container_name: frontend
+    ports:
+      - "3000:3000"
     image: maaayreel/relaysketch-frontend:latest
     depends_on:
       - django
