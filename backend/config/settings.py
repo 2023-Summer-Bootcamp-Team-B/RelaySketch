@@ -31,6 +31,11 @@ load_dotenv(dotenv_file)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     "django_prometheus",
     "django_celery_beat",
     "django_celery_results",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -97,11 +103,11 @@ BROKER_URL = "amqp://admin:admin@rabbitmq"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-if os.getenv('USE_SQLITE', 'false') == 'true':
+if os.getenv("USE_SQLITE", "false") == "true":
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
         }
     }
 else:
@@ -149,7 +155,7 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3-{AWS_S3_REGION_NAME}.amazonaws.com/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
@@ -169,13 +175,7 @@ CHANNEL_LAYERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://0.0.0.0:3000",
-    "http://frontend:3000",
-    "http://prometheus:9090",
-    "http://localhost:9090",
-    "http://127.0.0.1:9090",
-    "http://0.0.0.0:9090",
+    "http://localhost",
 ]
 
 CORS_ALLOW_HEADERS = (
@@ -187,14 +187,7 @@ CORS_ALLOW_HEADERS = (
     "x-requested-with",
 )
 
-CORS_ALLOW_METHODS = (
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-)
+CORS_ALLOW_METHODS = ("POST",)
 
 PROMETHEUS_METRICS_EXPORT_PORT_RANGE = range(8001, 8050)
 
@@ -206,3 +199,16 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
+    },
+}
+AWS_S3_SECURE_URLS = False  # use http instead of https
+AWS_QUERYSTRING_AUTH = (
+    False  # don't add complex authentication-related query parameters for requests
+)

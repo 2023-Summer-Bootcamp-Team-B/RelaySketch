@@ -1,3 +1,5 @@
+import { observer } from "mobx-react";
+
 import border from "../../assets/images/border.png";
 
 type PlayerPropsType = {
@@ -5,7 +7,7 @@ type PlayerPropsType = {
   turn: boolean;
 };
 
-const Player = ({ name, turn }: PlayerPropsType) => {
+const Player = observer(({ name, turn }: PlayerPropsType) => {
   const classes = turn
     ? " w-[13vw] h-[9vh] mt-[1.5vh] bg-[#7EC8FF] flex items-center justify-center"
     : " w-[13vw] h-[9vh] mt-[1.5vh] flex items-center justify-center";
@@ -22,6 +24,6 @@ const Player = ({ name, turn }: PlayerPropsType) => {
       </span>
     </li>
   );
-};
+});
 
 export default Player;
