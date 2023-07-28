@@ -1,0 +1,140 @@
+version: "3.7"
+
+services:
+  celery_beat:
+    container_name: celery_beat
+    image: maaayreel/relaysketch-backend:latest
+    restart: always
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    command: sh -c "pipenv run celery -A config beat --loglevel=info"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: always
+
+  influxdb:
+    image: bitnami/influxdb:2.7.1
+    container_name: influxdb
+    environment:
+      INFLUXDB_ADMIN_USER_PASSWORD: ${DB_USER_PASSWORD}
+      INFLUXDB_ADMIN_USER_TOKEN: ${DB_USERNAME}
+      INFLUXDB_HTTP_AUTH_ENABLED: "false"
+      INFLUXDB_DB: ${DB_DATABASE}
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:8.2.2
+    restart: unless-stopped
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel"
+      GF_DATABASE_TYPE: "mysql"
+      GF_DATABASE_HOST: ${DB_HOST}
+      GF_DATABASE_NAME: ${DB_DATABASE}
+      GF_DATABASE_USER: ${DB_USERNAME}
+      GF_DATABASE_PASSWORD: ${DB_USER_PASSWORD}
+    ports:
+      - "3050:3000"
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana-data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "8m"
+        max-file: "10"
+
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: ./logging/elasticsearch
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_VERSION: 8.5.2
+    volumes:
+      - ./logging/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch:/usr/share/elasticsearch/data:Z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${DB_ROOT_PASSWORD}
+      discovery.type: single-node
+    restart: unless-stopped
+
+  logstash:
+    container_name: logstash
+    build:
+      context: ./logging/logstash
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_VERSION: 8.5.2
+    volumes:
+      - ./logging/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - "5044:5044"
+      - "50000:50000/tcp"
+      - "50000:50000/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${DB_ROOT_PASSWORD}
+      ES_PASSWORD: ${DB_ROOT_PASSWORD}
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    container_name: kibana
+    build:
+      context: ./logging/kibana
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_VERSION: 8.5.2
+    volumes:
+      - ./logging/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - "5601:5601"
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${DB_ROOT_PASSWORD}
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  filebeat:
+    container_name: filebeat
+    build:
+      context: ./logging/filebeat
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_VERSION: 8.5.2
+    entrypoint: "filebeat -e -strict.perms=false"
+    volumes:
+      - ./logging/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./nginx/log:/var/log/nginx # nginx log path (require same option on nginx container)
+    depends_on:
+      - logstash
+      - elasticsearch
+      - kibana
+
+volumes:
+  grafana-data: {}
