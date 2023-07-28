@@ -6,6 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "experimentalDecorators": true,
+    "types": ["node"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -15,7 +15,7 @@ const MainPage = observer(() => {
   const navigate = useNavigate();
   const handleClickConnect = async () => {
     try {
-      const res = await axios.post("http://localhost:8000/api/add_room/");
+      const res = await axios.post("http://localhost/api/add_room/");
       navigate(`/playerroom/${res.data.result.room_id}`);
     } catch (err) {
       console.log(err);
@@ -26,7 +26,7 @@ const MainPage = observer(() => {
     debounce(async () => {
       try {
         disconnect();
-        const res = await axios.post("http://localhost:8000/api/add_room/");
+        const res = await axios.post("http://localhost/api/add_room/");
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
         console.log(err);

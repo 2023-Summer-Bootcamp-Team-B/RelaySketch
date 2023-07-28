@@ -5,41 +5,23 @@ services:
     image: redis:alpine
     container_name: redis
     command: redis-server --port 6379
-    hostname: redis
     restart: always
-    ports:
-      - "6379:6379"
 
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3.7.14-management-alpine # RabbitMQ 관리자 페이지를 사용하기 위해 alpine 버전 사용
+    image: rabbitmq:3.7.14-management-alpine
     restart: always
-    ports:
-      - "5672:5672" # RabbitMQ 서버 포트
-      - "15672:15672" # RabbitMQ 관리자 페이지 포트
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
 
   django:
     container_name: django
-    build:
-      context: ./backend # Docker 빌드 컨텍스트를 backend 폴더로 설정
-      dockerfile: Dockerfile # Dockerfile 경로
+    image: maaayreel/relaysketch-backend:latest
     restart: always
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
-      - staticfiles:/backend/static # static 파일을 호스트와 컨테이너 간에 공유
     depends_on:
-      - rabbitmq # rabbitmq 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
-      - redis # redis 컨테이너가 실행되고 나서 django 컨테이너가 실행되도록 설정
-    logging:
-      driver: "json-file" # 로그 드라이버를 json-file로 설정
-      options:
-        max-size: "10m" # 로그 파일의 최대 크기를 10MB로 설정
-        max-file: "3" # 최대 3개의 로그 파일 보존
+      - rabbitmq
+      - redis
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
@@ -59,13 +41,8 @@ services:
 
   celery_worker:
     container_name: celery_worker
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: maaayreel/relaysketch-backend:latest
     restart: always
-    ports: []
-    volumes:
-      - ./backend:/backend # 코드 변경을 반영하기 위해 호스트와 컨테이너 간에 소스코드 공유
     depends_on:
       - django
       - rabbitmq
@@ -88,29 +65,22 @@ services:
 
   frontend:
     container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    image: maaayreel/relaysketch-frontend:latest
     depends_on:
-      - django # django 컨테이너가 실행되고 나서 frontend 컨테이너가 실행되도록 설정
+      - django
 
   nginx:
     container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile # Dockerfile 경로
+    image: maaayreel/relaysketch-nginx:latest
     ports:
       - "80:80"
     depends_on:
-      - django # django 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
-      - frontend # frontend 컨테이너가 실행되고 나서 nginx 컨테이너가 실행되도록 설정
+      - django
+      - frontend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf # 호스트의 nginx 폴더와 컨테이너의 /etc/nginx/conf.d 폴더를 공유
-      - staticfiles:/staticfiles # static 파일을 호스트와 컨테이너 간에 공유
-      - ./nginx/log:/var/log/nginx # nginx 로그를 호스트와 컨테이너 간에 공유
+      - ./nginx/nginx.conf:/etc/nginx/nignx.conf
+      - staticfiles:/staticfiles
+      - ./nginx/log:/var/log/nginx
 
 volumes:
-  elasticsearch:
-  staticfiles:
+  staticfiles: {}
