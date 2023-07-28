@@ -225,7 +225,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          )
+          ),
         )}
         <button
           className="relative"
