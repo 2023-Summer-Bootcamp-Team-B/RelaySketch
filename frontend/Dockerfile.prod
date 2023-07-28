@@ -1,0 +1,33 @@
+# 베이스 이미지 선택
+FROM node:16-alpine as build
+
+# 작업 디렉토리 설정
+WORKDIR /frontend
+
+# 파일 복사
+COPY package*.json ./
+
+# 의존성 설치
+RUN npm ci
+
+# 소스코드 복사
+COPY . .
+
+# 프론트엔드 빌드
+RUN npm run build
+
+# 런타임 이미지
+FROM node:16-alpine
+
+# 작업 디렉토리 설정
+WORKDIR /frontend
+
+# 빌드 결과물 복사
+COPY --from=build /frontend/dist ./dist
+
+# 의존성 설치
+COPY package*.json ./
+RUN npm ci --only=production && npm install -g serve
+
+# 빌드된 애플리케이션을 실행합니다.
+CMD ["serve", "-s", "dist", "-l", "3000"]

@@ -115,7 +115,7 @@ const PlayerRoomPage = observer(() => {
 
   const connect = useCallback(() => {
     console.log("Connecting to websocket");
-    WebsocketStore.connect(`ws://localhost:8000/ws/room/${param.id}/`);
+    WebsocketStore.connect(`ws://15.165.125.132/ws/room/${param.id}/`);
   }, [param.id]);
 
   useEffect(() => {
