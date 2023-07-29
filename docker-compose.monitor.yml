@@ -25,9 +25,13 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    volumes:
+      - ./prometheus/config:/etc/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     restart: always
+    ports:
+      - "9090:9090" # 호스트의 9090 포트와 컨테이너의 9090 포트를 연결
 
   influxdb:
     image: bitnami/influxdb:2.7.1
@@ -59,6 +63,35 @@ services:
       options:
         max-size: "8m"
         max-file: "10"
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100" # 호스트의 9100 포트와 컨테이너의 9100 포트를 연결
+    restart: always
+
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+    ports:
+      - "9093:9093"
+
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080" # 호스트의 8080 포트와 컨테이너의 8080 포트를 연결
+    restart: always
 
   elasticsearch:
     container_name: elasticsearch
