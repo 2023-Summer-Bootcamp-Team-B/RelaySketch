@@ -78,6 +78,8 @@ services:
       - ./alertmanager/config.yml:/etc/alertmanager/config.yml
     ports:
       - "9093:9093"
+    environment:
+      EMAIL_CONFIG: ${EMAIL_CONFIG}
 
   cadvisor:
     image: google/cadvisor

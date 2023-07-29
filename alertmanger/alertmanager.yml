@@ -15,4 +15,4 @@ route:
 receivers:
 - name: 'email-alerts'
   email_configs:
-  - to: 'leeseoin@gmail.com'
+  - to: ${EMAIL_CONFIG}
