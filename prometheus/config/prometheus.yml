@@ -7,7 +7,6 @@ global:
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
     monitor: 'codelab-monitor'       # 기본적으로 붙여줄 라벨
-  query_log_file: query_log_file.log # prometheus의 쿼리 로그들을 기록, 없으면 기록안함
 
 # 규칙을 로딩하고 'evaluation_interval' 설정에 따라 정기적으로 평가한다.
 rule_files:
@@ -37,6 +36,24 @@ scrape_configs:
       - targets: ['django:8000'] ## prometheus, node-exporter, cadvisor
         labels: # 옵션 - scrap 해서 가져올 metrics 들 전부에게 붙여줄 라벨
           service : 'monitor-1'
+
+ # 노드 익스포터를 위한 서비스 디스커버리 추가
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: [ 'node-exporter:9100' ]
+        labels:
+          service: 'node-exporter'
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: [ 'cadvisor:8080' ] # cAdvisor 컨테이너의 8080 포트를 사용
+        labels:
+          service: 'cadvisor'
+  # 알림 규칙을 작성하기 위한 Alertmanager 연동
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets: [ 'alertmanager:9093' ] # Alertmanager 컨테이너의 9093 포트를 사용
+
 
     # relabel_config - 스크랩되기 전의 label들을 수정
     # metric_relabel_configs - 가져오는 대상들의 레이블들을 동적으로 다시작성하는 설정(drop, replace, labeldrop)

@@ -28,6 +28,7 @@ openai = "*"
 requests = "*"
 django-storages = "*"
 boto3 = "*"
+storage = "*"
 
 [dev-packages]
 

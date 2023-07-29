@@ -1,0 +1,18 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@example.com'
+  smtp_auth_username: 'username'
+  smtp_auth_password: 'password'
+
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'email-alerts'
+
+receivers:
+- name: 'email-alerts'
+  email_configs:
+  - to: 'leeseoin@gmail.com'
