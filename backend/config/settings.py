@@ -142,7 +142,13 @@ CHANNEL_LAYERS = {
     },
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost", "http://15.165.125.132"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost",
+    "http://15.165.125.132",
+    "https://www.relaysketch.online",
+    "https://relaysketch.online",
+]
 
 CORS_ALLOW_HEADERS = (
     "accept",
@@ -175,7 +181,7 @@ STORAGES = {
     },
 }
 
-AWS_S3_SECURE_URLS = False  # use http instead of https
+AWS_S3_SECURE_URLS = True  # use http instead of https
 
 AWS_QUERYSTRING_AUTH = (
     False  # don't add complex authentication-related query parameters for requests
