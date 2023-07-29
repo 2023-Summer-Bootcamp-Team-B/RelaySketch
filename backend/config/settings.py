@@ -24,6 +24,24 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "django": {
+        "handlers": ["console"],
+        "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+    },
+}
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "django", "15.165.125.132"]
 
 INSTALLED_APPS = [
