@@ -75,11 +75,17 @@ services:
     container_name: alertmanager
     image: prom/alertmanager
     volumes:
-      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+      - ./alertmanager/:/etc/alertmanager/
     ports:
       - "9093:9093"
     environment:
-      EMAIL_CONFIG: ${EMAIL_CONFIG}
+      EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      API_URL: ${API_URL}
+    restart: always
+    command:
+      - "--config.file=/etc/alertmanager/config.yml"
+      - "--storage.path=/alertmanager"
 
   cadvisor:
     image: google/cadvisor

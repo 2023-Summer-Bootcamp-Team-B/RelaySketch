@@ -1,0 +1,28 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  group_by: ["alertname"]
+  group_wait: 30s
+  group_interval: 1m
+  receiver: "slack"
+  routes:
+    - receiver: "email-alerts"
+
+receivers:
+  - name: "slack"
+    slack_configs:
+      - send_resolved: true
+        username: "grafana-alter"
+        channel: "#alter-grafana"
+        api_url: "https://hooks.slack.com/services/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"
+
+  - name: "email-alerts"
+    email_configs:
+      - to: "kuwon15@gmail.com"
+        from: "kuwon15@gmail.com"
+        smarthost: smtp.gmail.com:587
+        auth_username: "kuwon15@gmail.com"
+        auth_identity: "kuwon15@gmail.com"
+        auth_password: "rgccprfcccatmsdk"
+        send_resolved: true
