@@ -29,6 +29,7 @@ requests = "*"
 django-storages = "*"
 boto3 = "*"
 storage = "*"
+drf-yasg = "*"
 
 [dev-packages]
 
