@@ -24,7 +24,33 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "django", "15.165.125.132"]
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "django": {
+        "handlers": ["console"],
+        "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+    },
+}
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    "django",
+    "15.165.125.132",
+    "relaysketch.online",
+    "www.relaysketch.online",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -57,6 +83,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
+
+APPEND_SLASH = False
 
 ROOT_URLCONF = "config.urls"
 
@@ -142,7 +170,13 @@ CHANNEL_LAYERS = {
     },
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost", "http://15.165.125.132"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost",
+    "http://15.165.125.132",
+    "https://www.relaysketch.online",
+    "https://relaysketch.online",
+]
 
 CORS_ALLOW_HEADERS = (
     "accept",
@@ -175,7 +209,7 @@ STORAGES = {
     },
 }
 
-AWS_S3_SECURE_URLS = False  # use http instead of https
+AWS_S3_SECURE_URLS = True  # use http instead of https
 
 AWS_QUERYSTRING_AUTH = (
     False  # don't add complex authentication-related query parameters for requests
