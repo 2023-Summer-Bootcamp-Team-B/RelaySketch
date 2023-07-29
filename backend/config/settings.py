@@ -58,6 +58,8 @@ MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
+APPEND_SLASH = False
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
