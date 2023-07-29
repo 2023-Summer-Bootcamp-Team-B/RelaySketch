@@ -24,7 +24,7 @@ const MainPage = observer(() => {
   const handleClickConnect = async () => {
     try {
       const res = await axios.post(
-        "https://relaysketch.online/api/add_room/",
+        "https://www.relaysketch.online/api/add_room/",
         null,
         config
       );
@@ -39,7 +39,7 @@ const MainPage = observer(() => {
       try {
         disconnect();
         const res = await axios.post(
-          "https://relaysketch.online/api/add_room/",
+          "https://www.relaysketch.online/api/add_room/",
           null,
           config
         );

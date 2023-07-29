@@ -22,7 +22,7 @@ AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 LOGGING = {
     "version": 1,
@@ -42,7 +42,15 @@ LOGGING = {
     },
 }
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "django", "15.165.125.132"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    "django",
+    "15.165.125.132",
+    "relaysketch.online",
+    "www.relaysketch.online",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",

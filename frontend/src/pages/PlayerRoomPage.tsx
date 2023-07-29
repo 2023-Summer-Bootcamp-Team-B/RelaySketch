@@ -115,7 +115,7 @@ const PlayerRoomPage = observer(() => {
 
   const connect = useCallback(() => {
     console.log("Connecting to websocket");
-    WebsocketStore.connect(`wss://relaysketch.online/ws/room/${param.id}/`);
+    WebsocketStore.connect(`wss://www.relaysketch.online/ws/room/${param.id}/`);
   }, [param.id]);
 
   useEffect(() => {
