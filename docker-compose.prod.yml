@@ -76,6 +76,7 @@ services:
     image: maaayreel/relaysketch-nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - django
       - frontend
@@ -83,6 +84,16 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nignx.conf
       - staticfiles:/staticfiles
       - ./nginx/log:/var/log/nginx
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+  certbot:
+    container_name: nginx
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
 
 volumes:
   staticfiles: {}
