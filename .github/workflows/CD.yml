@@ -63,74 +63,34 @@ jobs:
           echo "AWS_S3_REGION_NAME=\"${{ secrets.AWS_S3_REGION_NAME }}\"" >> .env
           echo "AWS_REDIS_HOST=\"${{ secrets.AWS_REDIS_HOST }}\"" >> .env
 
-      - name: Copy env file to EC2-lb1
+      - name: Copy files to EC2-lb1
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST1 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env"
+          source: ".env docker-compose.lb.yml"
           target: "compose"
 
-      - name: Copy env file to EC2-lb2
+      - name: Copy files to EC2-lb2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST2 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env"
+          source: ".env docker-compose.lb.yml"
           target: "compose"
 
-      - name: Copy env file to EC2
+      - name: Copy files to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env"
-          target: "compose"
-
-      - name: Copy Grafana files to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "grafana/grafana.ini"
-          target: "compose/grafana"
-
-      - name: Copy docker-compose.lb.yml to EC2-lb1
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST1 }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "docker-compose.lb.yml"
-          target: "compose"
-
-      - name: Copy docker-compose.lb.yml to EC2-lb2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST2 }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "docker-compose.lb.yml"
-          target: "compose"
-
-      - name: Copy docker-compose.prod.yml to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "docker-compose.prod.yml"
+          source: ".env docker-compose.prod.yml docker-compose.main.yml docker-compose.monitor.yml nginx/zerodowntime logging prometheus grafana alertmanager k6ws.js k6http.js"
           target: "compose"
 
       - name: Deploy to EC2-lb1 Server
