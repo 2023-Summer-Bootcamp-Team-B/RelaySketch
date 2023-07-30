@@ -224,9 +224,9 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml pull
-            docker-compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.main.yml down
+            docker-compose -f docker-compose.main.yml pull
+            docker-compose -f docker-compose.main.yml up -d
 
       - name: Up EC2 Server
         uses: appleboy/ssh-action@master
