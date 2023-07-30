@@ -83,15 +83,15 @@ jobs:
           source: ".env"
           target: "compose"
 
-      #      - name: Copy Grafana files to EC2
-      #        uses: appleboy/scp-action@master
-      #        with:
-      #          host: ${{ secrets.EC2_HOST }}
-      #          username: ${{ secrets.EC2_USERNAME }}
-      #          key: ${{ secrets.EC2_KEY }}
-      #          port: ${{ secrets.EC2_PORT }}
-      #          source: "grafana.ini"
-      #          target: "compose/grafana"
+      - name: Copy Grafana files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "grafana/grafana.ini"
+          target: "compose/grafana"
 
       - name: Copy docker-compose.lb.yml to EC2-lb1
         uses: appleboy/scp-action@master
