@@ -4,7 +4,7 @@ from celery import Celery
 # 기본 장고파일 설정
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 app = Celery("config",
-             backend="rpc://redis:6379/",
+             backend=f"rpc://{os.getenv('AWS_REDIS_HOST', 'redis')}:6379/",
              include=["myapp.tasks"])
 app.config_from_object("django.conf:settings", namespace="CELERY")
 

@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+from celery.schedules import crontab
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -50,6 +51,8 @@ ALLOWED_HOSTS = [
     "15.165.125.132",
     "relaysketch.online",
     "www.relaysketch.online",
+    "3.38.107.253",
+    "3.38.178.89",
 ]
 
 INSTALLED_APPS = [
@@ -69,6 +72,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "storages",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -165,7 +169,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6379)],
+            "hosts": [(os.getenv("AWS_REDIS_HOST", "redis"), 6379)],
         },
     },
 }
@@ -176,6 +180,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://15.165.125.132",
     "https://www.relaysketch.online",
     "https://relaysketch.online",
+    "http://3.38.107.253:3000",
+    "http://3.38.178.89:3000",
 ]
 
 CORS_ALLOW_HEADERS = (
@@ -214,3 +220,10 @@ AWS_S3_SECURE_URLS = True  # use http instead of https
 AWS_QUERYSTRING_AUTH = (
     False  # don't add complex authentication-related query parameters for requests
 )
+
+CELERY_BEAT_SCHEDULE = {
+    'clear_data_every_day': {
+        'task': 'myapp.tasks.clear_data',  # task의 경로를 정확하게 설정해야 합니다.
+        'schedule': crontab(minute='0', hour='4'),  # 매일 4시 0분에 실행합니다.
+    },
+}
