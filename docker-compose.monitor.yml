@@ -20,6 +20,7 @@ services:
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      AWS_REDIS_HOST: ${AWS_REDIS_HOST}
     command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   prometheus:

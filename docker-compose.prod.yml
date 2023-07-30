@@ -15,7 +15,6 @@ services:
     restart: always
     depends_on:
       - rabbitmq
-      - redis
     environment: &common_env
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
