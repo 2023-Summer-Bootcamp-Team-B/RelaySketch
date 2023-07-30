@@ -113,141 +113,129 @@ jobs:
           source: "docker-compose.main.yml"
           target: "compose"
 
-      - name: Copy k6ws files to EC2
+      - name: Copy nginx files to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "k6ws.js"
+          source: "nginx"
           target: "compose"
 
-      - name: Copy k6http files to EC2
-        uses: appleboy/scp-action@master
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push Docker backend image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: maaayreel/relaysketch-backend:latest
+
+      - name: Build and push Docker frontend image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: maaayreel/relaysketch-frontend:latest
+
+      - name: Build and push Docker nginx image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./nginx
+          file: ./nginx/Dockerfile.prod
+          push: true
+          tags: maaayreel/relaysketch-nginx:latest
+
+      - name: Down EC2-lb1 Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "k6http.js"
-          target: "compose"
+          script: |
+            cd compose
+            mv -f nginx.prod1.conf nginx.prod.conf
+            docker exec -it nginx nginx -s reload
 
-      - name: Copy Grafana files to EC2
-        uses: appleboy/scp-action@master
+      - name: Deploy to EC2-lb1 Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST1 }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd compose
+            docker-compose -f docker-compose.lb.yml down
+            docker-compose -f docker-compose.lb.yml pull
+            docker-compose -f docker-compose.lb.yml up -d
+
+      - name: Down EC2-lb2 Server && Up EC2-lb1 Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "grafana/grafana.ini"
-          target: "compose"
+          script: |
+            cd compose
+            mv -f nginx.prod2.conf nginx.prod.conf
+            docker exec -it nginx nginx -s reload
 
-      - name: Copy logging files to EC2
-        uses: appleboy/scp-action@master
+      - name: Deploy to EC2-lb2 Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST2 }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            cd compose
+            docker-compose -f docker-compose.lb.yml down
+            docker-compose -f docker-compose.lb.yml pull
+            docker-compose -f docker-compose.lb.yml up -d
+
+      - name: Down EC2 Server && Up EC2-lb2 Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "logging"
-          target: "compose"
+          script: |
+            cd compose
+            mv -f nginx.prod3.conf nginx.prod.conf
+            docker exec -it nginx nginx -s reload
 
-      - name: Copy prometheus files to EC2
-        uses: appleboy/scp-action@master
+      - name: Deploy to EC2 Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "prometheus"
-          target: "compose"
+          script: |
+            cd compose
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
 
-      - name: Copy logging files to EC2
-        uses: appleboy/scp-action@master
+      - name: Up EC2 Server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: "prometheus"
-          target: "compose"
-
-      - name: Copy alertmanager files to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "alertmanager"
-          target: "compose"
-
-      # - name: Login to Docker Hub
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      # - name: Build and push Docker backend image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: ./backend
-      #     file: ./backend/Dockerfile.prod
-      #     push: true
-      #     tags: maaayreel/relaysketch-backend:latest
-
-      # - name: Build and push Docker frontend image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: ./frontend
-      #     file: ./frontend/Dockerfile.prod
-      #     push: true
-      #     tags: maaayreel/relaysketch-frontend:latest
-
-      # - name: Build and push Docker nginx image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: ./nginx
-      #     file: ./nginx/Dockerfile.prod
-      #     push: true
-      #     tags: maaayreel/relaysketch-nginx:latest
-
-      # - name: Deploy to EC2-lb1 Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST1 }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     script: |
-      #       cd compose
-      #       docker-compose -f docker-compose.lb.yml down
-      #       docker-compose -f docker-compose.lb.yml pull
-      #       docker-compose -f docker-compose.lb.yml up -d
-
-      # - name: Deploy to EC2-lb2 Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST2 }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     script: |
-      #       cd compose
-      #       docker-compose -f docker-compose.lb.yml down
-      #       docker-compose -f docker-compose.lb.yml pull
-      #       docker-compose -f docker-compose.lb.yml up -d
-
-      # - name: Deploy to EC2 Server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     script: |
-      #       cd compose
-      #       docker-compose -f docker-compose.prod.yml down
-      #       docker-compose -f docker-compose.prod.yml pull
-      #       docker-compose -f docker-compose.prod.yml up -d
+          script: |
+            cd compose
+            mv -f nginx.prod0.conf nginx.prod.conf
+            docker exec -it nginx nginx -s reload
