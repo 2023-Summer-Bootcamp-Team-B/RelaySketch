@@ -162,8 +162,8 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
-            mv -f nginx.prod1.conf nginx.prod.conf
-            docker exec -it nginx nginx -s reload
+            sudo mv -f nginx.prod1.conf nginx.prod.conf
+            docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2-lb1 Server
         uses: appleboy/ssh-action@master
@@ -187,8 +187,8 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
-            mv -f nginx.prod2.conf nginx.prod.conf
-            docker exec -it nginx nginx -s reload
+            sudo mv -f nginx.prod2.conf nginx.prod.conf
+            docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2-lb2 Server
         uses: appleboy/ssh-action@master
@@ -212,8 +212,8 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
-            mv -f nginx.prod3.conf nginx.prod.conf
-            docker exec -it nginx nginx -s reload
+            sudo mv -f nginx.prod3.conf nginx.prod.conf
+            docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2 Server
         uses: appleboy/ssh-action@master
@@ -238,4 +238,4 @@ jobs:
           script: |
             cd compose
             mv -f nginx.prod0.conf nginx.prod.conf
-            docker exec -it nginx nginx -s reload
+            docker exec -i nginx nginx -s reload
