@@ -1,12 +1,6 @@
 version: "3.7"
 
 services:
-  redis:
-    image: redis:alpine
-    container_name: redis
-    command: redis-server --port 6379
-    restart: always
-
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.7.14-management-alpine
@@ -22,7 +16,7 @@ services:
     depends_on:
       - rabbitmq
       - redis
-    environment:
+    environment: &common_env
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
@@ -37,6 +31,7 @@ services:
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      AWS_REDIS_HOST: ${AWS_REDIS_HOST}
     command: sh -c "/wait && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -47,20 +42,7 @@ services:
       - django
       - rabbitmq
     environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_HOST: ${DB_HOST}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
-      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      <<: *common_env
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
   frontend:
