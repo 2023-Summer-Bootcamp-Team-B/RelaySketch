@@ -58,19 +58,19 @@ const MainPage = observer(() => {
         <div className="relative">
           <img
             src={sun}
-            className="z-50 transform w-[210px] h-auto mr-[490px] mb-[210px] animate-wiggle"
+            className="z-50 transform mr-[240px] w-[85px] h-auto mb-[100px] animate-wiggle sm:w-[210px] sm:mr-[490px] sm:mb-[210px]"
             alt="backgroundsun"
           />
           <div className="absolute inset-0 flex items-center justify-center pt-5 z-2 w-auto h-auto ">
-            <p className="text-center transform -translate-y-[70px] font-hs text-[110px]">
+            <p className="text-[55px] mt-14 text-center transform -translate-y-[70px] font-hs sm:text-[110px] sm:mt-0 ">
               RELAY
             </p>
-            <p className="absolute text-center transform translate-y-[60px] font-hs text-[110px]">
+            <p className="text-[55px] absolute mb-16 text-center transform translate-y-[60px] font-hs sm:text-[110px] sm:mb-0">
               SKETCH
             </p>
 
             <div className="absolute inset-0 flex items-center justify-center duration-75 transform translate-y-[180px] scale-1 z-2 animate-pulse">
-              <span className="text-[40px] font-hs mb-3 whitespace-nowrap">
+              <span className="text-[20px] font-hs mb-40 whitespace-nowrap sm:text-[40px] sm:mb-3 ">
                 시작하려면 아무 곳이나 클릭하세요
               </span>
             </div>

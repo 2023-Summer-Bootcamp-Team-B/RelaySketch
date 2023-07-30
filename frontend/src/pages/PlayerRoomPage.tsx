@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import crown from "../assets/images/crown.png";
 import invite from "../assets/images/invite_link.svg";
+import new_button from "../assets/images/new_button.png";
 import play from "../assets/images/play.svg";
 import sketch from "../assets/images/sketch_book_white.svg";
-import new_button from "../assets/images/new_button.png";
 import small_border from "../assets/images/small_box_border.svg";
 import cloud1 from "../assets/images/구름1.svg";
 import cloud2 from "../assets/images/구름2.svg";
@@ -92,7 +92,7 @@ const PlayerRoomPage = observer(() => {
     navigator.clipboard
       .writeText(currentUrl)
       .then(() => {
-        SetValueState("Link Copied!");
+        SetValueState("초대 링크가 복사 되었어요!");
         SetHintState("");
         SetismodalEOpen(true);
         setTimeout(() => {
@@ -135,7 +135,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -195,7 +195,7 @@ const PlayerRoomPage = observer(() => {
             </div>
           ) : (
             <div
-              className="relative z-20 w-[300px] h-[100px]   mt-8 ml-4"
+              className="relative z-20 w-[100px] h-[100px]   mt-8 ml-4"
               key={x.index}
             >
               <img
@@ -226,7 +226,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"
