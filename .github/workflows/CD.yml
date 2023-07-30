@@ -13,36 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Build and push Docker backend image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile.prod
-          push: true
-          tags: maaayreel/relaysketch-backend:latest
-
-      - name: Build and push Docker frontend image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile.prod
-          push: true
-          tags: maaayreel/relaysketch-frontend:latest
-
-      - name: Build and push Docker nginx image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./nginx
-          file: ./nginx/Dockerfile.prod
-          push: true
-          tags: maaayreel/relaysketch-nginx:latest
-
       - name: Create env file
         run: |
           set +x
@@ -63,71 +33,221 @@ jobs:
           echo "AWS_S3_REGION_NAME=\"${{ secrets.AWS_S3_REGION_NAME }}\"" >> .env
           echo "AWS_REDIS_HOST=\"${{ secrets.AWS_REDIS_HOST }}\"" >> .env
 
-      - name: Copy files to EC2-lb1
+      - name: Copy env file to EC2-lb1
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST1 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env docker-compose.lb.yml"
+          source: ".env"
           target: "compose"
 
-      - name: Copy files to EC2-lb2
+      - name: Copy env file to EC2-lb2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST2 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env docker-compose.lb.yml"
+          source: ".env"
           target: "compose"
 
-      - name: Copy files to EC2
+      - name: Copy env file to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          source: ".env docker-compose.prod.yml docker-compose.main.yml docker-compose.monitor.yml nginx/zerodowntime logging prometheus grafana alertmanager k6ws.js k6http.js"
+          source: ".env"
           target: "compose"
 
-      - name: Deploy to EC2-lb1 Server
-        uses: appleboy/ssh-action@master
+      - name: Copy docker-compose.lb.yml to EC2-lb1
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST1 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          script: |
-            cd compose
-            docker-compose -f docker-compose.lb.yml down
-            docker-compose -f docker-compose.lb.yml pull
-            docker-compose -f docker-compose.lb.yml up -d
+          source: "docker-compose.lb.yml"
+          target: "compose"
 
-      - name: Deploy to EC2-lb2 Server
-        uses: appleboy/ssh-action@master
+      - name: Copy docker-compose.lb.yml to EC2-lb2
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST2 }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          script: |
-            cd compose
-            docker-compose -f docker-compose.lb.yml down
-            docker-compose -f docker-compose.lb.yml pull
-            docker-compose -f docker-compose.lb.yml up -d
+          source: "docker-compose.lb.yml"
+          target: "compose"
 
-      - name: Deploy to EC2 Server
-        uses: appleboy/ssh-action@master
+      - name: Copy docker-compose.prod.yml to EC2
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          script: |
-            cd compose
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml pull
-            docker-compose -f docker-compose.prod.yml up -d
+          source: "docker-compose.prod.yml"
+          target: "compose"
+
+      - name: Copy docker-compose.monitor.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.monitor.yml"
+          target: "compose"
+
+      - name: Copy docker-compose.main.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.main.yml"
+          target: "compose"
+
+      - name: Copy k6ws files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "k6ws.js"
+          target: "compose"
+
+      - name: Copy k6http files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "k6http.js"
+          target: "compose"
+
+      - name: Copy Grafana files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "grafana/grafana.ini"
+          target: "compose"
+
+      - name: Copy logging files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "logging"
+          target: "compose"
+
+      - name: Copy prometheus files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "prometheus"
+          target: "compose"
+
+      - name: Copy logging files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "prometheus"
+          target: "compose"
+
+      - name: Copy alertmanager files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "alertmanager"
+          target: "compose"
+
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v1
+      #   with:
+      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # - name: Build and push Docker backend image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: ./backend
+      #     file: ./backend/Dockerfile.prod
+      #     push: true
+      #     tags: maaayreel/relaysketch-backend:latest
+
+      # - name: Build and push Docker frontend image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: ./frontend
+      #     file: ./frontend/Dockerfile.prod
+      #     push: true
+      #     tags: maaayreel/relaysketch-frontend:latest
+
+      # - name: Build and push Docker nginx image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: ./nginx
+      #     file: ./nginx/Dockerfile.prod
+      #     push: true
+      #     tags: maaayreel/relaysketch-nginx:latest
+
+      # - name: Deploy to EC2-lb1 Server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST1 }}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.EC2_KEY }}
+      #     port: ${{ secrets.EC2_PORT }}
+      #     script: |
+      #       cd compose
+      #       docker-compose -f docker-compose.lb.yml down
+      #       docker-compose -f docker-compose.lb.yml pull
+      #       docker-compose -f docker-compose.lb.yml up -d
+
+      # - name: Deploy to EC2-lb2 Server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST2 }}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.EC2_KEY }}
+      #     port: ${{ secrets.EC2_PORT }}
+      #     script: |
+      #       cd compose
+      #       docker-compose -f docker-compose.lb.yml down
+      #       docker-compose -f docker-compose.lb.yml pull
+      #       docker-compose -f docker-compose.lb.yml up -d
+
+      # - name: Deploy to EC2 Server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USERNAME }}
+      #     key: ${{ secrets.EC2_KEY }}
+      #     port: ${{ secrets.EC2_PORT }}
+      #     script: |
+      #       cd compose
+      #       docker-compose -f docker-compose.prod.yml down
+      #       docker-compose -f docker-compose.prod.yml pull
+      #       docker-compose -f docker-compose.prod.yml up -d
