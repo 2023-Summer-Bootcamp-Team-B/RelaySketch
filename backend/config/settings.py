@@ -51,7 +51,8 @@ ALLOWED_HOSTS = [
     "15.165.125.132",
     "relaysketch.online",
     "www.relaysketch.online",
-    "3.38.107.253"
+    "3.38.107.253",
+    "3.38.178.89",
 ]
 
 INSTALLED_APPS = [
@@ -180,6 +181,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.relaysketch.online",
     "https://relaysketch.online",
     "http://3.38.107.253:3000",
+    "http://3.38.178.89:3000",
 ]
 
 CORS_ALLOW_HEADERS = (
