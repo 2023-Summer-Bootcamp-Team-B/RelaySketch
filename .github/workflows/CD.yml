@@ -162,6 +162,7 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
+            cd nginx
             sudo mv -f nginx.prod1.conf nginx.prod.conf
             docker exec -i nginx nginx -s reload
 
@@ -187,6 +188,7 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
+            cd nginx
             sudo mv -f nginx.prod2.conf nginx.prod.conf
             docker exec -i nginx nginx -s reload
 
@@ -212,6 +214,7 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
+            cd nginx
             sudo mv -f nginx.prod3.conf nginx.prod.conf
             docker exec -i nginx nginx -s reload
 
@@ -237,5 +240,6 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script: |
             cd compose
+            cd nginx
             mv -f nginx.prod0.conf nginx.prod.conf
             docker exec -i nginx nginx -s reload
