@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./nginx
-          file: ./frontend/Dockerfile.prod
+          file: ./nginx/Dockerfile.prod
           push: true
           tags: maaayreel/relaysketch-nginx:latest
 
