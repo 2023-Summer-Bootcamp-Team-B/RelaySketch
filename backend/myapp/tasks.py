@@ -5,6 +5,7 @@ import openai
 import requests
 from storages.backends.s3boto3 import S3Boto3Storage
 from datetime import datetime
+from myapp.models import Room, SubRoom, Topic
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 client_id = os.getenv("NAVER_CLIENT_ID")
@@ -58,9 +59,19 @@ def upload_image_to_s3(image_url, filename):
         storage = S3Boto3Storage()
         now = datetime.now().strftime("%Y%m%d%H%M%S")
         random_string = str(uuid.uuid4().hex[:6])
-        unique_filename = f"{filename}_{now}_{random_string}.png"
+        unique_filename = f"images/{filename}_{now}_{random_string}.png"
         s3_image_url = storage.save(unique_filename, image_data)
         return s3_image_url
     else:
         # 처리 실패 시 예외 처리 등을 수행할 수 있습니다.
         raise Exception("Failed to upload image to S3")
+
+
+@shared_task
+def clear_data():
+    for room in Room.objects.all():
+        room.hard_delete()
+    for sub_room in SubRoom.objects.all():
+        sub_room.hard_delete()
+    for topic in Topic.objects.all():
+        topic.hard_delete()

@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+from celery.schedules import crontab
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -217,3 +218,10 @@ AWS_S3_SECURE_URLS = True  # use http instead of https
 AWS_QUERYSTRING_AUTH = (
     False  # don't add complex authentication-related query parameters for requests
 )
+
+CELERY_BEAT_SCHEDULE = {
+    'clear_data_every_day': {
+        'task': 'myapp.tasks.clear_data',  # task의 경로를 정확하게 설정해야 합니다.
+        'schedule': crontab(minute='0', hour='4'),  # 매일 4시 0분에 실행합니다.
+    },
+}

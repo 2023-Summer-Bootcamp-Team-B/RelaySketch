@@ -44,6 +44,18 @@ services:
       <<: *common_env
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
 
+  celery_beat:
+    container_name: celery_beat
+    image: maaayreel/relaysketch-backend:latest
+    restart: always
+    depends_on:
+      - django
+      - rabbitmq
+      - celery_worker
+    environment:
+      <<: *common_env
+    command: sh -c "pipenv run celery -A config beat --loglevel=info"
+
   frontend:
     container_name: frontend
     ports:
