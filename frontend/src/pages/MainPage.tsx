@@ -12,7 +12,7 @@ import cloud2 from "../assets/images/구름2.svg";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const MainPage = observer(() => {
-  const { disconnect } = WebsocketStore;
+  const { disconnect, setError, setWs } = WebsocketStore;
   const navigate = useNavigate();
 
   const csrftoken = Cookies.get("csrftoken");
@@ -35,6 +35,9 @@ const MainPage = observer(() => {
   };
 
   useEffect(() => {
+    disconnect();
+    setWs(null);
+    setError(null);
     debounce(async () => {
       try {
         disconnect();

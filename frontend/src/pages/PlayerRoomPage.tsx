@@ -168,9 +168,12 @@ const PlayerRoomPage = observer(() => {
     }
   };
 
-  if (error) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
