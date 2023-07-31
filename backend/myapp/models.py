@@ -16,6 +16,9 @@ class Room(models.Model):
         self.delete_at = timezone.now()
         self.save()
 
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
 
 # SubRoom 모델
 class SubRoom(models.Model):
@@ -94,6 +97,9 @@ class SubRoom(models.Model):
 
         self.delete()
 
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
 
 # Topic 모델
 class Topic(models.Model):
@@ -115,3 +121,6 @@ class Topic(models.Model):
     def get_last_topic(cls, subroom_id):
         subroom = SubRoom.objects.get(id=subroom_id)
         return cls.objects.filter(sub_room=subroom, delete_at=None).order_by('-created_at').first()
+
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)

@@ -1,27 +1,6 @@
 version: "3.7"
 
 services:
-  celery_beat:
-    container_name: celery_beat
-    image: maaayreel/relaysketch-backend:latest
-    restart: always
-    environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_HOST: ${DB_HOST}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
-      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    command: sh -c "pipenv run celery -A config beat --loglevel=info"
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus
