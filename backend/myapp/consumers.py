@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -201,7 +202,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # 클라이언트에게 게임 결과 전송
                 await self.send_game_result(game_result)
 
-    async def generate_game_result(self, subroom):
+    @staticmethod
+    async def generate_game_result(subroom):
         game_result = []
 
         topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom, delete_at=None)
@@ -285,7 +287,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps(message_content))
 
-    async def ai_image_url(self, event):
+    async def ai_image_url(self):
         topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
         translated_result = await sync_to_async(translate_text.delay)(topic.title)
@@ -323,12 +325,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         except Exception as e:
             # If there's an unexpected error while getting the task result
-            await self.send(
-                text_data=json.dumps({"message": "An error occurred while creating the image", "error": str(e)})
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "image_created_fail",
+                    "message": {
+                        "event": "image_creation_failed",
+                        "data": {
+                            "error": str(e)
+                        },
+                    },
+                },
             )
 
-
-    async def next_round(self, event):
+    async def next_round(self):
         room_num = await self.get_room_count()
 
         room = await self.get_room_by_id(self.room_id)
@@ -405,7 +415,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         subroom_count = await self.get_subroom_count(room)
 
         sub_room = await self.get_subroom_by_id(player_id)
-
 
         if sub_room:
             sub_room.first_player = new_name

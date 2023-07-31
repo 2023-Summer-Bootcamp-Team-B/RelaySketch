@@ -175,9 +175,8 @@ jobs:
           script: |
             cd compose
             docker-compose -f docker-compose.lb.yml down
-            docker-compose -f docker-compose.lb.yml pull
-            docker-compose -f docker-compose.lb.yml up -d
             docker system prune --all --volumes
+            docker-compose -f docker-compose.lb.yml up -d
 
       - name: Down EC2-lb2 Server && Up EC2-lb1 Server
         uses: appleboy/ssh-action@master
@@ -201,9 +200,8 @@ jobs:
           script: |
             cd compose
             docker-compose -f docker-compose.lb.yml down
-            docker-compose -f docker-compose.lb.yml pull
-            docker-compose -f docker-compose.lb.yml up -d
             docker system prune --all --volumes
+            docker-compose -f docker-compose.lb.yml up -d
 
       - name: Up EC2-lb2 Server && Down >> Deploy >> UP to EC2 Server
         uses: appleboy/ssh-action@master
@@ -218,7 +216,7 @@ jobs:
             docker exec -i nginx nginx -s reload
             cd ..
             docker-compose -f docker-compose.main.yml down
-            docker-compose -f docker-compose.main.yml pull
+            docker system prune --all --volumes
             docker-compose -f docker-compose.main.yml up -d
             cd nginx
             mv -f nginx.0.conf nginx.conf
