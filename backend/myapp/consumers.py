@@ -300,9 +300,35 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1)
 
             # Retrieve the result (or exception) of the task
-            image_url = await sync_to_async(result.get)()
+            if result.successful():
+                image_url = await sync_to_async(result.get)()
 
-            if 'error' in image_url:
+                if 'error' in image_url:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "image_created_fail",
+                            "message": {
+                                "event": "image_creation_failed",
+                                "data": {
+                                    "error": "AI가 만들 수 없는 주제 입니다."
+                                },
+                            },
+                        },
+                    )
+                    return
+
+                await self.send(
+                    text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+                )
+
+                # Update the topic with the created image url
+                topic.url = image_url
+                await sync_to_async(topic.save)()
+            else:
+                # The task might have raised an exception
+                # Use .result to retrieve the exception if any was raised
+                exc = result.result
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -310,21 +336,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {
                             "event": "image_creation_failed",
                             "data": {
-                                "error": "AI가 만들 수 없는 주제 입니다."
+                                "error": str(exc)
                             },
                         },
                     },
                 )
-                return
-
-            await self.send(
-                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
-            )
-
-            # Update the topic with the created image url
-            topic.url = image_url
-            await sync_to_async(topic.save)()
-
         except Exception as e:
             # If there's an unexpected error while getting the task result
             await self.channel_layer.group_send(
