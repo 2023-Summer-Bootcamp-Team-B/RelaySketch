@@ -46,6 +46,7 @@ class SubRoom(models.Model):
     def get_next_id(self):
         next_sub_room_id = self.next_room.id
         return next_sub_room_id
+
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -61,8 +62,12 @@ class SubRoom(models.Model):
 
         # 이미 1개가 있다면
         if last_subroom:
-            last_player_number = cls.objects.filter(room=room, delete_at=None).count()
-            max_number = last_player_number + 1
+            count = cls.objects.filter(room=room, delete_at=None).count()
+            if count is not None:
+                last_player_number = count  # Removed .group()
+                max_number = last_player_number + 1
+            else:
+                max_number = 1
         else:
             max_number = 1
 
