@@ -46,14 +46,14 @@ def create_image(translated_text):
     try:
         response = openai.Image.create(prompt=translated_text, n=1, size="256x256")
         image_url = response["data"][0]["url"]
-        return image_url
+        return image_url, "image"
     except InvalidRequestError as e:
         error_message = f"OpenAI API returned an error: {e}."
         print(error_message)
-        return {'error': error_message}
+        return {'error': error_message}, None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return {'error': str(e)}
+        return {'error': str(e)}, None
 
 
 @shared_task
