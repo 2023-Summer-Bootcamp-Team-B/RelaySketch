@@ -66,8 +66,5 @@ def upload_image_to_s3(self, image_url):
 
 
 @shared_task
-def start_translation_and_image_creation_process(text):
-    # This is the entry point for the chained tasks
-    # The result of each task is passed as argument to the next task
-    # If any task fails, the following tasks are not called
+def chain_process(text):
     chain(translate_text.s(text), create_image.s(), upload_image_to_s3.s()).apply_async()

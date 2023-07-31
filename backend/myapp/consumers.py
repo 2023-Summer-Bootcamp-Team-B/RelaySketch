@@ -4,7 +4,7 @@ import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from .models import Room, SubRoom, Topic
-from .tasks import create_image, translate_text
+from .tasks import chain_process
 import logging
 
 logger = logging.getLogger(__name__)
@@ -289,14 +289,44 @@ class RoomConsumer(AsyncWebsocketConsumer):
             topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
             # Start the translation and image creation tasks
-            translate_text.apply_async((topic.title,), link=create_image.s())
+            result = chain_process.apply_async((topic.title,))
 
             await self.send(
                 text_data=json.dumps({"message": "Image creation started"})
             )
 
+            # Poll the AsyncResult instance to check if the task has finished
+            while not result.ready():
+                await asyncio.sleep(1)
+
+            # Retrieve the result (or exception) of the task
+            image_url = await sync_to_async(result.get)()
+
+            if 'error' in image_url:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "image_created_fail",
+                        "message": {
+                            "event": "image_creation_failed",
+                            "data": {
+                                "error": "AI가 만들 수 없는 주제 입니다."
+                            },
+                        },
+                    },
+                )
+                return
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+            )
+
+            # Update the topic with the created image url
+            topic.url = image_url
+            await sync_to_async(topic.save)()
+
         except Exception as e:
-            # If there's an unexpected error while starting the tasks
+            # If there's an unexpected error while getting the task result
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
