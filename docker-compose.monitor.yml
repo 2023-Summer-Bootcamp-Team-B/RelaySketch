@@ -153,4 +153,5 @@ services:
       - kibana
 
 volumes:
+  elasticsearch:
   grafana-data: {}

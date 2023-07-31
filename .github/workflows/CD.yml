@@ -178,6 +178,7 @@ jobs:
             docker-compose -f docker-compose.lb.yml down
             docker-compose -f docker-compose.lb.yml pull
             docker-compose -f docker-compose.lb.yml up -d
+            docker system prune --all --volumes
 
       - name: Down EC2-lb2 Server && Up EC2-lb1 Server
         uses: appleboy/ssh-action@master
@@ -204,6 +205,7 @@ jobs:
             docker-compose -f docker-compose.lb.yml down
             docker-compose -f docker-compose.lb.yml pull
             docker-compose -f docker-compose.lb.yml up -d
+            docker system prune --all --volumes
 
       - name: Down EC2 Server && Up EC2-lb2 Server
         uses: appleboy/ssh-action@master
