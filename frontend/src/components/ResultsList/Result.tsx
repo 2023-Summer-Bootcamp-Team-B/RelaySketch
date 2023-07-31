@@ -12,6 +12,7 @@ import sketchBook from "../../assets/images/sketchbook.png";
 import sunny from "../../assets/images/sun.svg";
 import WebsocketStore from "../../stores/WebsocketStore";
 import Button from "../UI/Button";
+import KakaoShareButton from "../UI/KakaoShareButton";
 
 type ResultPropsType = {
   title: string;
@@ -109,6 +110,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
           {/* 마지막 결과가 아닌 경우 */}
           {currentIdx !== total && index === count && (
             <div className=" flex items-center justify-center">
+              <KakaoShareButton />
               <Button
                 type="button"
                 className="border-dashed border-2 border-black rounded-[25px] bg-[#E7F5FF] shadow-lg relative z-10"
@@ -140,6 +142,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
           {/* 마지막 결과인 경우 */}
           {currentIdx === total && index === count && (
             <div className=" flex items-center justify-center">
+              <KakaoShareButton />
               <Button
                 type="button"
                 className="border-dashed border-2 border-black rounded-[25px] bg-[#E7F5FF] shadow-lg relative z-10"
