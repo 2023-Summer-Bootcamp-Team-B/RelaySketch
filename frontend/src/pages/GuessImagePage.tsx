@@ -7,7 +7,7 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const GuessImagePage = observer(() => {
-  const { nowLoading, imgSrc, endGame } = WebsocketStore;
+  const { nowLoading, imgSrc, endGame, error } = WebsocketStore;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +17,13 @@ const GuessImagePage = observer(() => {
       navigate("/results");
     }
   }, [nowLoading, endGame]);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <div>

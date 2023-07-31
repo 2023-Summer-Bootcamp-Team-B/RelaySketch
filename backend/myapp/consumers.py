@@ -280,6 +280,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps(message_content))
 
+    async def image_created_fail(self, event):
+        message_content = event["message"]
+
+        await self.send(text_data=json.dumps(message_content))
+
     async def ai_image_url(self, event):
         topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
@@ -292,13 +297,36 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
         )
 
-        image_url = await sync_to_async(result.get)()
-        await self.send(
-            text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
-        )
+        try:
+            image_url = await sync_to_async(result.get)()
 
-        topic.url = image_url
-        await sync_to_async(topic.save)()
+            if 'error' in image_url:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "image_created_fail",
+                        "message": {
+                            "event": "image_creation_failed",
+                            "data": {
+                                "error": "AI가 만들 수 없는 주제 입니다."
+                            },
+                        },
+                    },
+                )
+                return
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+            )
+            topic.url = image_url
+            await sync_to_async(topic.save)()
+
+        except Exception as e:
+            # If there's an unexpected error while getting the task result
+            await self.send(
+                text_data=json.dumps({"message": "An error occurred while creating the image", "error": str(e)})
+            )
+
 
     async def next_round(self, event):
         room_num = await self.get_room_count()
