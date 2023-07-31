@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useEffect } from "react";
 
-import shareIcon from "../../assets/images/공유아이콘.png";
+import shareIcon from "../../assets/images/kakao_share_button.png";
 import WebsocketStore from "../../stores/WebsocketStore";
 
 const KakaoShareButton = observer(() => {
