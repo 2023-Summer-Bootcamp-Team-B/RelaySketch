@@ -191,5 +191,6 @@ sketch
 
 */static
 migrations
+alertmanager
 
 k6
