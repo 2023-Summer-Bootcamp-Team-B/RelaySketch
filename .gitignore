@@ -194,3 +194,5 @@ migrations
 alertmanager
 
 k6
+
+FCMsecret.json

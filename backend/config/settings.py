@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from celery.schedules import crontab
 import pymysql
+from firebase_admin import messaging, credentials, initialize_app
 
 pymysql.install_as_MySQLdb()
 
@@ -227,3 +228,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='0', hour='4'),  # 매일 4시 0분에 실행합니다.
     },
 }
+
+try:
+    cred = credentials.Certificate(os.getenv("FIREBASE_SERVICE_ACCOUNT_KEY"))
+    FIREBASE_APP = initialize_app(cred)
+except Exception as e:
+    print(f"Failed to initialize Firebase app: {e}")
+    FIREBASE_APP = None
