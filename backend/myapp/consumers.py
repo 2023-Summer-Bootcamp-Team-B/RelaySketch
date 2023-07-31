@@ -287,7 +287,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps(message_content))
 
-    async def ai_image_url(self):
+    async def ai_image_url(self, event):
         topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
         translated_result = await sync_to_async(translate_text.delay)(topic.title)
