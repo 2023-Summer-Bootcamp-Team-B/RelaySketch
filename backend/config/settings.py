@@ -51,8 +51,8 @@ ALLOWED_HOSTS = [
     "15.165.125.132",
     "relaysketch.online",
     "www.relaysketch.online",
-    "3.38.107.253",
-    "3.38.178.89",
+    "15.164.244.194",
+    "3.36.112.44",
 ]
 
 INSTALLED_APPS = [
@@ -180,8 +180,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://15.165.125.132",
     "https://www.relaysketch.online",
     "https://relaysketch.online",
-    "http://3.38.107.253:3000",
-    "http://3.38.178.89:3000",
+    "http://15.164.244.194:3000",
+    "http://3.36.112.44:3000",
 ]
 
 CORS_ALLOW_HEADERS = (
@@ -222,8 +222,8 @@ AWS_QUERYSTRING_AUTH = (
 )
 
 CELERY_BEAT_SCHEDULE = {
-    'clear_data_every_day': {
-        'task': 'myapp.tasks.clear_data',  # task의 경로를 정확하게 설정해야 합니다.
-        'schedule': crontab(minute='0', hour='4'),  # 매일 4시 0분에 실행합니다.
+    "clear_data_every_day": {
+        "task": "myapp.tasks.clear_data",  # task의 경로를 정확하게 설정해야 합니다.
+        "schedule": crontab(minute="0", hour="4"),  # 매일 4시 0분에 실행합니다.
     },
 }
