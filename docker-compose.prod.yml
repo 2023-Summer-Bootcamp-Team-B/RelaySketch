@@ -74,7 +74,7 @@ services:
       - django
       - frontend
     volumes:
-      - ./nginx/nginx.prod.conf:/etc/nginx/nignx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nignx.conf
       - staticfiles:/staticfiles
       - ./nginx/log:/var/log/nginx
       - ./data/certbot/conf:/etc/letsencrypt

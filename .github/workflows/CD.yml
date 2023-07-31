@@ -149,7 +149,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./nginx
-          file: ./nginx/Dockerfile.prod
+          file: ./nginx/Dockerfile
           push: true
           tags: maaayreel/relaysketch-nginx:latest
 
@@ -163,7 +163,7 @@ jobs:
           script: |
             cd compose
             cd nginx
-            sudo mv -f nginx.prod1.conf nginx.prod.conf
+            sudo mv -f nginx.1.conf nginx.conf
             docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2-lb1 Server
@@ -189,7 +189,7 @@ jobs:
           script: |
             cd compose
             cd nginx
-            sudo mv -f nginx.prod2.conf nginx.prod.conf
+            sudo mv -f nginx.2.conf nginx.conf
             docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2-lb2 Server
@@ -215,7 +215,7 @@ jobs:
           script: |
             cd compose
             cd nginx
-            sudo mv -f nginx.prod3.conf nginx.prod.conf
+            sudo mv -f nginx.3.conf nginx.conf
             docker exec -i nginx nginx -s reload
 
       - name: Deploy to EC2 Server
@@ -241,5 +241,5 @@ jobs:
           script: |
             cd compose
             cd nginx
-            mv -f nginx.prod0.conf nginx.prod.conf
+            mv -f nginx.0.conf nginx.conf
             docker exec -i nginx nginx -s reload
