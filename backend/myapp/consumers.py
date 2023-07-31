@@ -9,7 +9,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,14 +37,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def connect(self, text_data=None):
         if text_data is not None:
             json.loads(text_data)
-
         self.room_id = self.scope["url_route"]["kwargs"]["roomid"]
         self.room_group_name = "main_room_%s" % self.room_id
-
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
         self.connection_open = True
-
         self.last_activity_time = time.time()
         self.ping_task = asyncio.create_task(self.send_ping())
 
@@ -376,13 +372,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
         player_id = data.get("playerId")
         new_name = data.get("name")
 
+        # 현재 룸 있는 플레이어 수
+        room = await self.get_room_by_id(self.room_id)
+        subroom_count = await self.get_subroom_count(room)
+
         sub_room = await self.get_subroom_by_id(player_id)
+
+
         if sub_room:
             sub_room.first_player = new_name
             await sync_to_async(sub_room.save)()
 
             await self.send(text_data=json.dumps({"event": "changeName", "data": "이름 변경 성공"}))
 
+        # room에 플레이어가 혼자가 아닐 경우 모두에게 바뀐 플레이어 이름 정보 그룹send로 보내준다.
+        if subroom_count > 1:
             await self.send_player_list()
 
     async def send_player_list(self):

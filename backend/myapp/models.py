@@ -60,13 +60,11 @@ class SubRoom(models.Model):
         last_subroom = cls.get_last_subroom(room)
 
         # 이미 1개가 있다면
-        if last_subroom and last_subroom.first_player:
-            match = re.search(r'\d+', last_subroom.first_player)
+        if last_subroom:
+            match = cls.objects.filter(room=room, delete_at=None).count()
             if match is not None:
-                last_player_number = int(match.group())
                 max_number = last_player_number + 1
-            else:
-                max_number = 1
+                last_player_number = int(match.group())
         else:
             max_number = 1
 
