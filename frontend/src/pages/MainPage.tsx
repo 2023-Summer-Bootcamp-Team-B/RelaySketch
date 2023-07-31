@@ -26,7 +26,7 @@ const MainPage = observer(() => {
       const res = await axios.post(
         "https://www.relaysketch.online/api/add_room/",
         null,
-        config
+        config,
       );
       navigate(`/playerroom/${res.data.result.room_id}`);
     } catch (err) {
@@ -41,7 +41,7 @@ const MainPage = observer(() => {
         const res = await axios.post(
           "https://www.relaysketch.online/api/add_room/",
           null,
-          config
+          config,
         );
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
