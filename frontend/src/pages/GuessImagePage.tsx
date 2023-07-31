@@ -21,7 +21,7 @@ const GuessImagePage = observer(() => {
   useEffect(() => {
     if (error) {
       alert(error);
-      navigate("/");
+      window.location.href = "/";
     }
   }, [error]);
 

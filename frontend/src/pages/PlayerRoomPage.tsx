@@ -134,7 +134,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -171,7 +171,7 @@ const PlayerRoomPage = observer(() => {
   useEffect(() => {
     if (error) {
       alert(error);
-      navigate("/");
+      window.location.href = "/";
     }
   }, [error]);
 
@@ -228,7 +228,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"

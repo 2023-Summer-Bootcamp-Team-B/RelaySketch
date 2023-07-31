@@ -214,11 +214,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # topic 쓴 사람 찾음
                 player = await sync_to_async(SubRoom.objects.get)(id=topic.player_id)
 
-                game_result.append({
-                    'title': topic.title,
-                    'player_name': player.first_player,
-                    'img': topic.url,
-                })
+                game_result.append(
+                    {
+                        "title": topic.title,
+                        "player_name": player.first_player,
+                        "img": topic.url,
+                    }
+                )
 
         except Exception as e:
             # 예외 처리
@@ -231,12 +233,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if game_result:
             await self.channel_layer.group_send(
                 self.room_group_name,
-                {
-                    'type': 'game_result_message',
-                    'message': {
-                        'game_result': game_result
-                    }
-                }
+                {"type": "game_result_message", "message": {"game_result": game_result}},
             )
 
     async def game_result_message(self, event):
@@ -302,41 +299,50 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
             image_url = await sync_to_async(result.get)()
 
-            if 'error' in image_url:
+            if "error" in image_url:
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "image_created_fail",
                         "message": {
                             "event": "image_creation_failed",
-                            "data": {
-                                "error": "AI가 만들 수 없는 주제 입니다."
-                            },
+                            "data": {"error": "AI가 만들 수 없는 주제 입니다."},
                         },
                     },
                 )
                 return
 
             await self.send(
-                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+                text_data=json.dumps(
+                    {"message": "Image creation completed", "image_url": image_url}
+                )
             )
             topic.url = image_url
             await sync_to_async(topic.save)()
 
         except Exception as e:
-            # If there's an unexpected error while getting the task result
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "image_created_fail",
-                    "message": {
-                        "event": "image_creation_failed",
-                        "data": {
-                            "error": str(e)
+            # Log the error along with its traceback
+
+            error_message = f"An unexpected error occurred: {str(e)}"
+
+            print(error_message)
+
+            try:
+                # If there's an unexpected error while getting the task result
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "image_created_fail",
+                        "message": {
+                            "event": "image_creation_failed",
+                            "data": {"error": error_message},
                         },
                     },
-                },
-            )
+                )
+
+            except Exception as group_send_error:
+                print(f"An error occurred while sending the group message: {group_send_error}")
 
     async def next_round(self, event):
         room_num = await self.get_room_count()
@@ -362,11 +368,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps(
                 {
                     "event": "moveNextRound",
-                    "data": {
-                        "round": self.round,
-                        "complete": room.completeNum,
-                        "url": image_url
-                    },
+                    "data": {"round": self.round, "complete": room.completeNum, "url": image_url},
                 }
             )
         )
