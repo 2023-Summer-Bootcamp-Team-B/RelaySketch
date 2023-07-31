@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import { useEffect } from "react";
 
 import shareIcon from "../../assets/images/kakao_share_button.png";
+// import shareIcon from "../../assets/images/kakaotalk_sharing_btn.png";
 import WebsocketStore from "../../stores/WebsocketStore";
 
 const KakaoShareButton = observer(() => {
@@ -46,12 +47,12 @@ const KakaoShareButton = observer(() => {
     <button
       id="kakaotalk-sharing-btn"
       type="button"
-      className="border-dashed border-2 border-black rounded-[25px] bg-[#E7F5FF] shadow-lg mr-2 p-2 relative z-10 flex justify-center items-center"
+      className="border-dashed border-2 border-black rounded-[12px] shadow-lg ml-2 relative z-10 flex justify-center items-center"
     >
       <img
         src={shareIcon}
         alt="카카오톡으로 공유하기"
-        className="w-[3vw] h-[6vh] max-[768px]:w-[6vh] max-[768px]:h-[6vh]"
+        className="w-auto h-[6.5vh] max-[768px]:w-[6vh] max-[768px]:h-[6vh] p-[1px]"
       />
     </button>
   );
