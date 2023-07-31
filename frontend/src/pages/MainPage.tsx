@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { debounce } from "lodash";
 import { observer } from "mobx-react";
 import { useEffect } from "react";
@@ -13,9 +14,20 @@ import WebsocketStore from "../stores/WebsocketStore";
 const MainPage = observer(() => {
   const { disconnect } = WebsocketStore;
   const navigate = useNavigate();
+
+  const csrftoken = Cookies.get("csrftoken");
+  const config = {
+    headers: {
+      "X-CSRFToken": csrftoken,
+    },
+  };
   const handleClickConnect = async () => {
     try {
-      const res = await axios.post("http://localhost/api/add_room/");
+      const res = await axios.post(
+        "https://www.relaysketch.online/api/add_room/",
+        null,
+        config
+      );
       navigate(`/playerroom/${res.data.result.room_id}`);
     } catch (err) {
       console.log(err);
@@ -26,7 +38,11 @@ const MainPage = observer(() => {
     debounce(async () => {
       try {
         disconnect();
-        const res = await axios.post("http://localhost/api/add_room/");
+        const res = await axios.post(
+          "https://www.relaysketch.online/api/add_room/",
+          null,
+          config
+        );
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
         console.log(err);
