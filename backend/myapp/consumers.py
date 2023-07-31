@@ -338,7 +338,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-    async def next_round(self):
+    async def next_round(self, event):
         room_num = await self.get_room_count()
 
         room = await self.get_room_by_id(self.room_id)
