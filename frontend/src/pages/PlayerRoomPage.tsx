@@ -134,7 +134,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue
+          (item) => !(item.playerId === myId) && item.playerName === inputValue,
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -168,9 +168,12 @@ const PlayerRoomPage = observer(() => {
     }
   };
 
-  if (error) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
@@ -225,7 +228,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          )
+          ),
         )}
         <button
           className="relative"

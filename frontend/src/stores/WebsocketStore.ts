@@ -35,6 +35,14 @@ class WebsocketStore {
 
   error: string | null = null;
 
+  setWs = (ws: WebSocket | null) => {
+    this.ws = ws;
+  };
+
+  setError = (error: string | null) => {
+    this.error = error;
+  };
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -84,6 +92,8 @@ class WebsocketStore {
           this.currentIdx += 1;
           this.gameResult = message.data.game_result;
           this.nameOfCurrentResult = message.data.game_result[0].player_name;
+        } else if (message.event === "image_creation_failed") {
+          this.error = message.data.error;
         }
 
         if (message.error === "방이 가득 찼습니다.") {
