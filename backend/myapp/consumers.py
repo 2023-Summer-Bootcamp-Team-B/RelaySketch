@@ -6,7 +6,6 @@ from asgiref.sync import sync_to_async
 from .models import Room, SubRoom, Topic
 from .tasks import create_image, translate_text
 import logging
-from celery.result import AsyncResult
 
 logger = logging.getLogger(__name__)
 
@@ -289,44 +288,15 @@ class RoomConsumer(AsyncWebsocketConsumer):
         try:
             topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
-            translated_result = await sync_to_async(translate_text.delay)(topic.title)
-
-            translated_text = await sync_to_async(translated_result.get)()
-            result = create_image.delay(translated_text)
+            # Start the translation and image creation tasks
+            translate_text.apply_async((topic.title,), link=create_image.s())
 
             await self.send(
-                text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
+                text_data=json.dumps({"message": "Image creation started"})
             )
-
-            while not AsyncResult(result.id).ready():
-                # The task has not finished yet, wait for a while and then continue the loop
-                await asyncio.sleep(1)
-
-            image_url = await sync_to_async(result.get)()
-
-            if 'error' in image_url:
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "image_created_fail",
-                        "message": {
-                            "event": "image_creation_failed",
-                            "data": {
-                                "error": "AI가 만들 수 없는 주제 입니다."
-                            },
-                        },
-                    },
-                )
-                return
-
-            await self.send(
-                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
-            )
-            topic.url = image_url
-            await sync_to_async(topic.save)()
 
         except Exception as e:
-            # If there's an unexpected error while getting the task result
+            # If there's an unexpected error while starting the tasks
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
