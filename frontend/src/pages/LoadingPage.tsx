@@ -8,7 +8,7 @@ import AnimatedFooter from "../components/UI/AnimatedFooter";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const LoadingPage = observer(() => {
-  const { nowLoading, endGame } = WebsocketStore;
+  const { nowLoading, endGame, error } = WebsocketStore;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +20,13 @@ const LoadingPage = observer(() => {
       }
     }
   }, [nowLoading, endGame]);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <div className="w-screen h-screen font-hs bg-[#E7F5FF] text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl">

@@ -12,7 +12,7 @@ import cloud2 from "../assets/images/구름2.svg";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const MainPage = observer(() => {
-  const { disconnect } = WebsocketStore;
+  const { disconnect, setError, setWs } = WebsocketStore;
   const navigate = useNavigate();
 
   const csrftoken = Cookies.get("csrftoken");
@@ -26,7 +26,7 @@ const MainPage = observer(() => {
       const res = await axios.post(
         "https://www.relaysketch.online/api/add_room/",
         null,
-        config
+        config,
       );
       navigate(`/playerroom/${res.data.result.room_id}`);
     } catch (err) {
@@ -35,13 +35,16 @@ const MainPage = observer(() => {
   };
 
   useEffect(() => {
+    disconnect();
+    setWs(null);
+    setError(null);
     debounce(async () => {
       try {
         disconnect();
         const res = await axios.post(
           "https://www.relaysketch.online/api/add_room/",
           null,
-          config
+          config,
         );
         navigate(`/playerroom/${res.data.result.room_id}`);
       } catch (err) {
