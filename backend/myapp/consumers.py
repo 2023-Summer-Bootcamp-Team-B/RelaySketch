@@ -90,7 +90,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         room = await self.get_room_by_id(self.room_id)
         remaining_subrooms_exists = await self.get_remaining_subrooms(room)
-        if not remaining_subrooms_exists:
+        if not remaining_subrooms_exists and room is not None:
             await sync_to_async(room.delete)()
 
         await self.send_player_list()
