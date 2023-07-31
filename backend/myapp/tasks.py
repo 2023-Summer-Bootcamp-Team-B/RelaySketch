@@ -16,7 +16,7 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 
 
 @shared_task(bind=True, max_retries=3)
-def create_image(title):
+def create_image(self, title):
     try:
         response = openai.Image.create(prompt=title, n=1, size="256x256")
         image_url = response["data"][0]["url"]
