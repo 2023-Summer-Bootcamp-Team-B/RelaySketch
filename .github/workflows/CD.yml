@@ -161,8 +161,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            cd compose
-            cd nginx
+            cd compose/nginx
             sudo mv -f nginx.1.conf nginx.conf
             docker exec -i nginx nginx -s reload
 
@@ -188,8 +187,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            cd compose
-            cd nginx
+            cd compose/nginx
             sudo mv -f nginx.2.conf nginx.conf
             docker exec -i nginx nginx -s reload
 
@@ -207,7 +205,7 @@ jobs:
             docker-compose -f docker-compose.lb.yml up -d
             docker system prune --all --volumes
 
-      - name: Down EC2 Server && Up EC2-lb2 Server
+      - name: Up EC2-lb2 Server && Down >> Deploy >> UP to EC2 Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -215,33 +213,13 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            cd compose
-            cd nginx
+            cd compose/nginx
             sudo mv -f nginx.3.conf nginx.conf
             docker exec -i nginx nginx -s reload
-
-      - name: Deploy to EC2 Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          script: |
-            cd compose
+            cd ..
             docker-compose -f docker-compose.main.yml down
             docker-compose -f docker-compose.main.yml pull
             docker-compose -f docker-compose.main.yml up -d
-
-      - name: Up EC2 Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          script: |
-            cd compose
             cd nginx
             mv -f nginx.0.conf nginx.conf
             docker exec -i nginx nginx -s reload

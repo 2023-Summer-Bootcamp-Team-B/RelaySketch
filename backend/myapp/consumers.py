@@ -292,13 +292,26 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
         )
 
-        image_url = await sync_to_async(result.get)()
-        await self.send(
-            text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
-        )
+        try:
+            image_url = await sync_to_async(result.get)()
 
-        topic.url = image_url
-        await sync_to_async(topic.save)()
+            if 'error' in image_url:
+                await self.send(
+                    text_data=json.dumps({"message": "Image creation failed", "error": image_url['error']})
+                )
+                return
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+            )
+            topic.url = image_url
+            await sync_to_async(topic.save)()
+
+        except Exception as e:
+            # If there's an unexpected error while getting the task result
+            await self.send(
+                text_data=json.dumps({"message": "An error occurred while creating the image", "error": str(e)})
+            )
 
     async def next_round(self, event):
         room_num = await self.get_room_count()
