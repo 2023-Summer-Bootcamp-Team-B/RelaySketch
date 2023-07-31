@@ -288,18 +288,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message_content))
 
     async def ai_image_url(self, event):
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
-
-        translated_result = await sync_to_async(translate_text.delay)(topic.title)
-
-        translated_text = await sync_to_async(translated_result.get)()
-        result = await sync_to_async(create_image.delay)(translated_text)
-
-        await self.send(
-            text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
-        )
-
         try:
+            topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
+
+            translated_result = await sync_to_async(translate_text.delay)(topic.title)
+
+            translated_text = await sync_to_async(translated_result.get)()
+            result = await sync_to_async(create_image.delay)(translated_text)
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
+            )
+
             image_url = await sync_to_async(result.get)()
 
             if 'error' in image_url:
