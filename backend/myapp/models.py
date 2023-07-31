@@ -46,6 +46,7 @@ class SubRoom(models.Model):
     def get_next_id(self):
         next_sub_room_id = self.next_room.id
         return next_sub_room_id
+    
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -63,8 +64,10 @@ class SubRoom(models.Model):
         if last_subroom:
             match = cls.objects.filter(room=room, delete_at=None).count()
             if match is not None:
-                max_number = last_player_number + 1
                 last_player_number = int(match.group())
+                max_number = last_player_number + 1
+            else:
+                max_number = 1
         else:
             max_number = 1
 
