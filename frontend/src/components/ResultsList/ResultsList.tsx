@@ -10,7 +10,7 @@ const ResultsList = observer(() => {
   const {
     myId,
     hostId,
-    players,
+    allEnteredPlayers,
     gameResult,
     currentIdx,
     nameOfCurrentResult,
@@ -18,7 +18,7 @@ const ResultsList = observer(() => {
   } = WebsocketStore;
 
   const showResultHandler = () => {
-    const id = players[currentIdx].player_id;
+    const id = allEnteredPlayers[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
 

@@ -1,10 +1,8 @@
-/* eslint-disable no-await-in-loop */
 import axios from "axios";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 import downloadBtnImg from "../../assets/images/download.svg";
 import playBtnImg from "../../assets/images/play.svg";
@@ -12,6 +10,7 @@ import sketchBook from "../../assets/images/sketchbook.png";
 import sunny from "../../assets/images/sun.svg";
 import WebsocketStore from "../../stores/WebsocketStore";
 import Button from "../UI/Button";
+import KakaoShareButton from "../UI/KakaoShareButton";
 
 type ResultPropsType = {
   title: string;
@@ -21,16 +20,16 @@ type ResultPropsType = {
 };
 
 const Result = observer(({ name, title, image, index }: ResultPropsType) => {
-  const { gameResult, total, currentIdx, myId, hostId, players, send } =
+  const { gameResult, currentIdx, myId, hostId, allEnteredPlayers, send } =
     WebsocketStore;
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
-  const navigate = useNavigate();
   const imgUrlList = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
+  const total = gameResult.length;
 
   const newGameHandler = () => {
-    navigate("/");
+    window.location.href = "/";
   };
 
   const downloadHandler = async () => {
@@ -60,7 +59,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   };
 
   const showResultHandler = () => {
-    const id = players[currentIdx].player_id;
+    const id = allEnteredPlayers[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
 
@@ -80,12 +79,17 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
     setHidden(true);
   }, [gameResult]);
 
+  const classes =
+    index === 0
+      ? "mr-4 text-[#fc5c65] font-bold"
+      : "mr-4 text-[#0984e3] font-bold";
+
   return (
     <>
       {!hidden && (
         <div ref={ref}>
           <div className=" text-right text-lg md:text-3xl mb-4 mr-2 relative z-10">
-            <span className="mr-4">{title}</span>
+            <span className={classes}>{title}</span>
             <span>{name}</span>
           </div>
           <div className=" flex items-start mb-4 ">
@@ -111,19 +115,19 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
             <div className=" flex items-center justify-center">
               <Button
                 type="button"
-                className="border-dashed border-2 border-black rounded-[25px] bg-[#E7F5FF] shadow-lg relative z-10"
+                className="border-dashed border-2 border-black rounded-[12px] bg-[#E7F5FF] shadow-lg relative z-10"
                 onClick={downloadHandler}
               >
                 <img
                   src={downloadBtnImg}
                   alt="download button"
-                  className=" w-[4vw] h-[8vh] p-2"
+                  className=" w-[3.5vw] h-[6.5vh] p-2"
                 />
               </Button>
               {/* 방장이 아니면 다음 결과 보기 버튼을 화면에 표시하지 않음 */}
               {myId === hostId && (
                 <Button type="button" onClick={showResultHandler}>
-                  <div className=" border-dashed border-2 border-black rounded-[25px] w-fit h-[8vh] pl-2 pr-2 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
+                  <div className=" border-dashed border-2 border-black rounded-[12px] w-fit h-[7vh] pl-2 pr-2 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
                     <img
                       src={playBtnImg}
                       alt="play a new game"
@@ -135,6 +139,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
                   </div>
                 </Button>
               )}
+              <KakaoShareButton />
             </div>
           )}
           {/* 마지막 결과인 경우 */}
@@ -142,17 +147,17 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
             <div className=" flex items-center justify-center">
               <Button
                 type="button"
-                className="border-dashed border-2 border-black rounded-[25px] bg-[#E7F5FF] shadow-lg relative z-10"
+                className="border-dashed border-2 border-black rounded-[12px] bg-[#E7F5FF] shadow-lg relative z-10"
                 onClick={downloadHandler}
               >
                 <img
                   src={downloadBtnImg}
                   alt="download button"
-                  className=" w-[4vw] h-[8vh] p-2"
+                  className=" w-[3.5vw] h-[6.5vh] p-2"
                 />
               </Button>
               <Button type="button" onClick={newGameHandler}>
-                <div className=" border-dashed border-2 border-black rounded-[25px] w-fit h-[8vh] p-4 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
+                <div className=" border-dashed border-2 border-black rounded-[12px] w-fit h-[7vh] p-4 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
                   <img
                     src={playBtnImg}
                     alt="play a new game"
@@ -163,6 +168,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
                   </span>
                 </div>
               </Button>
+              <KakaoShareButton />
             </div>
           )}
         </div>

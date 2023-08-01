@@ -97,6 +97,8 @@ services:
       - "3000:3000"
     depends_on:
       - django # django 컨테이너가 실행되고 나서 frontend 컨테이너가 실행되도록 설정
+    environment:
+      VITE_APP_KAKAO_API_KEY: ${VITE_APP_KAKAO_API_KEY}
 
   nginx:
     container_name: nginx
