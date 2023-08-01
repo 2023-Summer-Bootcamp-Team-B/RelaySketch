@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+
 import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +23,22 @@ type ArrType = {
 
 const PlayerRoomPage = observer(() => {
   const { myId, players: player, total, hostId, round } = WebsocketStore;
+
+  /*
+  const handlePopState = (event: { state: any }) => {
+    // event.state는 pushState 또는 replaceState로 변경한 상태 정보를 가지고 있습니다.
+    if (event.state) {
+      window.location.href = "/";
+      console.log("이전 페이지 보기 버튼이 눌렸습니다!");
+      // 원하는 작업을 수행합니다.
+    } else {
+      // 다음 페이지 보기 버튼이 눌렸을 때 처리하는 로직을 작성합니다.
+      console.log("다음 페이지 보기 버튼이 눌렸습니다!");
+      window.location.href = "/";
+    }
+  };
+
+  window.addEventListener("popstate", handlePopState); */
 
   console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
@@ -134,7 +151,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -163,17 +180,14 @@ const PlayerRoomPage = observer(() => {
         event: "nameChanged",
         data: { playerId: myId, name: inputValue },
       });
-
+      console.log("이름 바뀌었슈");
       event.target.blur();
     }
   };
 
-  useEffect(() => {
-    if (error) {
-      alert(error);
-      navigate("/");
-    }
-  }, [error]);
+  if (error) {
+    navigate("/");
+  }
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
@@ -182,7 +196,7 @@ const PlayerRoomPage = observer(() => {
         {roomstate.map((x: ArrType) =>
           x.empty ? (
             <div
-              className="relative z-20 w-[300px] h-[100px] items-center justify-center mt-8 ml-4"
+              className="relative z-20 w-[300px] h-[100px]  mt-8 ml-4"
               key={x.index}
             >
               <img
@@ -190,9 +204,10 @@ const PlayerRoomPage = observer(() => {
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
-              <p className="absolute z-30  ml-[90px] mt-[28px] font-hs text-[40px]">
+              <span className="absolute z-30  ml-[90px] mt-[28px] font-hs text-[40px]">
                 EMPTY
-              </p>
+              </span>
+
               <div className="absolute bg-gray-400 z-39 h-[100%] w-[92%] top-2 left-2.5" />
             </div>
           ) : (
@@ -228,7 +243,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"

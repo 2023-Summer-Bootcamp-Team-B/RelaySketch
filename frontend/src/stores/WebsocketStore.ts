@@ -25,6 +25,8 @@ class WebsocketStore {
 
   endGame = false;
 
+  isHostChanged = false;
+
   gameResult: any[] = [];
 
   currentIdx = 0;
@@ -58,6 +60,9 @@ class WebsocketStore {
 
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
+          console.log(`내 아이디${this.myId}`);
+          console.log(`방장 아이디${this.hostId}`);
+          console.log(`전체 인원수 ${this.total}`);
         } else if (message.event === "connected") {
           this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
@@ -176,6 +181,21 @@ class WebsocketStore {
     };
     this.send(data);
   }
+
+  resetRound = () => {
+    runInAction(() => {
+      this.round = 0;
+    });
+  };
+
+  setHasHostChanged = (boolean: boolean) => {
+    runInAction(() => {
+      this.isHostChanged = boolean;
+    });
+  };
+
+  
+
 }
 
 export default new WebsocketStore();

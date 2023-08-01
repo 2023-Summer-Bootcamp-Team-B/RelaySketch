@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import 구름1 from "../assets/images/구름1.svg";
 import 구름2 from "../assets/images/구름2.svg";
@@ -23,14 +24,28 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [, setClickEditButton] = useState(false);
   const [clickInputButton, setClickInputButton] = useState(true);
   const [, setIsSendingChangeTitle] = useState(false);
-
-  const { completeNum, round, total, myId, send } = WebsocketStore;
+  const navigate = useNavigate();
+  const { completeNum, round, total, myId, resetRound, send, disconnect } =
+    WebsocketStore;
+  const [pretotal, setPretotal] = useState(total);
 
   useEffect(() => {
     if (timerDisplayRef.current) {
       timerDisplayRef.current.innerText = timer.toString();
     }
   }, [timer]);
+
+  useEffect(() => {
+    if (pretotal == null) {
+      setPretotal(total);
+    }
+
+    if (pretotal !== total) {
+      navigate("/");
+      resetRound();
+      disconnect();
+    }
+  }, [pretotal, total]);
 
   const onTimerEnd = () => {
     console.log("Timer ended! Perform your specific event here.");

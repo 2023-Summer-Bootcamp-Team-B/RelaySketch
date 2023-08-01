@@ -66,7 +66,7 @@ const ResultsList = observer(() => {
                   name={result.player_name}
                   title={result.title}
                   image={result.img}
-                  index={idx}
+                  currentImageCount={idx}
                 />
               </li>
             ))}
