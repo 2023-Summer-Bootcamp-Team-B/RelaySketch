@@ -4,7 +4,6 @@ import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 import downloadBtnImg from "../../assets/images/download.svg";
 import playBtnImg from "../../assets/images/play.svg";
@@ -22,18 +21,16 @@ type ResultPropsType = {
 };
 
 const Result = observer(({ name, title, image, index }: ResultPropsType) => {
-  const { gameResult, currentIdx, myId, hostId, allEnteredPlayers, send, disconnect } =
+  const { gameResult, currentIdx, myId, hostId, allEnteredPlayers, send } =
     WebsocketStore;
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
-  const navigate = useNavigate();
   const imgUrlList = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
   const total = gameResult.length;
 
   const newGameHandler = () => {
-    disconnect();
-    navigate("/");
+    window.location.href = "/";
   };
 
   const downloadHandler = async () => {
@@ -83,7 +80,10 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
     setHidden(true);
   }, [gameResult]);
 
-  const classes = index === 0 ? "mr-4 text-[#fc5c65] font-bold" : "mr-4 text-[#0984e3] font-bold";
+  const classes =
+    index === 0
+      ? "mr-4 text-[#fc5c65] font-bold"
+      : "mr-4 text-[#0984e3] font-bold";
 
   return (
     <>
