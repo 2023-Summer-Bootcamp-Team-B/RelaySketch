@@ -58,13 +58,8 @@ class WebsocketStore {
       runInAction(() => {
         const message = JSON.parse(event.data);
 
-        console.log(message);
-
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
-          console.log(`내 아이디${this.myId}`);
-          console.log(`방장 아이디${this.hostId}`);
-          console.log(`전체 인원수 ${this.total}`);
         } else if (message.event === "connected") {
           this.allEnteredPlayers = [];
           this.myId = message.data.playerId;
@@ -121,8 +116,7 @@ class WebsocketStore {
       }, 50000);
     };
 
-    this.ws.onclose = (event) => {
-      console.log(event.code);
+    this.ws.onclose = () => {
       this.ws = null;
       if (this.pingIntervalId) {
         clearInterval(this.pingIntervalId);
@@ -141,7 +135,6 @@ class WebsocketStore {
     if (this.ws) {
       if (this.ws.readyState === WebSocket.OPEN) {
         try {
-          console.log(data);
           this.ws.send(JSON.stringify(data));
         } catch (error) {
           console.error("Failed to send a message:", error);

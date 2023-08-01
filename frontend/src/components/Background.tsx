@@ -24,10 +24,8 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [, setClickEditButton] = useState(false);
   const [clickInputButton, setClickInputButton] = useState(true);
   const [, setIsSendingChangeTitle] = useState(false);
-  const navigate = useNavigate();
   const { completeNum, round, total, myId, resetRound, send, disconnect } =
     WebsocketStore;
-  const [pretotal, setPretotal] = useState(total);
 
   useEffect(() => {
     if (timerDisplayRef.current) {
@@ -36,16 +34,18 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   }, [timer]);
 
   useEffect(() => {
-    if (pretotal == null) {
-      setPretotal(total);
-    }
-
-    if (pretotal !== total) {
-      navigate("/");
+    // Add event listener for beforeunload
+    window.onbeforeunload = () => {
       resetRound();
       disconnect();
-    }
-  }, [pretotal, total]);
+      window.location.href = "/";
+      return null;
+    };
+    return () => {
+      // Remove the event listener when component unmounts
+      window.onbeforeunload = null;
+    };
+  }, []);
 
   const onTimerEnd = () => {
     console.log("Timer ended! Perform your specific event here.");
