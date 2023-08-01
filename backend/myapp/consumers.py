@@ -19,9 +19,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.sub_room_id = None
         self.present_sub_room_id = None
         self.last_activity_time = None
-        self.ping_interval = 50
         self.timeout = 60
+        self.ping_interval = 50
+        self.status_interval = 3
         self.ping_task = None
+        self.status_task = None
         self.round = 0
         self.time = None
 
@@ -36,15 +38,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             logger.error(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
-        # 게임이 이미 시작된 경우 (round > 1) 참가하지 못하도록 체크합니다.
-        if self.round > 1:
-            error_message = "게임이 이미 시작되어 참가할 수 없습니다."
-            await self.send(text_data=json.dumps({"error": error_message}))
-            await self.close(1008)
-            return
-
         if text_data is not None:
             json.loads(text_data)
+
         self.room_id = self.scope["url_route"]["kwargs"]["roomid"]
         self.room_group_name = "main_room_%s" % self.room_id
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -88,6 +84,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.ping_task:
             self.ping_task.cancel()
 
+        if self.status_task:
+            self.status_task.cancel()
+
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         self.connection_open = False
 
@@ -127,6 +126,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {"event": "gameStart", "round": self.round},
                     },
                 )
+                self.status_task = asyncio.create_task(self.send_status())
 
             elif event == "inputTitle":
                 title = data["title"]
@@ -261,6 +261,26 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.close()
             except Exception as e:
                 logger.error(f"Unexpected error occurred: {e}")
+                await self.close()
+
+    async def send_status(self):
+        while self.round >= 1:
+            try:
+                print("send status")
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "game_progress",
+                        "message": {"event": "gameProgress", "data": self.round},
+                    },
+                )
+                await asyncio.sleep(self.status_interval)
+            except asyncio.CancelledError:
+                print("send status cancelled")
+                await self.close()
+            except Exception as e:
+                logger.error(f"Unexpected error occurred: {e}")
+                print("send status error")
                 await self.close()
 
     async def handle_topic_submission(self, data):
@@ -414,6 +434,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
         sub_room = SubRoom.objects.get(id=present_sub_room_id)
         topic = Topic.objects.create(title=title, url=None, player_id=player_id, sub_room=sub_room)
         return topic
+
+    async def game_progress(self, event):
+        error_message = "게임이 이미 시작되어 참가할 수 없습니다."
+        print("group send")
+        if self.round == 0:
+            print("에러")
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "event": "error",
+                        "data": {"error": error_message},
+                    }
+                )
+            )
+            await self.close(1008)
+            return
 
     async def handle_name_change(self, data):
         player_id = data.get("playerId")
