@@ -15,7 +15,7 @@ const InputTitlePage = observer(() => {
       <img
         src={햇님}
         alt="sun"
-        className="sm:w-[500px] sm:h-[400px] w-[400px] h-[300px] mx-auto relative z-40 sm:ml-20  ml-28 pb-10 sm:mt-0 mt-[-40px] p-4"
+        className="sm:w-[500px] sm:h-[400px] w-[350px] h-[250px] mx-auto relative z-40 sm:ml-20  ml-[155px] pb-10 sm:mt-0 mt-[10px] p-4"
       />
     </Background>
   );

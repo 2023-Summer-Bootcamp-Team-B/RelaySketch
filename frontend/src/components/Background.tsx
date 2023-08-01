@@ -86,30 +86,34 @@ const Background = observer(({ children, title }: BackgroundProps) => {
       h-660 translate-x-1/2 translate-y-1/2
       transform"
       >
-        <div className="flex pt-10 relative">
-          <span className="text-[82px] ">
+        <div className="flex sm:pt-10 pt-0 relative">
+          <span className="sm:text-[82px] text-[35px] sm:ml-0 ml-[320px] ">
             {round}/{total}
           </span>
-          <span className="sm:text-[56px] text-[35px] mx-auto sm:mt-3 ml-[320px] pl-12 absolute sm:ml-[230px]">
+          <span className="sm:text-[56px] text-[30px] mx-auto sm:mt-3 ml-[355px] pl-12 absolute sm:ml-[255px]">
             {title}
           </span>
           <span
             ref={timerDisplayRef}
-            className="text-[82px] z-40 px-5 absolute ml-[850px]"
+            className="sm:text-[82px] text-[40px] z-40 px-5 absolute sm:ml-[850px] ml-[617px] sm:mt-0 mt-[50px]"
           />
         </div>
         <div className="flex relative">
           <div className="relative w-[180px] h-20">
             <div className="flex items-center bg-white w-[178px] h-[76px] pl-3">
-              <img src={체크} alt="check" className=" w-[54px] bottom-7 z-40" />
-              <span className="text-[50px] flex px-2 z-40">
+              <img
+                src={체크}
+                alt="check"
+                className=" sm:ml-0 ml-[315px] sm:w-[54px] w-[30px] sm:mt-0 mt-[-16px] bottom-7 z-40"
+              />
+              <span className="sm:text-[50px] text-[25px] flex px-2 z-40 sm:ml-0 ml-[-5px] sm:mt-0 mt-[-20px]">
                 {completeNum}/{total}
               </span>
             </div>
             <img
               src={인원수테두리}
               alt="playerline"
-              className="absolute bottom-[2px]"
+              className="absolute sm:bottom-[2px] bottom-[30px] sm:ml-0 ml-[320px] sm:w-[180px] w-[90px]"
             />
           </div>
           {children}
@@ -117,19 +121,23 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             <img
               src={구름2}
               alt="cloud2"
-              className="relative left-12 z-20 top-36"
+              className="relative sm:left-12 left-[175px] z-20 sm:top-36 top-[30px]"
             />
             <img
               src={구름1}
               alt="cloud1 "
-              className="relative top-56 right-40"
+              className="relative sm:top-56 top-[90px] sm:right-40 right-[80px]"
             />
             <img
               src={구름1}
               alt="cloud1"
-              className=" z-5 top-40 left-40 relative"
+              className=" z-5 sm:top-40 top-[70px] sm:left-40 left-[80px] relative"
             />
-            <img src={구름3} alt="cloud2" className=" z-10 relative left-4" />
+            <img
+              src={구름3}
+              alt="cloud2"
+              className=" z-10 relative sm:left-4"
+            />
           </div>
         </div>
 
@@ -156,7 +164,7 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             />
             {clickInputButton ? (
               <button
-                className="sm:text-[42px] text-[20px] px-6 z-30 py-[12px]  h-[50px] absolute"
+                className="sm:text-[42px] text-[20px] sm:mt-2 mt-0 px-6 z-30 py-[12px] sm:left-0 left-[-125px] h-[50px] absolute"
                 type="submit"
                 onClick={handleButtonClickA}
               >
