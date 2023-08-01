@@ -47,7 +47,7 @@ const KakaoShareButton = observer(() => {
     <button
       id="kakaotalk-sharing-btn"
       type="button"
-      className="border-dashed border-2 border-black rounded-[12px] shadow-lg ml-2 relative z-10 flex justify-center items-center"
+      className="border-dashed border-2 border-black rounded-[10px] shadow-lg ml-2 relative z-10 flex justify-center items-center"
     >
       <img
         src={shareIcon}

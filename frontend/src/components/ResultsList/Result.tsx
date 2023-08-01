@@ -22,15 +22,17 @@ type ResultPropsType = {
 };
 
 const Result = observer(({ name, title, image, index }: ResultPropsType) => {
-  const { gameResult, total, currentIdx, myId, hostId, players, send } =
+  const { gameResult, currentIdx, myId, hostId, allEnteredPlayers, send, disconnect } =
     WebsocketStore;
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
   const navigate = useNavigate();
   const imgUrlList = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
+  const total = gameResult.length;
 
   const newGameHandler = () => {
+    disconnect();
     navigate("/");
   };
 
@@ -61,7 +63,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   };
 
   const showResultHandler = () => {
-    const id = players[currentIdx].player_id;
+    const id = allEnteredPlayers[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
 
@@ -81,7 +83,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
     setHidden(true);
   }, [gameResult]);
 
-  const classes = index === 0 ? "mr-4 text-[#fc5c65] font-bold" : "mr-4";
+  const classes = index === 0 ? "mr-4 text-[#fc5c65] font-bold" : "mr-4 text-[#0984e3] font-bold";
 
   return (
     <>
@@ -156,7 +158,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
                 />
               </Button>
               <Button type="button" onClick={newGameHandler}>
-                <div className=" border-dashed border-2 border-black rounded-[12px] w-fit h-[8vh] p-4 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
+                <div className=" border-dashed border-2 border-black rounded-[12px] w-fit h-[7vh] p-4 ml-2 text-center bg-[#E7F5FF] shadow-lg flex justify-center items-center relative z-10">
                   <img
                     src={playBtnImg}
                     alt="play a new game"
