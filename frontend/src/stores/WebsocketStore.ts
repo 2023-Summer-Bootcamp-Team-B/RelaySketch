@@ -35,6 +35,8 @@ class WebsocketStore {
 
   players = <any>[];
 
+  allEnteredPlayers: any[] = [];
+
   error: string | null = null;
 
   setWs = (ws: WebSocket | null) => {
@@ -64,8 +66,12 @@ class WebsocketStore {
           console.log(`방장 아이디${this.hostId}`);
           console.log(`전체 인원수 ${this.total}`);
         } else if (message.event === "connected") {
+          this.allEnteredPlayers = [];
           this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
+          if (this.allEnteredPlayers.length <= message.data.players.length) {
+            this.allEnteredPlayers = message.data.players;
+          }
           this.players = message.data.players;
           this.total = this.players.length;
           for (let i = 0; i < this.total; i += 1) {
@@ -194,8 +200,11 @@ class WebsocketStore {
     });
   };
 
-  
-
+  setDisableNowLoading = () => {
+    runInAction(() => {
+      this.nowLoading = false;
+    });
+  };
 }
 
 export default new WebsocketStore();

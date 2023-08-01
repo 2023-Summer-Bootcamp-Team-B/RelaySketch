@@ -7,8 +7,31 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const GuessImagePage = observer(() => {
-  const { nowLoading, imgSrc, endGame, error } = WebsocketStore;
+  const {
+    nowLoading,
+    imgSrc,
+    endGame,
+    error,
+    disconnect,
+    setDisableNowLoading,
+    resetRound
+  } = WebsocketStore;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Add event listener for beforeunload
+    window.onbeforeunload = () => {
+      setDisableNowLoading();
+      resetRound();
+      disconnect();
+      window.location.href = "/";
+      return null;
+    };
+    return () => {
+      // Remove the event listener when component unmounts
+      window.onbeforeunload = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (nowLoading) {
