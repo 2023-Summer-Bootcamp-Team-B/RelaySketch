@@ -194,7 +194,10 @@ const PlayerRoomPage = observer(() => {
               <div className="absolute bg-gray-400 z-39 h-[100%] w-[92%] top-2 left-2.5 sm:ml-0 sm:mt-0 ml-[-4px] mt-[-4px]" />
             </div>
           ) : (
-            <div className="relative z-20 w-[150px] h-[50px] mt-8 ml-4 sm:w-[300px] sm:h-[100px]">
+            <div
+              className="relative z-20 w-[150px] h-[50px] mt-8 ml-4 sm:w-[300px] sm:h-[100px]"
+              key={x.index}
+            >
               <img
                 src={small_border}
                 alt="small_border"

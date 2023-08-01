@@ -9,6 +9,11 @@ import WebsocketStore from "../stores/WebsocketStore";
 const InputTitlePage = observer(() => {
   const { nowLoading } = WebsocketStore;
   const navigate = useNavigate();
+  useEffect(() => {
+    if (nowLoading) {
+      navigate("/loading");
+    }
+  }, [nowLoading]);
 
   return (
     <Background title="주제를 입력하세요!">
