@@ -116,7 +116,7 @@ const PlayerRoomPage = observer(() => {
 
   const connect = useCallback(() => {
     console.log("Connecting to websocket");
-    WebsocketStore.connect(`ws://localhost/ws/room/${param.id}/`);
+    WebsocketStore.connect(`wss://www.relaysketch.online/ws/room/${param.id}/`);
   }, [param.id]);
 
   useEffect(() => {
@@ -169,9 +169,12 @@ const PlayerRoomPage = observer(() => {
     }
   };
 
-  if (error) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">

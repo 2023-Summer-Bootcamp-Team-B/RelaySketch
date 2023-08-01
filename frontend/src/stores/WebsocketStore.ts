@@ -33,7 +33,17 @@ class WebsocketStore {
 
   players = <any>[];
 
+  allEnteredPlayers: any[] = [];
+
   error: string | null = null;
+
+  setWs = (ws: WebSocket | null) => {
+    this.ws = ws;
+  };
+
+  setError = (error: string | null) => {
+    this.error = error;
+  };
 
   constructor() {
     makeAutoObservable(this);
@@ -51,8 +61,12 @@ class WebsocketStore {
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
         } else if (message.event === "connected") {
+          this.allEnteredPlayers = [];
           this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
+          if (this.allEnteredPlayers.length <= message.data.players.length) {
+            this.allEnteredPlayers = message.data.players;
+          }
           this.players = message.data.players;
           this.total = this.players.length;
           for (let i = 0; i < this.total; i += 1) {
@@ -84,6 +98,8 @@ class WebsocketStore {
           this.currentIdx += 1;
           this.gameResult = message.data.game_result;
           this.nameOfCurrentResult = message.data.game_result[0].player_name;
+        } else if (message.event === "image_creation_failed") {
+          this.error = message.data.error;
         }
 
         if (message.error === "방이 가득 찼습니다.") {

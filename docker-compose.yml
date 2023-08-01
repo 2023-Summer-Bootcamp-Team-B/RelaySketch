@@ -40,7 +40,7 @@ services:
       options:
         max-size: "10m" # 로그 파일의 최대 크기를 10MB로 설정
         max-file: "3" # 최대 3개의 로그 파일 보존
-    environment:
+    environment: &common_env
       SECRET_KEY: ${SECRET_KEY}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
@@ -55,6 +55,7 @@ services:
       AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      AWS_REDIS_HOST: ${AWS_REDIS_HOST}
     command: sh -c "/wait && pipenv run python manage.py collectstatic --no-input && pipenv run gunicorn -c gunicorn.conf.py config.asgi:application --bind 0.0.0.0:8000"
 
   celery_worker:
@@ -70,21 +71,22 @@ services:
       - django
       - rabbitmq
     environment:
-      SECRET_KEY: ${SECRET_KEY}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_HOST: ${DB_HOST}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME}
-      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME}
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      <<: *common_env
     command: sh -c "pipenv run celery -A config worker --loglevel=info"
+
+  celery_beat:
+    container_name: celery_beat
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - django
+      - rabbitmq
+      - celery_worker
+    environment:
+      <<: *common_env
+    command: sh -c "pipenv run celery -A config beat --loglevel=info"
 
   frontend:
     container_name: frontend
@@ -95,6 +97,8 @@ services:
       - "3000:3000"
     depends_on:
       - django # django 컨테이너가 실행되고 나서 frontend 컨테이너가 실행되도록 설정
+    environment:
+      VITE_APP_KAKAO_API_KEY: ${VITE_APP_KAKAO_API_KEY}
 
   nginx:
     container_name: nginx

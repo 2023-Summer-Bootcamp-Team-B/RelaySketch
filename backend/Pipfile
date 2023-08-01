@@ -28,6 +28,9 @@ openai = "*"
 requests = "*"
 django-storages = "*"
 boto3 = "*"
+storage = "*"
+drf-yasg = "*"
+firebase-admin = "*"
 
 [dev-packages]
 

@@ -9,7 +9,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,16 +35,20 @@ class RoomConsumer(AsyncWebsocketConsumer):
             logger.error(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
+        # 게임이 이미 시작된 경우 (round > 1) 참가하지 못하도록 체크합니다.
+        if self.round > 1:
+            error_message = "게임이 이미 시작되어 참가할 수 없습니다."
+            await self.send(text_data=json.dumps({"error": error_message}))
+            await self.close(1008)
+            return
+
         if text_data is not None:
             json.loads(text_data)
-
         self.room_id = self.scope["url_route"]["kwargs"]["roomid"]
         self.room_group_name = "main_room_%s" % self.room_id
-
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
         self.connection_open = True
-
         self.last_activity_time = time.time()
         self.ping_task = asyncio.create_task(self.send_ping())
 
@@ -284,6 +287,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps(message_content))
 
+    async def image_created_fail(self, event):
+        message_content = event["message"]
+
+        await self.send(text_data=json.dumps(message_content))
+
     async def ai_image_url(self, event):
         topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
 
@@ -296,13 +304,36 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
         )
 
-        image_url = await sync_to_async(result.get)()
-        await self.send(
-            text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
-        )
+        try:
+            image_url = await sync_to_async(result.get)()
 
-        topic.url = image_url
-        await sync_to_async(topic.save)()
+            if 'error' in image_url:
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "image_created_fail",
+                        "message": {
+                            "event": "image_creation_failed",
+                            "data": {
+                                "error": "AI가 만들 수 없는 주제 입니다."
+                            },
+                        },
+                    },
+                )
+                return
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+            )
+            topic.url = image_url
+            await sync_to_async(topic.save)()
+
+        except Exception as e:
+            # If there's an unexpected error while getting the task result
+            await self.send(
+                text_data=json.dumps({"message": "An error occurred while creating the image", "error": str(e)})
+            )
+
 
     async def next_round(self, event):
         room_num = await self.get_room_count()
@@ -376,13 +407,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
         player_id = data.get("playerId")
         new_name = data.get("name")
 
+        # 현재 룸 있는 플레이어 수
+        room = await self.get_room_by_id(self.room_id)
+        subroom_count = await self.get_subroom_count(room)
+
         sub_room = await self.get_subroom_by_id(player_id)
+
+
         if sub_room:
             sub_room.first_player = new_name
             await sync_to_async(sub_room.save)()
 
             await self.send(text_data=json.dumps({"event": "changeName", "data": "이름 변경 성공"}))
 
+        # room에 플레이어가 혼자가 아닐 경우 모두에게 바뀐 플레이어 이름 정보 그룹send로 보내준다.
+        if subroom_count > 1:
             await self.send_player_list()
 
     async def send_player_list(self):

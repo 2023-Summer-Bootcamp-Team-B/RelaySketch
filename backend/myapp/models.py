@@ -16,6 +16,9 @@ class Room(models.Model):
         self.delete_at = timezone.now()
         self.save()
 
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
 
 # SubRoom 모델
 class SubRoom(models.Model):
@@ -43,6 +46,7 @@ class SubRoom(models.Model):
     def get_next_id(self):
         next_sub_room_id = self.next_room.id
         return next_sub_room_id
+
     @classmethod
     def get_first_subroom(cls, room):
         return cls.objects.filter(room=room, delete_at=None).order_by('created_at').first()
@@ -58,8 +62,12 @@ class SubRoom(models.Model):
 
         # 이미 1개가 있다면
         if last_subroom:
-            last_player_number = int(re.search(r'\d+', last_subroom.first_player).group())
-            max_number = last_player_number + 1
+            count = cls.objects.filter(room=room, delete_at=None).count()
+            if count is not None:
+                last_player_number = count  # Removed .group()
+                max_number = last_player_number + 1
+            else:
+                max_number = 1
         else:
             max_number = 1
 
@@ -94,6 +102,9 @@ class SubRoom(models.Model):
 
         self.delete()
 
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
 
 # Topic 모델
 class Topic(models.Model):
@@ -115,3 +126,6 @@ class Topic(models.Model):
     def get_last_topic(cls, subroom_id):
         subroom = SubRoom.objects.get(id=subroom_id)
         return cls.objects.filter(sub_room=subroom, delete_at=None).order_by('-created_at').first()
+
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)

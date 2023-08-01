@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+from celery.schedules import crontab
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -24,7 +25,35 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "django", "15.165.125.132"]
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "django": {
+        "handlers": ["console"],
+        "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+    },
+}
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "[::1]",
+    "django",
+    "15.165.125.132",
+    "relaysketch.online",
+    "www.relaysketch.online",
+    "43.202.134.227",
+    "15.164.3.18",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -43,6 +72,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "storages",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +87,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
+
+APPEND_SLASH = False
 
 ROOT_URLCONF = "config.urls"
 
@@ -137,12 +169,20 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6379)],
+            "hosts": [(os.getenv("AWS_REDIS_HOST", "redis"), 6379)],
         },
     },
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://localhost", "http://15.165.125.132"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost",
+    "http://15.165.125.132",
+    "https://www.relaysketch.online",
+    "https://relaysketch.online",
+    "http://43.202.134.227:3000",
+    "http://15.164.3.18:3000",
+]
 
 CORS_ALLOW_HEADERS = (
     "accept",
@@ -175,8 +215,15 @@ STORAGES = {
     },
 }
 
-AWS_S3_SECURE_URLS = False  # use http instead of https
+AWS_S3_SECURE_URLS = True  # use http instead of https
 
 AWS_QUERYSTRING_AUTH = (
     False  # don't add complex authentication-related query parameters for requests
 )
+
+CELERY_BEAT_SCHEDULE = {
+    "clear_data_every_day": {
+        "task": "myapp.tasks.clear_data",  # task의 경로를 정확하게 설정해야 합니다.
+        "schedule": crontab(minute="0", hour="4"),  # 매일 4시 0분에 실행합니다.
+    },
+}

@@ -7,13 +7,20 @@ import Background from "../components/Background";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const InputTitlePage = observer(() => {
-  const { nowLoading } = WebsocketStore;
+  const { nowLoading, error } = WebsocketStore;
   const navigate = useNavigate();
   useEffect(() => {
     if (nowLoading) {
       navigate("/loading");
     }
   }, [nowLoading]);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      navigate("/");
+    }
+  }, [error]);
 
   return (
     <Background title="주제를 입력하세요!">
