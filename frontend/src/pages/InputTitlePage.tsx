@@ -9,7 +9,6 @@ import WebsocketStore from "../stores/WebsocketStore";
 const InputTitlePage = observer(() => {
   const { nowLoading, error } = WebsocketStore;
   const navigate = useNavigate();
-
   useEffect(() => {
     if (nowLoading) {
       navigate("/loading");
@@ -28,7 +27,7 @@ const InputTitlePage = observer(() => {
       <img
         src={햇님}
         alt="sun"
-        className="w-[500px] h-[400px] mx-auto relative z-40 ml-20 pb-10 p-4"
+        className="sm:w-[500px] sm:h-[400px] w-[350px] h-[250px] mx-auto relative z-40 sm:ml-20  ml-[155px] pb-10 sm:mt-0 mt-[10px] p-4"
       />
     </Background>
   );

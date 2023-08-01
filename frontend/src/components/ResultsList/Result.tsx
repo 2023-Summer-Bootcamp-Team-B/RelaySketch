@@ -93,20 +93,20 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
             <span>{name}</span>
           </div>
           <div className=" flex items-start mb-4 ">
-            <div className=" flex mt-4 relative z-10 h-[35vh]">
+            <div className=" flex mt-4 relative z-10 sm:h-[35vh] h-40">
               <img src={sunny} alt="" className=" w-[3vw] h-[5vh] ml-4 " />
               <span className="text-lg md:text-2xl ml-1 mt-2 ">태양</span>
             </div>
-            <div className=" h-[39vh]">
+            <div className=" sm:h-[39vh] h-[10px]">
               <img
                 src={sketchBook}
                 alt=""
-                className=" w-[28vw] h-[39vh] relative z-10 "
+                className=" sm:w-[28vw] w-[230px] sm:h-[39vh] h-[160px] relative z-20 "
               />
               <img
                 src={image}
                 alt=""
-                className=" w-[23.5vw] h-[34vh] relative left-[2.3vw] bottom-[35vh]"
+                className=" sm:w-[23.5vw] w-[194px] z-10 sm:h-[34vh] h-[140px] relative sm:left-[2.3vw] left-[18px] sm:bottom-[35vh] bottom-[144px] "
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
                 <img
                   src={downloadBtnImg}
                   alt="download button"
-                  className=" w-[3.5vw] h-[6.5vh] p-2"
+                  className=" sm:w-[3.5vw] w-[50px] h-[6.5vh] p-2"
                 />
               </Button>
               {/* 방장이 아니면 다음 결과 보기 버튼을 화면에 표시하지 않음 */}
