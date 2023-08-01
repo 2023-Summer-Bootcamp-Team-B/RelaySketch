@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 
 import 구름1 from "../assets/images/구름1.svg";
 import 구름2 from "../assets/images/구름2.svg";
