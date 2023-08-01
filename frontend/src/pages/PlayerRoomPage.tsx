@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import crown from "../assets/images/crown.png";
 import invite from "../assets/images/invite_link.svg";
+import new_button from "../assets/images/new_button.png";
 import play from "../assets/images/play.svg";
 import sketch from "../assets/images/sketch_book_white.svg";
 import small_border from "../assets/images/small_box_border.svg";
@@ -113,7 +114,7 @@ const PlayerRoomPage = observer(() => {
     navigator.clipboard
       .writeText(currentUrl)
       .then(() => {
-        SetValueState("Link Copied!");
+        SetValueState("초대 링크가 복사 되었어요!");
         SetHintState("");
         SetismodalEOpen(true);
         setTimeout(() => {
@@ -156,7 +157,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue
+          (item) => !(item.playerId === myId) && item.playerName === inputValue,
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -165,16 +166,16 @@ const PlayerRoomPage = observer(() => {
         return;
       }
 
-      if (inputValue.length <= 2) {
-        SetValueState("This text is too Short");
-        SetHintState("need 2~8 char");
+      if (inputValue.length <= 1) {
+        SetValueState("닉네임을 입력하세요!");
+        SetHintState("need 1~5 char");
         SetismodalEOpen(true);
 
         return;
       }
       if (inputValue.length >= 6) {
-        SetValueState("This text is too Long");
-        SetHintState("need 2~8 char");
+        SetValueState("닉네임이 너무 길어요!");
+        SetHintState("need 1~5 char");
         SetismodalEOpen(true);
         return;
       }
@@ -200,11 +201,11 @@ const PlayerRoomPage = observer(() => {
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
       <img src={sketch} alt="sketch" className="absolute z-10 pb-[60px]" />
-      <div className="grid grid-cols-2 grid-rows-3 mb-8 w-[650px] h-[400px] mt-[10px] ">
+      <div className="grid grid-cols-2 grid-rows-3 mb-8 sm:w-[650px] sm:h-[400px] w-[320px] h-[220px] sm:mt-[10px] mt-[-40px] sm:mr-0 mr-6">
         {roomstate.map((x: ArrType) =>
           x.empty ? (
             <div
-              className="relative z-20 w-[300px] h-[100px] items-center justify-center mt-8 ml-4"
+              className="relative z-20 sm:w-[300px] sm:h-[100px] w-[150px] h-[50px] items-center justify-center mt-8 ml-4"
               key={x.index}
             >
               <img
@@ -212,14 +213,14 @@ const PlayerRoomPage = observer(() => {
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
-              <p className="absolute z-30  ml-[90px] mt-[28px] font-hs text-[40px]">
+              <p className="absolute z-30  sm:ml-[90px] ml-[44px] sm:mt-[28px] mt-[10px] font-hs sm:text-[40px] text-[20px]">
                 EMPTY
               </p>
-              <div className="absolute bg-gray-400 z-39 h-[100%] w-[92%] top-2 left-2.5" />
+              <div className="absolute bg-gray-400 z-39 h-[100%] w-[92%] top-2 left-2.5 sm:ml-0 sm:mt-0 ml-[-4px] mt-[-4px]" />
             </div>
           ) : (
             <div
-              className="relative z-20 w-[300px] h-[100px]   mt-8 ml-4"
+              className="relative z-20 w-[150px] h-[50px] mt-8 ml-4 sm:w-[300px] sm:h-[100px]"
               key={x.index}
             >
               <img
@@ -231,35 +232,35 @@ const PlayerRoomPage = observer(() => {
                 <img
                   src={crown}
                   alt="room owner"
-                  className="absolute w-10 h-10 z-40 bottom-[80px]"
+                  className="absolute w-10 h-10 z-40 sm:bottom-[80px] bottom-[38px]"
                 />
               )}
 
-              <div className="absolute z-30  ml-[12px] mt-[9px] font-hs text-[40px]">
+              <div className="absolute z-30  sm:ml-[12px] ml-[7px] mt-[9px] font-hs sm:text-[40px] text-[20px]">
                 {x.playerId === myId ? (
                   <input
-                    className="absolute z-29 w-[272px] h-[94px] bg-[#7EC8FF]  mt-[1px] text-center  rounded-[5px] ring-2 ring-black border-2 border-[#010101]"
+                    className="absolute z-29 sm:ml-0 ml-[-2px] sm:w-[272px] sm:h-[94px] w-[138px] h-[45px] bg-[#7EC8FF] sm:mt-[1px] mt-[-3px] text-center rounded-[5px] ring-2 ring-black border-2 border-[#010101]"
                     defaultValue={x.playerName}
                     onKeyDown={handleInputKeyDown}
                     onBlur={handleInputBlur}
                   />
                 ) : (
-                  <span className="absolute w-[271px] h-[95px] bg-[#E7F5FF] flex items-center justify-center">
+                  <span className="absolute sm:w-[271px] sm:h-[95px] w-[134px] h-[45px] bg-[#E7F5FF] sm:mt-0 mt-[-3px] flex items-center justify-center">
                     {x.playerName}
                   </span>
                 )}
               </div>
             </div>
-          )
+          ),
         )}
         <button
           className="relative"
           type="button"
           onClick={handleCopyLinkToClipboard}
         >
-          <div className="absolute flex items-center justify-center ml-[120px] z-20 w-[190px] h-[65px] top-[90px]">
+          <div className="absolute flex items-center justify-center sm:ml-[120px] ml-[-20px] z-20 w-[190px] h-[65px] top-[90px]">
             <img
-              src={small_border}
+              src={new_button}
               alt="small_border"
               className="absolute z-30"
             />
@@ -271,7 +272,7 @@ const PlayerRoomPage = observer(() => {
             <span className="absolute z-30 ml-[50px] font-hs text-[40px]">
               초대
             </span>
-            <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
+            <div className="absolute z-39 h-[96%] w-[91%] top-0.5" />
           </div>
         </button>
 
@@ -279,7 +280,7 @@ const PlayerRoomPage = observer(() => {
           <button className="relative" type="button" onClick={handlePlay}>
             <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
               <img
-                src={small_border}
+                src={new_button}
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
@@ -290,23 +291,23 @@ const PlayerRoomPage = observer(() => {
                 className="absolute z-30 mt-1 ml-2 left-0 w-[60px] h-auto"
               />
 
-              <p className="absolute z-30  ml-[50px] font-hs text-[40px]">
+              <p className="absolute z-30  ml-[50px] font-hs text-[40px] ">
                 시작
               </p>
-              <div className="absolute bg-white z-39 h-[96%] w-[91%] top-0.5" />
+              <div className="absolute z-39 h-[96%] w-[91%] top-0.5" />
             </div>
           </button>
         ) : (
           <button className="relative" type="button">
             <div className="absolute flex items-center justify-center ml-[20px] z-20 w-[190px] h-[65px] top-[90px] ">
               <img
-                src={small_border}
+                src={new_button}
                 alt="small_border"
                 className="absolute z-30 w-full h-auto"
               />
 
               <p className="absolute z-30  ml-[10px] font-hs text-[40px]">
-                Ready..
+                준비중..
               </p>
               <div className="absolute bg-gray z-39 h-[96%] w-[91%] top-0.5" />
             </div>
