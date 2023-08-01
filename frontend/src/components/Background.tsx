@@ -90,7 +90,7 @@ const Background = observer(({ children, title }: BackgroundProps) => {
           <span className="text-[82px] ">
             {round}/{total}
           </span>
-          <span className="text-[56px] mx-auto mt-3 pl-12 absolute ml-[230px]">
+          <span className="sm:text-[56px] text-[35px] mx-auto sm:mt-3 ml-[320px] pl-12 absolute sm:ml-[230px]">
             {title}
           </span>
           <span
@@ -138,10 +138,10 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             <img
               src={입력창테두리}
               alt="input"
-              className=" absolute w-[590px] h-[335px] bottom-[-75px] left-[75px] z-20"
+              className=" absolute sm:w-[590px]  w-[290px]  sm:h-[325px]  h-[90px]  sm:bottom-[-72px] bottom-[70px] sm:left-[75px] left-[260px] z-20"
             />
             <input
-              className=" w-[570px] h-[100px] text-[42px] absolute pl-6 ml-3 z-30 outline-none"
+              className=" sm:w-[570px] w-[282px] sm:h-[100px] h-[50px] text-[20px] sm:text-[42px] absolute sm:pl-6 pl-3 sm:ml-3 ml-[190px] z-30 outline-none"
               type="text"
               value={input}
               onChange={handleInput} // 입력창
@@ -152,11 +152,11 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             <img
               src={버튼테두리1}
               alt="buttonline"
-              className="absolute bottom-[27px] left-[-5px] w-auto h-[127px] z-20"
+              className="absolute sm:bottom-[24px] bottom-[83px] sm:left-[-5px] left-[-115px] w-auto sm:h-[127px] h-[60px] z-20"
             />
             {clickInputButton ? (
               <button
-                className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
+                className="sm:text-[42px] text-[20px] px-6 z-30 py-[12px]  h-[50px] absolute"
                 type="submit"
                 onClick={handleButtonClickA}
               >
@@ -165,7 +165,7 @@ const Background = observer(({ children, title }: BackgroundProps) => {
             ) : null}
             {showButtonB ? (
               <button
-                className="text-[42px] px-6 z-30 py-[12px] h-[100px] absolute"
+                className="sm:text-[42px] text-[20px] sm:left-0 left-[-125px] px-6 z-30 py-[12px] sm:h-[100px] h-[50px] absolute"
                 type="submit"
                 onClick={handleButtonClickB}
               >

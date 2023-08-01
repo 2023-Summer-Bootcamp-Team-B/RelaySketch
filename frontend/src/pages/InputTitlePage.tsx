@@ -10,18 +10,12 @@ const InputTitlePage = observer(() => {
   const { nowLoading } = WebsocketStore;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (nowLoading) {
-      navigate("/loading");
-    }
-  }, [nowLoading]);
-
   return (
     <Background title="주제를 입력하세요!">
       <img
         src={햇님}
         alt="sun"
-        className="w-[500px] h-[400px] mx-auto relative z-40 ml-20 pb-10 p-4"
+        className="sm:w-[500px] sm:h-[400px] w-[400px] h-[300px] mx-auto relative z-40 sm:ml-20  ml-28 pb-10 sm:mt-0 mt-[-40px] p-4"
       />
     </Background>
   );
