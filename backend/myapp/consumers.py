@@ -36,6 +36,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
             logger.error(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
+        # 게임이 이미 시작된 경우 (round > 1) 참가하지 못하도록 체크합니다.
+        if self.round > 1:
+            error_message = "게임이 이미 시작되어 참가할 수 없습니다."
+            await self.send(text_data=json.dumps({"error": error_message}))
+            await self.close(1008)
+            return
+
         if text_data is not None:
             json.loads(text_data)
         self.room_id = self.scope["url_route"]["kwargs"]["roomid"]
