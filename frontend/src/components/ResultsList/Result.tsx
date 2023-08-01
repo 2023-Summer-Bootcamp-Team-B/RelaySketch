@@ -27,11 +27,9 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   const imgUrlList = gameResult.map((result) => result.img);
   const count = gameResult.length - 1;
   const total = gameResult.length;
-
   const newGameHandler = () => {
     window.location.href = "/";
   };
-
   const downloadHandler = async () => {
     const promises: Promise<any>[] = [];
     Object.entries(imgUrlList).forEach(([i, imgUrl]) => {
@@ -48,42 +46,34 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
         .catch((err) => {
           console.log(err);
         });
-
       promises.push(promise);
     });
-
     await Promise.all(promises);
     zip
       .generateAsync({ type: "blob" })
       .then((content) => saveAs(content, "images.zip"));
   };
-
   const showResultHandler = () => {
     const id = allEnteredPlayers[currentIdx].player_id;
     send({ event: "wantResult", data: { playerId: id } });
   };
-
   const ref = useCallback((node: HTMLDivElement) => {
     if (node !== null) {
       node.scrollIntoView({ behavior: "smooth" });
     }
   }, []);
-
   useEffect(() => {
     setTimeout(() => {
       setHidden(false);
     }, index * 2000);
   }, [gameResult]);
-
   useEffect(() => {
     setHidden(true);
   }, [gameResult]);
-
   const classes =
     index === 0
-      ? "mr-4 text-[#fc5c65] font-bold"
-      : "mr-4 text-[#0984e3] font-bold";
-
+      ? "mr-4 text-[#FC5C65] font-bold"
+      : "mr-4 text-[#0984E3] font-bold";
   return (
     <>
       {!hidden && (
@@ -177,5 +167,4 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
     </>
   );
 });
-
 export default Result;

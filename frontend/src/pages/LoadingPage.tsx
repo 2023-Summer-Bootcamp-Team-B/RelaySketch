@@ -8,8 +8,22 @@ import AnimatedFooter from "../components/UI/AnimatedFooter";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const LoadingPage = observer(() => {
-  const { nowLoading, endGame, error } = WebsocketStore;
+  const {
+    nowLoading,
+    endGame,
+    error,
+    disconnect,
+    setDisableNowLoading,
+    resetRound,
+  } = WebsocketStore;
   const navigate = useNavigate();
+
+  window.addEventListener("popstate", () => {
+    setDisableNowLoading();
+    disconnect();
+    resetRound();
+    window.location.href = "/";
+  });
 
   useEffect(() => {
     if (!nowLoading) {
@@ -24,7 +38,7 @@ const LoadingPage = observer(() => {
   useEffect(() => {
     if (error) {
       alert(error);
-      navigate("/");
+      window.location.href = "/";
     }
   }, [error]);
 

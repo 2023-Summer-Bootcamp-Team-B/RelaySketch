@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+
 import { observer } from "mobx-react";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,7 +23,14 @@ type ArrType = {
 };
 
 const PlayerRoomPage = observer(() => {
-  const { myId, players: player, total, hostId, round } = WebsocketStore;
+  const {
+    myId,
+    players: player,
+    total,
+    hostId,
+    round,
+    disconnect,
+  } = WebsocketStore;
 
   console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
@@ -58,6 +66,20 @@ const PlayerRoomPage = observer(() => {
       </div>
     </div>
   );
+
+  useEffect(() => {
+    // Add event listener for beforeunload
+    window.onbeforeunload = () => {
+      window.location.href = "/";
+      disconnect();
+      // The return value is ignored, but we need to return something to trigger the event
+      return null;
+    };
+    return () => {
+      // Remove the event listener when component unmounts
+      window.onbeforeunload = null;
+    };
+  }, []);
 
   const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
