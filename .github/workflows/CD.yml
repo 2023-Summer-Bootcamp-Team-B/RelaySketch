@@ -34,6 +34,12 @@ jobs:
       #     echo "AWS_REDIS_HOST=\"${{ secrets.AWS_REDIS_HOST }}\"" >> .env
       #     echo "VITE_APP_KAKAO_API_KEY=\"${{ secrets.VITE_APP_KAKAO_API_KEY }}\"" >> .env
 
+      - name: Create frontend env file
+        run: |
+          set +x
+          cd frontend
+          echo "VITE_APP_KAKAO_API_KEY=\"${{ secrets.VITE_APP_KAKAO_API_KEY }}\"" > .env
+
       # - name: Copy env file to EC2-lb1
       #   uses: appleboy/scp-action@master
       #   with:
