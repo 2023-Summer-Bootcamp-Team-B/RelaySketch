@@ -53,3 +53,5 @@ services:
     image: maaayreel/relaysketch-frontend:latest
     depends_on:
       - django
+    environment:
+      VITE_APP_KAKAO_API_KEY: ${VITE_APP_KAKAO_API_KEY}

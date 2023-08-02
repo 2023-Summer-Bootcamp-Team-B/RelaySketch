@@ -64,35 +64,35 @@ jobs:
       #     source: ".env"
       #     target: "compose"
 
-      # - name: Copy docker-compose.lb.yml to EC2-lb1
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST1 }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     source: "docker-compose.lb.yml"
-      #     target: "compose"
+      - name: Copy docker-compose.lb.yml to EC2-lb1
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST1 }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.lb.yml"
+          target: "compose"
 
-      # - name: Copy docker-compose.lb.yml to EC2-lb2
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST2 }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     source: "docker-compose.lb.yml"
-      #     target: "compose"
+      - name: Copy docker-compose.lb.yml to EC2-lb2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST2 }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.lb.yml"
+          target: "compose"
 
-      # - name: Copy docker-compose.prod.yml to EC2
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     source: "docker-compose.prod.yml"
-      #     target: "compose"
+      - name: Copy docker-compose.prod.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.prod.yml"
+          target: "compose"
 
       # - name: Copy docker-compose.monitor.yml to EC2
       #   uses: appleboy/scp-action@master
@@ -104,15 +104,15 @@ jobs:
       #     source: "docker-compose.monitor.yml"
       #     target: "compose"
 
-      # - name: Copy docker-compose.main.yml to EC2
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_KEY }}
-      #     port: ${{ secrets.EC2_PORT }}
-      #     source: "docker-compose.main.yml"
-      #     target: "compose"
+      - name: Copy docker-compose.main.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.main.yml"
+          target: "compose"
 
       - name: Copy nginx files to EC2
         uses: appleboy/scp-action@master
