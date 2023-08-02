@@ -100,10 +100,8 @@ class WebsocketStore {
           this.nameOfCurrentResult = message.data.game_result[0].player_name;
         } else if (message.event === "image_creation_failed") {
           this.error = message.data.error;
-        }
-
-        if (message.error === "방이 가득 찼습니다.") {
-          this.error = message.error;
+        } else if (message.event === "error") {
+          this.error = message.data.error;
         }
 
         this.messages.push(message);
