@@ -23,12 +23,9 @@ def create_image(self, title):
         s3_image_url = upload_image_to_s3(image_url, "image")
         return f"https://{AWS_STORAGE_BUCKET_NAME}.s3-{AWS_S3_REGION_NAME}.amazonaws.com/{s3_image_url}"
     except InvalidRequestError as e:
-        error_message = f"OpenAI API returned an error: {e}. Retrying..."
+        error_message = f"OpenAI API returned an error: {e}."
         print(error_message)
-        # If retry fails, return error message as task result
-        if self.request.retries == self.max_retries:
-            return {'error': error_message}
-        raise self.retry(countdown=2**self.request.retries, exc=e)
+        return {'error': error_message}
     except Exception as e:
         # Handle other exceptions
         print(f"An unexpected error occurred: {e}")
@@ -88,3 +85,4 @@ def clear_data():
         sub_room.hard_delete()
     for topic in Topic.objects.all():
         topic.hard_delete()
+        
