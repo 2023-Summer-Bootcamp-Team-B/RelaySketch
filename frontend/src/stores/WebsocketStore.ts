@@ -25,6 +25,8 @@ class WebsocketStore {
 
   endGame = false;
 
+  isHostChanged = false;
+
   gameResult: any[] = [];
 
   currentIdx = 0;
@@ -32,6 +34,8 @@ class WebsocketStore {
   nameOfCurrentResult = "";
 
   players = <any>[];
+
+  allEnteredPlayers: any[] = [];
 
   error: string | null = null;
 
@@ -54,13 +58,15 @@ class WebsocketStore {
       runInAction(() => {
         const message = JSON.parse(event.data);
 
-        console.log(message);
-
         if (message.event === "ping") {
           this.send({ event: "pong", data: "pong" });
         } else if (message.event === "connected") {
+          this.allEnteredPlayers = [];
           this.myId = message.data.playerId;
         } else if (message.event === "renewList") {
+          if (this.allEnteredPlayers.length <= message.data.players.length) {
+            this.allEnteredPlayers = message.data.players;
+          }
           this.players = message.data.players;
           this.total = this.players.length;
           for (let i = 0; i < this.total; i += 1) {
@@ -110,8 +116,7 @@ class WebsocketStore {
       }, 50000);
     };
 
-    this.ws.onclose = (event) => {
-      console.log(event.code);
+    this.ws.onclose = () => {
       this.ws = null;
       if (this.pingIntervalId) {
         clearInterval(this.pingIntervalId);
@@ -130,7 +135,6 @@ class WebsocketStore {
     if (this.ws) {
       if (this.ws.readyState === WebSocket.OPEN) {
         try {
-          console.log(data);
           this.ws.send(JSON.stringify(data));
         } catch (error) {
           console.error("Failed to send a message:", error);
@@ -176,6 +180,24 @@ class WebsocketStore {
     };
     this.send(data);
   }
+
+  resetRound = () => {
+    runInAction(() => {
+      this.round = 0;
+    });
+  };
+
+  setHasHostChanged = (boolean: boolean) => {
+    runInAction(() => {
+      this.isHostChanged = boolean;
+    });
+  };
+
+  setDisableNowLoading = () => {
+    runInAction(() => {
+      this.nowLoading = false;
+    });
+  };
 }
 
 export default new WebsocketStore();
