@@ -85,7 +85,7 @@ const PlayerRoomPage = observer(() => {
     const inputValue = event.target.value;
     const name = defaultName(myId);
 
-    if (inputValue.length <= 2 || inputValue.length >= 9) {
+    if (inputValue.length <= 1 || inputValue.length >= 6) {
       SetismodalEOpen(false);
       event.target.value = name;
 
@@ -157,7 +157,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("This text is too Many");
@@ -251,7 +251,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"
