@@ -32,7 +32,6 @@ const PlayerRoomPage = observer(() => {
     disconnect,
   } = WebsocketStore;
 
-  console.log("Rendering PlayerRoomPage");
   const navigate = useNavigate();
   const param = useParams();
   const { send, error } = WebsocketStore;
@@ -106,7 +105,6 @@ const PlayerRoomPage = observer(() => {
       event: "startGame",
       data: "게임시작",
     });
-    console.log("게임시작!!");
   };
 
   const handleCopyLinkToClipboard = () => {
@@ -128,16 +126,12 @@ const PlayerRoomPage = observer(() => {
   };
 
   for (let i = 0; i < total; i += 1) {
-    console.log(`방장님 id: ${hostId}`);
     roomstate[i].empty = false;
     roomstate[i].playerId = player[i].player_id;
     roomstate[i].playerName = player[i].name;
-    console.log(`${i}번째 아이디: ${roomstate[i].playerId}`);
-    console.log(`${i}번째 이름: ${roomstate[i].playerName}`);
   }
 
   const connect = useCallback(() => {
-    console.log("Connecting to websocket");
     WebsocketStore.connect(`wss://www.relaysketch.online/ws/room/${param.id}/`);
   }, [param.id]);
 
@@ -160,8 +154,8 @@ const PlayerRoomPage = observer(() => {
           (item) => !(item.playerId === myId) && item.playerName === inputValue,
         ) !== -1
       ) {
-        SetValueState("This text is too Many");
-        SetHintState("name can`t be duplicated");
+        SetValueState("동일한 닉네임이 존재해요!");
+        SetHintState("닉네임은 오직 하나여야만 해요.");
         SetismodalEOpen(true);
         return;
       }
@@ -170,7 +164,6 @@ const PlayerRoomPage = observer(() => {
         SetValueState("닉네임을 입력하세요!");
         SetHintState("need 1~5 char");
         SetismodalEOpen(true);
-
         return;
       }
       if (inputValue.length >= 6) {
