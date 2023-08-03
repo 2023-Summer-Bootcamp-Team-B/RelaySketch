@@ -20,8 +20,15 @@ type ResultPropsType = {
 };
 
 const Result = observer(({ name, title, image, index }: ResultPropsType) => {
-  const { gameResult, currentIdx, myId, hostId, allEnteredPlayers, send } =
-    WebsocketStore;
+  const {
+    gameResult,
+    currentIdx,
+    myId,
+    hostId,
+    allEnteredPlayers,
+    send,
+    disconnect,
+  } = WebsocketStore;
   const [hidden, setHidden] = useState(true);
   const zip = new JSZip();
   const imgUrlList = gameResult.map((result) => result.img);
@@ -29,6 +36,7 @@ const Result = observer(({ name, title, image, index }: ResultPropsType) => {
   const total = gameResult.length;
   const newGameHandler = () => {
     window.location.href = "/";
+    disconnect();
   };
   const downloadHandler = async () => {
     const promises: Promise<any>[] = [];
