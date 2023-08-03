@@ -47,8 +47,6 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   }, []);
 
   const onTimerEnd = () => {
-    console.log("Timer ended! Perform your specific event here.");
-    // 0초가 됐을 때 강제 라운드 변경 이벤트
     send({
       event: "inputTitle",
       data: {
@@ -68,13 +66,11 @@ const Background = observer(({ children, title }: BackgroundProps) => {
     setClickEditButton(false);
     setShowButtonB(true);
     WebsocketStore.sendDataToBackend(input, myId);
-    console.log("입력 버튼 클릭!");
   };
 
   const handleButtonClickB = () => {
     setIsSendingChangeTitle(true);
     WebsocketStore.sendChangeTitleEvent(input, myId);
-    console.log("수정 버튼 클릭!");
     setIsSendingChangeTitle(false); // Set isSendingChangeTitle to false immediately after sending the event
   };
 

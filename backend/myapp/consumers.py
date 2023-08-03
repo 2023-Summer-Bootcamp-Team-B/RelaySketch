@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class RoomConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,9 +19,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
         self.sub_room_id = None
         self.present_sub_room_id = None
         self.last_activity_time = None
-        self.ping_interval = 50
         self.timeout = 60
+        self.ping_interval = 50
+        self.status_interval = 3
         self.ping_task = None
+        self.status_task = None
         self.round = 0
         self.time = None
 
@@ -35,15 +38,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             logger.error(f"Failed to send message: {e}")
 
     async def connect(self, text_data=None):
-        # 게임이 이미 시작된 경우 (round > 1) 참가하지 못하도록 체크합니다.
-        if self.round > 1:
-            error_message = "게임이 이미 시작되어 참가할 수 없습니다."
-            await self.send(text_data=json.dumps({"error": error_message}))
-            await self.close(1008)
-            return
-
         if text_data is not None:
             json.loads(text_data)
+
         self.room_id = self.scope["url_route"]["kwargs"]["roomid"]
         self.room_group_name = "main_room_%s" % self.room_id
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -87,6 +84,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if self.ping_task:
             self.ping_task.cancel()
 
+        if self.status_task:
+            self.status_task.cancel()
+
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         self.connection_open = False
 
@@ -96,7 +96,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 
         room = await self.get_room_by_id(self.room_id)
         remaining_subrooms_exists = await self.get_remaining_subrooms(room)
-        if not remaining_subrooms_exists:
+        if not remaining_subrooms_exists and room is not None:
             await sync_to_async(room.delete)()
 
         await self.send_player_list()
@@ -126,6 +126,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
                         "message": {"event": "gameStart", "round": self.round},
                     },
                 )
+                self.status_task = asyncio.create_task(self.send_status())
 
             elif event == "inputTitle":
                 title = data["title"]
@@ -208,7 +209,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # 클라이언트에게 게임 결과 전송
                 await self.send_game_result(game_result)
 
-    async def generate_game_result(self, subroom):
+    @staticmethod
+    async def generate_game_result(subroom):
         game_result = []
 
         topics = await sync_to_async(Topic.objects.filter)(sub_room=subroom, delete_at=None)
@@ -219,11 +221,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 # topic 쓴 사람 찾음
                 player = await sync_to_async(SubRoom.objects.get)(id=topic.player_id)
 
-                game_result.append({
-                    'title': topic.title,
-                    'player_name': player.first_player,
-                    'img': topic.url,
-                })
+                game_result.append(
+                    {
+                        "title": topic.title,
+                        "player_name": player.first_player,
+                        "img": topic.url,
+                    }
+                )
 
         except Exception as e:
             # 예외 처리
@@ -236,12 +240,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
         if game_result:
             await self.channel_layer.group_send(
                 self.room_group_name,
-                {
-                    'type': 'game_result_message',
-                    'message': {
-                        'game_result': game_result
-                    }
-                }
+                {"type": "game_result_message", "message": {"game_result": game_result}},
             )
 
     async def game_result_message(self, event):
@@ -262,6 +261,26 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 await self.close()
             except Exception as e:
                 logger.error(f"Unexpected error occurred: {e}")
+                await self.close()
+
+    async def send_status(self):
+        while self.round >= 1:
+            try:
+                print("send status")
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "game_progress",
+                        "message": {"event": "gameProgress", "data": self.round},
+                    },
+                )
+                await asyncio.sleep(self.status_interval)
+            except asyncio.CancelledError:
+                print("send status cancelled")
+                await self.close()
+            except Exception as e:
+                logger.error(f"Unexpected error occurred: {e}")
+                print("send status error")
                 await self.close()
 
     async def handle_topic_submission(self, data):
@@ -293,47 +312,64 @@ class RoomConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(message_content))
 
     async def ai_image_url(self, event):
-        topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
-
-        translated_result = await sync_to_async(translate_text.delay)(topic.title)
-
-        translated_text = await sync_to_async(translated_result.get)()
-        result = await sync_to_async(create_image.delay)(translated_text)
-
-        await self.send(
-            text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
-        )
-
         try:
+            topic = await sync_to_async(Topic.get_last_topic)(self.present_sub_room_id)
+
+            translated_result = await sync_to_async(translate_text.delay)(topic.title)
+
+            translated_text = await sync_to_async(translated_result.get)()
+            result = await sync_to_async(create_image.delay)(translated_text)
+
+            await self.send(
+                text_data=json.dumps({"message": "Image creation started", "task_id": result.id})
+            )
+
             image_url = await sync_to_async(result.get)()
 
-            if 'error' in image_url:
+            if "error" in image_url:
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "image_created_fail",
                         "message": {
                             "event": "image_creation_failed",
-                            "data": {
-                                "error": "AI가 만들 수 없는 주제 입니다."
-                            },
+                            "data": {"error": "AI가 만들 수 없는 주제 입니다."},
                         },
                     },
                 )
                 return
 
             await self.send(
-                text_data=json.dumps({"message": "Image creation completed", "image_url": image_url})
+                text_data=json.dumps(
+                    {"message": "Image creation completed", "image_url": image_url}
+                )
             )
             topic.url = image_url
             await sync_to_async(topic.save)()
 
         except Exception as e:
-            # If there's an unexpected error while getting the task result
-            await self.send(
-                text_data=json.dumps({"message": "An error occurred while creating the image", "error": str(e)})
-            )
+            # Log the error along with its traceback
 
+            error_message = f"An unexpected error occurred: {str(e)}"
+
+            print(error_message)
+
+            try:
+                # If there's an unexpected error while getting the task result
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "image_created_fail",
+                        "message": {
+                            "event": "image_creation_failed",
+                            "data": {"error": error_message},
+                        },
+                    },
+                )
+
+            except Exception as group_send_error:
+                print(f"An error occurred while sending the group message: {group_send_error}")
 
     async def next_round(self, event):
         room_num = await self.get_room_count()
@@ -359,11 +395,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps(
                 {
                     "event": "moveNextRound",
-                    "data": {
-                        "round": self.round,
-                        "complete": room.completeNum,
-                        "url": image_url
-                    },
+                    "data": {"round": self.round, "complete": room.completeNum, "url": image_url},
                 }
             )
         )
@@ -403,6 +435,22 @@ class RoomConsumer(AsyncWebsocketConsumer):
         topic = Topic.objects.create(title=title, url=None, player_id=player_id, sub_room=sub_room)
         return topic
 
+    async def game_progress(self, event):
+        error_message = "게임이 이미 시작되어 참가할 수 없습니다."
+        print("group send")
+        if self.round == 0:
+            print("에러")
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "event": "error",
+                        "data": {"error": error_message},
+                    }
+                )
+            )
+            await self.close(1008)
+            return
+
     async def handle_name_change(self, data):
         player_id = data.get("playerId")
         new_name = data.get("name")
@@ -412,7 +460,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
         subroom_count = await self.get_subroom_count(room)
 
         sub_room = await self.get_subroom_by_id(player_id)
-
 
         if sub_room:
             sub_room.first_player = new_name

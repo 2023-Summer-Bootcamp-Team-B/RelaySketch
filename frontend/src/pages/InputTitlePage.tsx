@@ -33,6 +33,7 @@ const InputTitlePage = observer(() => {
 
   useEffect(() => {
     if (error) {
+      alert(error);
       window.location.href = "/";
     }
   }, [error]);
