@@ -3,6 +3,8 @@ import asyncio
 import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from django.core.exceptions import ObjectDoesNotExist
+
 from .models import Room, SubRoom, Topic
 from .tasks import create_image, translate_text
 import logging
@@ -400,11 +402,16 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
         )
 
+    from asgiref.sync import sync_to_async
+
     @sync_to_async
     def get_room_by_id(self, room_id):
         try:
             return Room.objects.get(id=room_id)
         except Room.DoesNotExist:
+            return None
+        except Exception as e:
+            print(f"Unexpected error occurred while getting room by id: {e}")
             return None
 
     @sync_to_async
@@ -413,27 +420,51 @@ class RoomConsumer(AsyncWebsocketConsumer):
             return SubRoom.objects.get(id=subroom_id)
         except SubRoom.DoesNotExist:
             return None
+        except Exception as e:
+            print(f"Unexpected error occurred while getting subroom by id: {e}")
+            return None
 
     @sync_to_async
     def get_room_count(self):
-        room = Room.objects.get(id=self.room_id)
-        room_count = SubRoom.objects.filter(room=room, delete_at=None).count()
-
-        return room_count
+        try:
+            room = Room.objects.get(id=self.room_id)
+            room_count = SubRoom.objects.filter(room=room, delete_at=None).count()
+            return room_count
+        except ObjectDoesNotExist:
+            print("Room does not exist")
+            return 0
+        except Exception as e:
+            print(f"Unexpected error occurred while getting room count: {e}")
+            return 0
 
     @sync_to_async
     def get_subroom_count(self, room):
-        return SubRoom.objects.filter(room=room, delete_at=None).count()
+        try:
+            return SubRoom.objects.filter(room=room, delete_at=None).count()
+        except Exception as e:
+            print(f"Unexpected error occurred while getting subroom count: {e}")
+            return 0
 
     @sync_to_async
     def get_remaining_subrooms(self, room):
-        return SubRoom.objects.filter(room=room, delete_at=None).exists()
+        try:
+            return SubRoom.objects.filter(room=room, delete_at=None).exists()
+        except Exception as e:
+            print(f"Unexpected error occurred while checking if remaining subrooms exist: {e}")
+            return False
 
     @sync_to_async
     def save_topic(self, title, present_sub_room_id, player_id):
-        sub_room = SubRoom.objects.get(id=present_sub_room_id)
-        topic = Topic.objects.create(title=title, url=None, player_id=player_id, sub_room=sub_room)
-        return topic
+        try:
+            sub_room = SubRoom.objects.get(id=present_sub_room_id)
+            topic = Topic.objects.create(title=title, url=None, player_id=player_id, sub_room=sub_room)
+            return topic
+        except ObjectDoesNotExist:
+            print("SubRoom does not exist")
+            return None
+        except Exception as e:
+            print(f"Unexpected error occurred while saving topic: {e}")
+            return None
 
     async def game_progress(self, event):
         error_message = "게임이 이미 시작되어 참가할 수 없습니다."
