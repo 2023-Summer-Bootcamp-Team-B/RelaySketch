@@ -1,4 +1,4 @@
-RelaySketch
+# Relay Sketch
 
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
@@ -8,6 +8,7 @@ RelaySketch
 변환된 이미지를 다른 플레이어들에게 보여주고, 그것이 무엇인지 맞히는 게임으로 즐겁게 놀 수 있어요. 
 
 재밌는 주제를 제시해보면 웃음바다가 펼쳐질지도 몰라요! 🤣
+<br><br><br><br>
 
 
 # 📌 System Architecture
@@ -16,6 +17,8 @@ RelaySketch
 ![시스템아키텍쳐](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/be13ee8b-5fb9-4e4e-bfa5-559a154f7049)
 
 ![시스템아키텍쳐2](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/47391b51-fba7-41d5-bc87-6eace99df25e)
+
+<br>
 
 # 📚 Tech Stacks
 <table>
@@ -73,9 +76,11 @@ RelaySketch
     </td>
   </tr>
 </table>
+<br><br><br><br>
 
 # ♻️ Flow
 <img width="1440" alt="flow" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/460e3036-8674-4e4b-b844-d17852338b19">
+<br><br><br><br>
 
 # Database
 
@@ -85,6 +90,7 @@ RelaySketch
 <img width="677" alt="ERD" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/a9175ecc-547b-4906-b9c8-781a22b78044">
 </div>
 </details>
+<br><br>
 
 # 📂 File Directory
 <details>
@@ -196,7 +202,7 @@ RelaySketch
 </div>
 </details>
 
-
+<br><br>
 
 
 
@@ -231,7 +237,7 @@ RelaySketch
 ### NEWGAME * 
 <img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/62c6cc32-b487-4952-88c0-1178d5aa3539" alt="호스트_결과_보기_및_다시시작_AdobeExpress">
 
-
+<br><br><br><br>
 
 
 
@@ -248,9 +254,14 @@ RelaySketch
 ![ELK](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/198deb3f-9787-4964-9135-1514bffb7d3c)
 
 
+### K6
+<img width="1440" alt="k61" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/103251717/d385ca18-7898-486c-9e1b-1f1547e11756">
+<img width="1440" alt="k62" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/103251717/5221b945-bf3a-483f-b5fe-ab3e36a8852f">
+<br><br><br><br>
+
 # 📑 Swagger
 <img width="1088" alt="API명세서" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/6b696ffd-10a9-4951-87fc-dfb4a2e1a548">
-
+<br><br><br>
 
 # 👥 Member
 
@@ -375,4 +386,4 @@ RelaySketch
 
 
 ### GitHub
-You can find our team's repositories on [GitHub](https://github.com/your_team_name).
+You can find our team's repositories on [GitHub](https://github.com/2023-Summer-Bootcamp-Team-B).
