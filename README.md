@@ -14,7 +14,8 @@
 # 📌 System Architecture
 
 
-![시스템아키텍쳐](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/be13ee8b-5fb9-4e4e-bfa5-559a154f7049)
+
+![시스템아키텍쳐](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/6192244a-59e9-46c9-9adc-fd5df10bfeca)
 
 ![시스템아키텍쳐2](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/47391b51-fba7-41d5-bc87-6eace99df25e)
 
@@ -208,34 +209,36 @@
 
 # 🔍 Features
 ### MAIN PAGE * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/ca49e05a-42af-4c5c-b052-1af243125316" alt="메인_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/ca49e05a-42af-4c5c-b052-1af243125316" alt="메인_AdobeExpress">
 
 ### INPUT TITLE * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/e1a02fd0-ecbc-41cc-a808-57dcc554ffd9" alt="호스트_주제입력_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/9a6a641b-58fc-4dea-b86b-caccb99dff0e" alt="호스트_주제입력_AdobeExpress">
 
 ### LOADING * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/f142b6f7-6c0e-4cd9-a951-a78fe6c31a1d" alt="로딩_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/f142b6f7-6c0e-4cd9-a951-a78fe6c31a1d" alt="로딩_AdobeExpress">
 
 ### GUESS TITLE * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/ccf95c69-dc60-4f45-af5c-9b9a6390db92" alt="호스트_주제추리_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/36deac36-b9db-42fa-a34a-9a27fe478e89" alt="호스트_주제추리_AdobeExpress">
 
 ### RESULT * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/c25a3b75-9724-4a25-bee6-3866b70950ae" alt="호스트결과보기_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/e4d8907f-1b18-4913-9395-11dfa091438e" alt="호스트결과보기_AdobeExpress">
   <details>
   <summary>RESULT - DOWNLOAD *</summary>
-  <img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/2fa3a59c-06a4-4121-a265-59b9a7ef7574" alt="호스트다운로드_AdobeExpress gif">
+  <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/c18d46c2-9f4b-4a29-afa4-e55cf339d486" alt="호스트다운로드_AdobeExpress gif">
   </details>
+  
 
   <details>
   <summary>RESULT - SHARE * </summary>
-  <img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/1cdfa46f-5655-47e2-a95c-f4c80bd2a9be" alt="카카오톡공유_AdobeExpress">
+  <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/1cdfa46f-5655-47e2-a95c-f4c80bd2a9be" alt="카카오톡공유_AdobeExpress">
+
   
   </details>
 
  
 
 ### NEWGAME * 
-<img width="564" height="332" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/62c6cc32-b487-4952-88c0-1178d5aa3539" alt="호스트_결과_보기_및_다시시작_AdobeExpress">
+<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/62c6cc32-b487-4952-88c0-1178d5aa3539" alt="호스트_결과_보기_및_다시시작_AdobeExpress">
 
 <br><br><br><br>
 
