@@ -223,21 +223,21 @@ class RoomConsumer(AsyncWebsocketConsumer):
                     # 클라이언트에게 게임 결과 전송
                     await self.send_game_result(game_result)
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except json.JSONDecodeError as e:
             logger.error(f"Failed to decode JSON: {str(e)}")
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
-            await self.send(text_data=json.dumps({"event": "error", "data": f"오류가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"오류가 발생했습니다: {str(e)}"}}))
 
     async def send_message(self, event):
         try:
             message_content = event["message"]
             await self.send(text_data=json.dumps(message_content))
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"오류가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"오류가 발생했습니다: {str(e)}"}}))
 
     @staticmethod
     async def generate_game_result(subroom):
@@ -278,9 +278,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             game_result = event["message"]
             await self.send(text_data=json.dumps({"event": "gameResult", "data": game_result}))
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"오류가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"오류가 발생했습니다: {str(e)}"}}))
 
     async def send_ping(self):
         while True:
@@ -327,9 +327,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.round = message_content["round"]
             await self.send(text_data=json.dumps(message_content))
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"오류가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"오류가 발생했습니다: {str(e)}"}}))
 
     async def renew_list(self, event):
         await self.send_message(event)
@@ -428,11 +428,11 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 )
             )
         except AttributeError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"속성 에러가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"속성 에러가 발생했습니다: {str(e)}"}}))
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"알 수 없는 에러가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"알 수 없는 에러가 발생했습니다: {str(e)}"}}))
 
     @sync_to_async
     def get_room_by_id(self, room_id):
@@ -530,9 +530,9 @@ class RoomConsumer(AsyncWebsocketConsumer):
             if subroom_count > 1:
                 await self.send_player_list()
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {e}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {e}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"오류가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"오류가 발생했습니다: {str(e)}"}}))
 
     async def send_player_list(self):
         try:
@@ -563,8 +563,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 },
             )
         except AttributeError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"속성 에러가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"속성 에러가 발생했습니다: {str(e)}"}}))
         except KeyError as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"필요한 데이터가 없습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"필요한 데이터가 없습니다: {str(e)}"}}))
         except Exception as e:
-            await self.send(text_data=json.dumps({"event": "error", "data": f"알 수 없는 에러가 발생했습니다: {str(e)}"}))
+            await self.send(text_data=json.dumps({"event": "error", "data": {"error": f"알 수 없는 에러가 발생했습니다: {str(e)}"}}))
