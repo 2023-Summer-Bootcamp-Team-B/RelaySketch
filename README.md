@@ -3,10 +3,10 @@
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
 ### 소개
-🌤️AI 이미지 맞히기 게임 Relay Sketch!🎨
+AI 이미지 맞히기 게임 Relay Sketch🌞
 
-이 이미지가 뭘까요? 정답을 맞혀보세요!
-플레이어들을 거쳐가며 변하는 이미지의 정답을 과연 맞힐 수 있을까요?
+이 이미지가 뭘까요?
+플레이어들을 거쳐가며 변하는 이미지를 추측해봐요!🔍
 
 
 # 📌 System Architecture
@@ -111,13 +111,13 @@
 ### Result
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/e4d8907f-1b18-4913-9395-11dfa091438e" alt="호스트결과보기_AdobeExpress">
   <details>
-  <summary>RESULT - DOWNLOAD *</summary>
+  <summary>Result - Download </summary>
   <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/c18d46c2-9f4b-4a29-afa4-e55cf339d486" alt="호스트다운로드_AdobeExpress gif">
   </details>
   
 
   <details>
-  <summary>RESULT - SHARE * </summary>
+  <summary>Result - Share </summary>
   <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/1cdfa46f-5655-47e2-a95c-f4c80bd2a9be" alt="카카오톡공유_AdobeExpress">
 
   
@@ -135,7 +135,7 @@
 
 
 
-# 🖥️ Monitorings
+# 🖥️ Monitoring
 
 ### Prometheus & Grafana
 <img width="1440" alt="grafana prometheus" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/3179729d-c84a-447b-9b40-e695e12481bb">
