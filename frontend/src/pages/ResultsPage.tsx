@@ -6,7 +6,7 @@ import ResultsSection from "../components/ResultsList/ResultsSection";
 import WebsocketStore from "../stores/WebsocketStore";
 
 const ResultsPage = observer(() => {
-  const { error } = WebsocketStore;
+  const { error, ws } = WebsocketStore;
 
   useEffect(() => {
     if (error) {
@@ -14,6 +14,13 @@ const ResultsPage = observer(() => {
       window.location.href = "/";
     }
   }, [error]);
+
+  useEffect(() => {
+    if (!ws) {
+      alert("서버와의 연결이 끊어졌습니다.");
+      window.location.href = "/";
+    }
+  }, [ws]);
 
   return (
     <div className=" h-screen w-screen flex justify-center items-center font-hs bg-[#E7F5FF] ">

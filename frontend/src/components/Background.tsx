@@ -23,8 +23,17 @@ const Background = observer(({ children, title }: BackgroundProps) => {
   const [, setClickEditButton] = useState(false);
   const [clickInputButton, setClickInputButton] = useState(true);
   const [, setIsSendingChangeTitle] = useState(false);
-  const { completeNum, round, total, myId, resetRound, send, disconnect } =
-    WebsocketStore;
+  const {
+    completeNum,
+    round,
+    total,
+    myId,
+    resetRound,
+    send,
+    disconnect,
+    error,
+    ws,
+  } = WebsocketStore;
 
   useEffect(() => {
     if (timerDisplayRef.current) {
@@ -45,6 +54,20 @@ const Background = observer(({ children, title }: BackgroundProps) => {
       window.onbeforeunload = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      window.location.href = "/";
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (!ws) {
+      alert("서버와의 연결이 끊어졌습니다.");
+      window.location.href = "/";
+    }
+  }, [ws]);
 
   const onTimerEnd = () => {
     send({

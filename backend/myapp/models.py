@@ -1,5 +1,8 @@
-from django.db import models
+from django.db import models, DatabaseError
 from django.utils import timezone
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Room 모델
@@ -12,11 +15,20 @@ class Room(models.Model):
     # Room에서 delete 메서드를 호출할 때
     # Room 객체의 delete_at 필드를 현재 시간으로 설정하고 객체를 저장
     def delete(self, *args, **kwargs):
-        self.delete_at = timezone.now()
-        self.save()
+        try:
+            self.delete_at = timezone.now()
+            self.save()
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass
 
     def hard_delete(self, *args, **kwargs):
-        super().delete(*args, **kwargs)
+        try:
+            super().delete(*args, **kwargs)
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass
+
 
 
 # SubRoom 모델
@@ -33,8 +45,12 @@ class SubRoom(models.Model):
     # SubRoom 객체가 delete 메서드를 호출할 때 호출되는 함수
     # 이 함수는 SubRoom 객체의 delete_at 필드를 현재 시간으로 설정하고 객체를 저장
     def delete(self, *args, **kwargs):
-        self.delete_at = timezone.now()
-        self.save()
+        try:
+            self.delete_at = timezone.now()
+            self.save()
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass
 
     def get_next_id(self):
         next_sub_room_id = self.next_room.id
@@ -88,7 +104,11 @@ class SubRoom(models.Model):
         self.delete()
 
     def hard_delete(self, *args, **kwargs):
-        super().delete(*args, **kwargs)
+        try:
+            super().delete(*args, **kwargs)
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass
 
 
 class Topic(models.Model):
@@ -101,8 +121,12 @@ class Topic(models.Model):
     sub_room = models.ForeignKey("SubRoom", on_delete=models.CASCADE)
 
     def delete(self, *args, **kwargs):
-        self.delete_at = timezone.now()
-        self.save()
+        try:
+            self.delete_at = timezone.now()
+            self.save()
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass
 
     @classmethod
     def get_last_topic(cls, subroom_id):
@@ -113,4 +137,8 @@ class Topic(models.Model):
         )
 
     def hard_delete(self, *args, **kwargs):
-        super().delete(*args, **kwargs)
+        try:
+            super().delete(*args, **kwargs)
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            pass

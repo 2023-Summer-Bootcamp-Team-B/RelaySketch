@@ -1,39 +1,33 @@
-from django.http import HttpResponse
-import pika
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Room
+from rest_framework import status
+from django.db import DatabaseError
+import logging
 
-
-# Create your views here.
-def send_message(request):
-    credentials = pika.PlainCredentials("admin", "admin")
-    parameters = pika.ConnectionParameters("rabbitmq", 5672, "/", credentials)
-    connection = pika.BlockingConnection(parameters)
-    channel = connection.channel()
-
-    # 큐 생성
-    channel.queue_declare(queue="my_queue")
-
-    # 메시지 전송
-    channel.basic_publish(exchange="", routing_key="my_queue", body="Hello, RabbitMQ!".encode())
-
-    # 연결 종료
-    connection.close()
-
-    return HttpResponse("Message sent to RabbitMQ!")
+logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
 def add_room(request):
     if request.method == "POST":
-        room = Room.objects.create()  # 방 생성
-        data = {
-            "message": "방 생성 완료!",
-            "result": {
-                "room_id": room.id,
-                "created_at": room.created_at,
-                "update_at": room.update_at,
-            },
-        }
-        return Response(data)
+        try:
+            room = Room.objects.create()  # 방 생성
+            data = {
+                "message": "방 생성 완료!",
+                "result": {
+                    "room_id": room.id,
+                    "created_at": room.created_at,
+                    "update_at": room.update_at,
+                },
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
+        except DatabaseError as e:
+            logger.error("DatabaseError: %s", e)
+            return Response(
+                {"error": "방 생성 중 문제가 발생했습니다."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    else:
+        return Response(
+            {"error": "허용되지 않은 요청입니다."}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )

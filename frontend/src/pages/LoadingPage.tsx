@@ -12,6 +12,7 @@ const LoadingPage = observer(() => {
     nowLoading,
     endGame,
     error,
+    ws,
     disconnect,
     setDisableNowLoading,
     resetRound,
@@ -41,6 +42,13 @@ const LoadingPage = observer(() => {
       window.location.href = "/";
     }
   }, [error]);
+
+  useEffect(() => {
+    if (!ws) {
+      alert("서버와의 연결이 끊어졌습니다.");
+      window.location.href = "/";
+    }
+  }, [ws]);
 
   return (
     <div className="w-screen h-screen font-hs bg-[#E7F5FF] text-3xl md:text-5xl xl:text-6xl 2xl:text-7xl">

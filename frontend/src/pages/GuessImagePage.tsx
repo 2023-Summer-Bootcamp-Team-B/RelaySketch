@@ -11,7 +11,6 @@ const GuessImagePage = observer(() => {
     nowLoading,
     imgSrc,
     endGame,
-    error,
     disconnect,
     setDisableNowLoading,
     resetRound,
@@ -40,13 +39,6 @@ const GuessImagePage = observer(() => {
       navigate("/results");
     }
   }, [nowLoading, endGame]);
-
-  useEffect(() => {
-    if (error) {
-      alert(error);
-      window.location.href = "/";
-    }
-  }, [error]);
 
   return (
     <div>

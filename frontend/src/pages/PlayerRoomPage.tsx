@@ -34,7 +34,7 @@ const PlayerRoomPage = observer(() => {
 
   const navigate = useNavigate();
   const param = useParams();
-  const { send, error } = WebsocketStore;
+  const { send, error, ws } = WebsocketStore;
   const [IsmodalEOpen, SetismodalEOpen] = useState(false);
   const [ValueLengthState, SetValueState] = useState("");
   const [HintState, SetHintState] = useState("");
@@ -190,6 +190,13 @@ const PlayerRoomPage = observer(() => {
       window.location.href = "/";
     }
   }, [error]);
+
+  useEffect(() => {
+    if (!ws) {
+      alert("서버와의 연결이 끊어졌습니다.");
+      window.location.href = "/";
+    }
+  }, [ws]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
