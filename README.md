@@ -278,7 +278,3 @@
      </tr>
     </tbody>
 </table>
-
-
-### GitHub
-You can find our team's repositories on [GitHub](https://github.com/2023-Summer-Bootcamp-Team-B).
