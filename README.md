@@ -3,7 +3,7 @@
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
 ### 소개
-AI 이미지 맞히기 게임 Relay Sketch!
+🌤️AI 이미지 맞히기 게임 Relay Sketch!🎨
 
 이 이미지가 뭘까요? 정답을 맞혀보세요!
 플레이어들을 거쳐가며 변하는 이미지의 정답을 과연 맞힐 수 있을까요?
@@ -96,19 +96,19 @@ AI 이미지 맞히기 게임 Relay Sketch!
 
 
 # 🔍 Features
-### MAIN PAGE * 
+### MainPage 
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/ca49e05a-42af-4c5c-b052-1af243125316" alt="메인_AdobeExpress">
 
-### INPUT TITLE * 
+### InputTitle 
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/9a6a641b-58fc-4dea-b86b-caccb99dff0e" alt="호스트_주제입력_AdobeExpress">
 
-### LOADING * 
+### Loading 
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/f142b6f7-6c0e-4cd9-a951-a78fe6c31a1d" alt="로딩_AdobeExpress">
 
-### GUESS TITLE * 
+### GuessTitle 
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/36deac36-b9db-42fa-a34a-9a27fe478e89" alt="호스트_주제추리_AdobeExpress">
 
-### RESULT * 
+### Result
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/e4d8907f-1b18-4913-9395-11dfa091438e" alt="호스트결과보기_AdobeExpress">
   <details>
   <summary>RESULT - DOWNLOAD *</summary>
@@ -125,7 +125,7 @@ AI 이미지 맞히기 게임 Relay Sketch!
 
  
 
-### NEWGAME * 
+### NewGame 
 <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/62c6cc32-b487-4952-88c0-1178d5aa3539" alt="호스트_결과_보기_및_다시시작_AdobeExpress">
 
 <br><br><br><br>
