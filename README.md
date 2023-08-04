@@ -1,17 +1,15 @@
-# Relay Sketch
+# ![햇님2 1](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/2b6497ee-ad23-4993-8c10-0c9562387d16)Relay Sketch
 
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
 ### 소개
-📃 어떤 주제든 입력하면, 우리 태양이가 이미지로 변환해드려요! ☀️
+AI 이미지 맞히기 게임 
+Relay Sketch🌞
 
-변환된 이미지는 다음 사람에게 전달되고, 전달 받은 사람이 답을 입력하면 또 이미지로 변환되어 다음 사람에게 전해집니다.
+이 이미지가 뭘까요?
+플레이어들을 거쳐가며 변하는 이미지를 추측해봐요!🔍
 
-내가 제시한 주제가 모두에게 제대로 전달될 수 있을까요?
-
-우리 태양이의 미적 감각을 믿어보자구요! 🤣
-
-
+<br><br><br><br>
 
 # 📌 System Architecture
 
@@ -21,7 +19,7 @@
 
 ![시스템아키텍쳐2](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/47391b51-fba7-41d5-bc87-6eace99df25e)
 
-<br>
+<br><br><br><br>
 
 # 📚 Tech Stacks
 <table>
@@ -85,7 +83,7 @@
 <img width="1440" alt="flow" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/460e3036-8674-4e4b-b844-d17852338b19">
 <br><br><br><br>
 
-# Database
+# 🗄️ Database
 
 <details>
 <summary>ERD</summary>
@@ -93,45 +91,49 @@
 <img width="677" alt="ERD" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/a9175ecc-547b-4906-b9c8-781a22b78044">
 </div>
 </details>
-<br><br>
-
-
-
-
+<br><br><br><br>
 
 # 🔍 Features
-### MAIN PAGE * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/ca49e05a-42af-4c5c-b052-1af243125316" alt="메인_AdobeExpress">
+### MainPage 
+![ezgif-2-a98570fc0f](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/94730ba8-20de-4ab6-8857-a156d7dd84e6)
 
-### INPUT TITLE * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/9a6a641b-58fc-4dea-b86b-caccb99dff0e" alt="호스트_주제입력_AdobeExpress">
+### InputTitle 
 
-### LOADING * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/f142b6f7-6c0e-4cd9-a951-a78fe6c31a1d" alt="로딩_AdobeExpress">
+![ezgif-2-ac7790c603](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/81aafdb5-743b-49d9-9154-30bbd00df03c)
 
-### GUESS TITLE * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/36deac36-b9db-42fa-a34a-9a27fe478e89" alt="호스트_주제추리_AdobeExpress">
+### Loading 
 
-### RESULT * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/e4d8907f-1b18-4913-9395-11dfa091438e" alt="호스트결과보기_AdobeExpress">
+![ezgif-2-4c66588aa1](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/26afd317-8eba-4d47-9a5f-80a97748d753)
+
+### GuessTitle 
+
+![ezgif-2-99c8b9f0db](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/cc72851b-6f71-440d-8dbd-bb2ac87ea547)
+
+### Result
+
+![ezgif-2-2568ce5715](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/12446735-8a38-460f-ae8a-551c2b180cdc)
+
   <details>
-  <summary>RESULT - DOWNLOAD *</summary>
-  <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/c18d46c2-9f4b-4a29-afa4-e55cf339d486" alt="호스트다운로드_AdobeExpress gif">
+  <summary>Result - Download </summary>
+
+![ezgif-1-9c99019b99](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/5c0d1eac-bec0-4fa8-bc6a-784dc9b735cb)
+
   </details>
   
 
   <details>
-  <summary>RESULT - SHARE * </summary>
-  <img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/1cdfa46f-5655-47e2-a95c-f4c80bd2a9be" alt="카카오톡공유_AdobeExpress">
+  <summary>Result - Share </summary>
 
+![ezgif-2-06e6fe447c](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/6534d894-b099-445f-90bf-efd6923e6690)
   
   </details>
 
  
+<details>
+<summary>Result - Newgame </summary>
 
-### NEWGAME * 
-<img width="400" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/101982673/62c6cc32-b487-4952-88c0-1178d5aa3539" alt="호스트_결과_보기_및_다시시작_AdobeExpress">
-
+![ezgif-1-1ec8bf34b4](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/5086ee3e-6001-4366-b11a-1f34a7b78741)
+</details>
 <br><br><br><br>
 
 
@@ -139,24 +141,34 @@
 
 
 
-# 🖥️ Monitorings
+# 🖥️ Monitoring
 
 ### Prometheus & Grafana
 <img width="1440" alt="grafana prometheus" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/3179729d-c84a-447b-9b40-e695e12481bb">
 
+<br>
 
 ### ELK
 ![ELK](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/198deb3f-9787-4964-9135-1514bffb7d3c)
 
+<br>
 
 ### K6
-<img width="1440" alt="k61" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/103251717/d385ca18-7898-486c-9e1b-1f1547e11756">
-<img width="1440" alt="k62" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/103251717/5221b945-bf3a-483f-b5fe-ab3e36a8852f">
+<img width="1362" alt="스크린샷 2023-08-03 오후 6 33 46" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/5fd4b2ec-c069-4bdb-9e8d-4dfbd0db7a85">
+<img width="1359" alt="스크린샷 2023-08-03 오후 6 34 03" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/fdb6ba6c-ce27-44b0-b209-9892201fca57">
+
+
 <br><br><br><br>
 
 # 📑 Swagger
 <img width="1088" alt="API명세서" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/6b696ffd-10a9-4951-87fc-dfb4a2e1a548">
-<br><br><br>
+<br><br><br><br>
+
+# 📥 CD
+
+![CD](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/a2c5465c-71ec-4d08-a519-f8b9195193bf)
+
+<br><br><br><br>
 
 # 👥 Member
 
