@@ -34,7 +34,7 @@ const PlayerRoomPage = observer(() => {
 
   const navigate = useNavigate();
   const param = useParams();
-  const { send, error, ws } = WebsocketStore;
+  const { send, error } = WebsocketStore;
   const [IsmodalEOpen, SetismodalEOpen] = useState(false);
   const [ValueLengthState, SetValueState] = useState("");
   const [HintState, SetHintState] = useState("");
@@ -151,7 +151,7 @@ const PlayerRoomPage = observer(() => {
 
       if (
         roomstate.findIndex(
-          (item) => !(item.playerId === myId) && item.playerName === inputValue,
+          (item) => !(item.playerId === myId) && item.playerName === inputValue
         ) !== -1
       ) {
         SetValueState("동일한 닉네임이 존재해요!");
@@ -190,13 +190,6 @@ const PlayerRoomPage = observer(() => {
       window.location.href = "/";
     }
   }, [error]);
-
-  useEffect(() => {
-    if (!ws) {
-      alert("서버와의 연결이 끊어졌습니다.");
-      window.location.href = "/";
-    }
-  }, [ws]);
 
   return (
     <div className="relative h-screen w-screen bg-[#E7F5FF] flex justify-center items-center overflow-hidden">
@@ -251,7 +244,7 @@ const PlayerRoomPage = observer(() => {
                 )}
               </div>
             </div>
-          ),
+          )
         )}
         <button
           className="relative"
