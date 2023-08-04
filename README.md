@@ -1,9 +1,10 @@
-# Relay Sketch
+# ![햇님2 1](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/2b6497ee-ad23-4993-8c10-0c9562387d16)Relay Sketch
 
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
 ### 소개
-AI 이미지 맞히기 게임 Relay Sketch🌞
+AI 이미지 맞히기 게임 
+Relay Sketch🌞
 
 이 이미지가 뭘까요?
 플레이어들을 거쳐가며 변하는 이미지를 추측해봐요!🔍
@@ -82,7 +83,7 @@ AI 이미지 맞히기 게임 Relay Sketch🌞
 <img width="1440" alt="flow" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/460e3036-8674-4e4b-b844-d17852338b19">
 <br><br><br><br>
 
-# Database
+# 🗄️ Database
 
 <details>
 <summary>ERD</summary>
