@@ -162,7 +162,13 @@ Relay Sketch🌞
 
 # 📑 Swagger
 <img width="1088" alt="API명세서" src="https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/6b696ffd-10a9-4951-87fc-dfb4a2e1a548">
-<br><br><br>
+<br><br><br><br>
+
+# 📥 CD
+
+![CD](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/112528747/a2c5465c-71ec-4d08-a519-f8b9195193bf)
+
+<br><br><br><br>
 
 # 👥 Member
 
