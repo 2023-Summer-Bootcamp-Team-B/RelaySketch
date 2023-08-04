@@ -3,12 +3,14 @@
 ![최최종로고](https://github.com/2023-Summer-Bootcamp-Team-B/RelaySketch/assets/137774867/4318b363-f86b-4aae-988a-b772f262e8ee)
 
 ### 소개
-📃 어떤 주제든, 우리 태양이가 이미지로 변환해드려요! ☀️
+📃 어떤 주제든 입력하면, 우리 태양이가 이미지로 변환해드려요! ☀️
 
-변환된 이미지를 다른 플레이어들에게 보여주고, 그것이 무엇인지 맞히는 게임으로 즐겁게 놀 수 있어요. 
+변환된 이미지는 다음 사람에게 전달되고, 전달 받은 사람이 답을 입력하면 또 이미지로 변환되어 다음 사람에게 전해집니다.
 
-재밌는 주제를 제시해보면 웃음바다가 펼쳐질지도 몰라요! 🤣
-<br><br><br><br>
+내가 제시한 주제가 모두에게 제대로 전달될 수 있을까요?
+
+우리 태양이의 미적 감각을 믿어보자구요! 🤣
+
 
 
 # 📌 System Architecture
@@ -93,117 +95,7 @@
 </details>
 <br><br>
 
-# 📂 File Directory
-<details>
-<summary>front</summary>
-<div markdown="1">
-  
-~~~
-📦frontend
- ┣ 📂node_modules
- ┣ 📂public
- ┣ 📂src
- ┃ ┣ 📂assets
- ┃ ┃ ┣ 📂fonts
- ┃ ┃ ┗ 📂images
- ┃ ┣ 📂components
- ┃ ┃ ┣ 📂Header
- ┃ ┃ ┃ ┗ 📜Header.tsx
- ┃ ┃ ┣ 📂PlayerList
- ┃ ┃ ┃ ┣ 📜Player.tsx
- ┃ ┃ ┃ ┣ 📜PlayerList.tsx
- ┃ ┃ ┃ ┗ 📜PlayersSection.tsx
- ┃ ┃ ┣ 📂ResultsList
- ┃ ┃ ┃ ┣ 📜Result.tsx
- ┃ ┃ ┃ ┣ 📜ResultsList.tsx
- ┃ ┃ ┃ ┗ 📜ResultsSection.tsx
- ┃ ┃ ┣ 📂UI
- ┃ ┃ ┃ ┣ 📜AnimatedBackground.tsx
- ┃ ┃ ┃ ┣ 📜AnimatedFooter.tsx
- ┃ ┃ ┃ ┣ 📜Button.tsx
- ┃ ┃ ┃ ┗ 📜KakaoShareButton.tsx
- ┃ ┃ ┗ 📜Background.tsx
- ┃ ┣ 📂pages
- ┃ ┃ ┣ 📜GuessImagePage.tsx
- ┃ ┃ ┣ 📜InputTitlePage.tsx
- ┃ ┃ ┣ 📜LoadingPage.tsx
- ┃ ┃ ┣ 📜MainPage.tsx
- ┃ ┃ ┣ 📜PlayerRoomPage.tsx
- ┃ ┃ ┗ 📜ResultsPage.tsx
- ┃ ┣ 📂stores
- ┃ ┃ ┗ 📜WebsocketStore.ts
- ┃ ┣ 📜App.css
- ┃ ┣ 📜App.tsx
- ┃ ┣ 📜index.css
- ┃ ┣ 📜main.tsx
- ┃ ┗ 📜vite-env.d.ts
- ┣ 📜.eslintrc.cjs
- ┣ 📜.gitignore
- ┣ 📜Dockerfile
- ┣ 📜Dockerfile.prod
- ┣ 📜index.html
- ┣ 📜package-lock.json
- ┣ 📜package.json
- ┣ 📜postcss.config.js
- ┣ 📜tailwind.config.js
- ┣ 📜tsconfig.json
- ┣ 📜tsconfig.node.json
- ┗ 📜vite.config.ts
-~~~
 
-</div>
-</details>
-
-
-
-<details>
-<summary>backend</summary>
-<div markdown="1">
-  
-~~~
-📦backend
- ┣ 📂config
- ┃ ┣ 📜asgi.py
- ┃ ┣ 📜celery.py
- ┃ ┣ 📜settings.py
- ┃ ┣ 📜urls.py
- ┃ ┣ 📜wsgi.py
- ┃ ┗ 📜__init__.py
- ┣ 📂myapp
- ┃ ┣ 📂migrations
- ┃ ┃ ┣ 📜0001_initial.py
- ┃ ┃ ┣ 📜0002_remove_subroom_unique_first_player_in_room.py
- ┃ ┃ ┣ 📜0003_topic_player_id.py
- ┃ ┃ ┗ 📜__init__.py
- ┃ ┣ 📂test
- ┃ ┃ ┣ 📜test_models.py
- ┃ ┃ ┣ 📜test_views.py
- ┃ ┃ ┗ 📜__init__.py
- ┃ ┣ 📜admin.py
- ┃ ┣ 📜apps.py
- ┃ ┣ 📜consumers.py
- ┃ ┣ 📜models.py
- ┃ ┣ 📜routing.py
- ┃ ┣ 📜tasks.py
- ┃ ┣ 📜tests.py
- ┃ ┣ 📜views.py
- ┃ ┗ 📜__init__.py
- ┣ 📂static
- ┣ 📜.dockerignore
- ┣ 📜celerybeat-schedule
- ┣ 📜Dockerfile
- ┣ 📜Dockerfile.prod
- ┣ 📜gunicorn.conf.py
- ┣ 📜main.py
- ┣ 📜manage.py
- ┣ 📜Pipfile
- ┗ 📜Pipfile.lock
-~~~
-
-</div>
-</details>
-
-<br><br>
 
 
 
