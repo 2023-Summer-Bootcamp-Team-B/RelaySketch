@@ -101,6 +101,9 @@ const PlayerRoomPage = observer(() => {
   };
 
   const handlePlay = () => {
+    if (player.length < 2) {
+      return;
+    }
     send({
       event: "startGame",
       data: "게임시작",
